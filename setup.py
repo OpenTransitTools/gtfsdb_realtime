@@ -27,7 +27,7 @@ if sys.version_info[:2] <= (2, 6):
     extras_require['dev'].append('unittest2')
 
 setup(
-    name='ott.gtfsdb-realtime',
+    name='ott.gtfsdb_realtime',
     version='0.1.0',
     description='GTFS Real-time Database',
     long_description=open('README').read(),
@@ -54,7 +54,7 @@ setup(
     extras_require=extras_require,
     entry_points="""\
         [console_scripts]
-        loader = ott.loader:main
+        loader = ott.gtfsdb_realtime.loader:main
     """,
 
 )

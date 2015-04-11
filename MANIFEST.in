@@ -1,2 +1,2 @@
-recursive-include gtfsdb-realtime/configs *
-recursive-include gtfsdb-realtime/data *
+recursive-include gtfsdb_realtime/configs *
+recursive-include gtfsdb_realtime/data *
