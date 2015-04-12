@@ -18,32 +18,23 @@ class Position(Base):
     '''
     __tablename__ = 'positions'
 
-    id = Column(Integer, primary_key=True, nullable=False)
-    address = Column(String)
-    city = Column(String)
-    zipcode = Column(String)
-    state = Column(String)
     lat = Column(Numeric(12,9), nullable=False)
     lon = Column(Numeric(12,9), nullable=False)
-    created = Column(DateTime, default=datetime.datetime.now())
-    updated = Column(DateTime, default=datetime.datetime.now())
-    latest  = Column(Boolean,  default=False)
+    bearing = Column(Numeric(3,3), nullable=False)
+    latest = Column(Boolean,  default=False)
 
     vehicle_id  = Column(String, nullable=False)
-    carshare_co = Column(String, nullable=False)
 
-    '''
-    __table_args__ = (
-        ForeignKeyConstraint(
-              [vehicle_id, carshare_co],
-              [Vehicle.id, Vehicle.carshare_company]),
-              {}
-    )
+    trip_id   = Column(String)
+    route_id  = Column(String)
+    headsign  = Column(String)
+    stop_id   = Column(String)
+    stop_seq  = Column(Integer)
+    status    = Column(String)
+    timestamp = Column(String)
 
-    vehicle = relation(Vehicle, backref=backref('vehicles', order_by=id, cascade="all, delete-orphan"))
-    '''
 
-    def set_position(self, lat, lon, address=None, city=None, state=None, zipcode=None):
+    def set_position(self, lat, lon):
         ''' set the lat / lon of this object, and update the timestamp and 'latest' status (to True)
         '''
         self.lat = lat
@@ -51,13 +42,14 @@ class Position(Base):
         if hasattr(self, 'geom'):
             self.add_geom_to_dict(self.__dict__)
 
-        self.address = address
-        self.city = city
-        self.state = state
-        self.zipcode = zipcode
         self.updated = datetime.datetime.now()
         self.latest  = True
 
+    def set_attributes(self, obj):
+        try:
+            pass
+        except:
+            pass
 
     @classmethod
     def clear_latest_column(cls, session, car_co=''):

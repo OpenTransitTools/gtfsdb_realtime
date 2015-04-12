@@ -3,7 +3,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, String, DateTime
 
 class _Base(object):
-    __tablename__ = "Base"
 
     id = Column(String, primary_key=True, nullable=False)
     agency = Column(String, nullable=False)
@@ -17,7 +16,6 @@ class _Base(object):
             'polymorphic_identity' : tablename,
             'with_polymorphic'     : '*'
         }
-
 
     @classmethod
     def from_dict(cls, attrs):

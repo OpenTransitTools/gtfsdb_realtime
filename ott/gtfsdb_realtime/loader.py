@@ -67,7 +67,7 @@ def main():
     #import pdb; pdb.set_trace()
     args = init_parser()
     print args
-    #parse(args)
+    parse(args)
 
     db = Database(args.database_url, args.schema, args.geo)
     if args.create:
