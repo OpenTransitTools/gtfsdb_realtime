@@ -12,17 +12,7 @@ from ott.gtfsdb_realtime.model.position import Position
 class Vehicle(Base):
     __tablename__ = 'vehicles'
 
-    id = Column(String, primary_key=True, nullable=False)
-    carshare_company = Column(String, nullable=False)
     name = Column(String)
-    created = Column(DateTime, default=datetime.datetime.now())
-    updated = Column(DateTime, default=datetime.datetime.now())
-
-    __mapper_args__ = {
-            'polymorphic_on': carshare_company,
-            'polymorphic_identity': __tablename__,
-            'with_polymorphic':'*'
-    }
 
     @abc.abstractmethod
     def set_attributes(self, dict):

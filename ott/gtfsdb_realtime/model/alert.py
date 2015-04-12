@@ -13,6 +13,7 @@ class Alert(Base):
     __tablename__ = 'alerts'
 
     name = Column(String)
+    __mapper_args__ = Base.make_mapper(__tablename__)
 
     @abc.abstractmethod
     def set_attributes(self, dict):

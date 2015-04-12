@@ -7,15 +7,17 @@ class _Base(object):
 
     id = Column(String, primary_key=True, nullable=False)
     agency = Column(String, nullable=False)
-
-    __mapper_args__ = {
-        'polymorphic_on'       : agency,
-        'polymorphic_identity' : __tablename__,
-        'with_polymorphic'     : '*'
-    }
-
     created = Column(DateTime, default=datetime.datetime.now())
     updated = Column(DateTime, default=datetime.datetime.now())
+
+    @classmethod
+    def make_mapper(cls, tablename, column=agency):
+        return {
+            'polymorphic_on'       : column,
+            'polymorphic_identity' : tablename,
+            'with_polymorphic'     : '*'
+        }
+
 
     @classmethod
     def from_dict(cls, attrs):
