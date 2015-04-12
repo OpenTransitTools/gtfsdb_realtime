@@ -1,6 +1,21 @@
+import datetime
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, String, DateTime
 
 class _Base(object):
+    __tablename__ = "Base"
+
+    id = Column(String, primary_key=True, nullable=False)
+    agency = Column(String, nullable=False)
+
+    __mapper_args__ = {
+        'polymorphic_on'       : agency,
+        'polymorphic_identity' : __tablename__,
+        'with_polymorphic'     : '*'
+    }
+
+    created = Column(DateTime, default=datetime.datetime.now())
+    updated = Column(DateTime, default=datetime.datetime.now())
 
     @classmethod
     def from_dict(cls, attrs):

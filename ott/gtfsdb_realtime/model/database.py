@@ -11,7 +11,7 @@ log.setLevel(logging.INFO)
 
 class Database(object):
 
-    def __init__(self, url='sqlite:///gtfsdb_realtime.db', schema=None, is_geospatial=False, pool_size=20):
+    def __init__(self, url, schema=None, is_geospatial=False, pool_size=20):
         self.url = url
         self.schema = schema
         self.is_geospatial = is_geospatial

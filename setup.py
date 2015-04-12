@@ -17,6 +17,8 @@ extras_require = dict(
 install_requires = [
     'ott.utils',
     'argparse',
+    'simplejson',
+    'geojson',
     'geoalchemy2>=0.2.4',
     'sqlalchemy>=0.9',
     'gtfs-realtime-bindings',
