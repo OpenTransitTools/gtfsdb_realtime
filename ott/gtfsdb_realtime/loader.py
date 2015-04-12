@@ -2,6 +2,7 @@ import argparse
 import logging
 log = logging.getLogger(__file__)
 
+from ott.gtfsdb_realtime.model.database import Database
 
 def init_parser():
     parser = argparse.ArgumentParser(
@@ -65,14 +66,13 @@ def parse(args):
 def main():
     #import pdb; pdb.set_trace()
     args = init_parser()
-    parse(args)
     print args
-    '''
-    db = Database(args.url, args.schema, args.geo)
+    parse(args)
+
+    db = Database(args.database_url, args.schema, args.geo)
     if args.create:
         db.create()
-    UpdateController().update_children(db, args)
-    '''
+
 
 if __name__ == '__main__':
     main()
