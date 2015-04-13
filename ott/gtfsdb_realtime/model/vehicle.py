@@ -19,7 +19,7 @@ class Vehicle(Base):
         self.vehicle_id = vehicle_id
 
     @classmethod
-    def parse_gtfsrt_data(self, session, agency, data):
+    def parse_gtfsrt_data(cls, session, agency, data):
         ''' create or update new Vehicles and positions
             :return Vehicle object
         '''
@@ -38,7 +38,7 @@ class Vehicle(Base):
             ret_val = v
 
         except Exception, err:
-            log.exception('Exception: {0}, committing position to db for vehicle id={1}, lat={2}, lon={3}'.format(err, p.vehicle_id, lat, lon))
+            log.exception(err)
             session.rollback()
         finally:
             # step 4:

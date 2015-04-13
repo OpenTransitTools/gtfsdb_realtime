@@ -1,3 +1,4 @@
+import abc
 import datetime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, String, Integer, DateTime
@@ -8,6 +9,10 @@ class _Base(object):
     agency = Column(String, nullable=False)
     created = Column(DateTime, default=datetime.datetime.now())
     updated = Column(DateTime, default=datetime.datetime.now())
+
+    @abc.abstractmethod
+    def parse_gtfsrt_data(cls, session, agency, data):
+        raise NotImplementedError("Please implement this method")
 
     @classmethod
     def make_mapper(cls, tablename, column=agency):
