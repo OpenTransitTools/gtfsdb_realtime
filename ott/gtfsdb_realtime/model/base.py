@@ -4,7 +4,7 @@ from sqlalchemy import Column, String, DateTime
 
 class _Base(object):
 
-    id = Column(String, primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, nullable=False)
     agency = Column(String, nullable=False)
     created = Column(DateTime, default=datetime.datetime.now())
     updated = Column(DateTime, default=datetime.datetime.now())

@@ -12,13 +12,44 @@ from ott.gtfsdb_realtime.model.position import Position
 class Vehicle(Base):
     __tablename__ = 'vehicles'
 
-    name = Column(String)
+    vehicle_id = Column(String, nullable=False)
 
-    @abc.abstractmethod
-    def set_attributes(self, dict):
-        ''' copy known values from the dict into this object, then update the timestamp
+    def __init__(self, agency, vehicle_id):
+        self.agency = agency
+        self.vehicle_id = vehicle_id
+
+    @classmethod
+    def parse_gtfsrt_data(self, session, agency, data):
+        ''' create or update new Vehicles and positions
+            :return Vehicle object
         '''
-        raise NotImplementedError("Please implement this method")
+        ret_val = None
+
+        try:
+            # step 1: query db for vehicle
+
+            # step 2: create or update vehicle
+            v = Vehicle(agency, data.vehicle.id)
+            session.add(v)
+
+            # step 3: update vehicle position
+
+
+            ret_val = v
+
+        except Exception, err:
+            log.exception('Exception: {0}, committing position to db for vehicle id={1}, lat={2}, lon={3}'.format(err, p.vehicle_id, lat, lon))
+            session.rollback()
+        finally:
+            # step 4: 
+            try:
+                session.commit()
+                session.flush()
+            except:
+                session.rollback()
+
+        return ret_val
+
 
 
     def update_position(self, session, lat, lon, address=None, city=None, state=None, zipcode=None, time_span=144):
