@@ -41,7 +41,7 @@ class Vehicle(Base):
             log.exception('Exception: {0}, committing position to db for vehicle id={1}, lat={2}, lon={3}'.format(err, p.vehicle_id, lat, lon))
             session.rollback()
         finally:
-            # step 4: 
+            # step 4:
             try:
                 session.commit()
                 session.flush()

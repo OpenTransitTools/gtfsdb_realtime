@@ -46,7 +46,7 @@ def init_parser():
     return args
 
 
-def parse(args):
+def parse(args, session):
     from google.transit import gtfs_realtime_pb2
     import urllib
 
@@ -56,6 +56,7 @@ def parse(args):
     url = 'http://trimet.org/transweb/ws/V1/FeedSpecAlerts/appId/3819A6A38C72223198B560DF0/includeFuture/true'
     url = 'http://trimet.org/transweb/ws/V1/TripUpdate/appId/3819A6A38C72223198B560DF0/includeFuture/true'
     url = 'http://developer.trimet.org/ws/gtfs/VehiclePositions/appId/3819A6A38C72223198B560DF0'
+    agency = "trimet"
     if args.url and len(args.url) > 1:
         url = args.url
     response = urllib.urlopen(url)
@@ -64,21 +65,22 @@ def parse(args):
         if entity.HasField('trip_update'):
             pass
         elif entity.HasField('vehicle'):
-            Vehicle.parse(entity.vehicle)
+            data = entity.vehicle
+            Vehicle.parse_gtfsrt_data(session, agency, data)
 
 def main():
     #import pdb; pdb.set_trace()
     args = init_parser()
     print args
-    parse(args)
 
     db = Database(args.database_url, args.schema, args.geo)
     if args.create:
         db.create()
 
-    from ott.gtfsdb_realtime.model.alert import Alert
-    d = Alert()
-    print d.__mapper_args__
+    session = db.get_session()
+
+    parse(args, session)
+
 
 if __name__ == '__main__':
     main()
