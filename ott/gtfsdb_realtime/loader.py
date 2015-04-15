@@ -3,6 +3,7 @@ import logging
 log = logging.getLogger(__file__)
 
 from ott.gtfsdb_realtime.model.database import Database
+from ott.gtfsdb_realtime.model.base import Base
 
 def init_parser():
     parser = argparse.ArgumentParser(
@@ -15,6 +16,13 @@ def init_parser():
         '-u',
         required='true',
         help="url to gtfs-realtime data"
+    )
+    parser.add_argument(
+        '--agency',
+        '-agency',
+        '-a',
+        default="trimet",
+        help="agency name (string)"
     )
     parser.add_argument(
         '--database_url',
@@ -45,7 +53,6 @@ def init_parser():
     args = parser.parse_args()
     return args
 
-
 def parse(args, session):
     from google.transit import gtfs_realtime_pb2
     import urllib
@@ -62,18 +69,7 @@ def parse(args, session):
         url = args.url
     response = urllib.urlopen(url)
     feed.ParseFromString(response.read())
-    for entity in feed.entity:
-        if entity.HasField('trip_update'):
-            data = entity #.trip_update
-            #Trip.parse_gtfsrt_data(session, agency, data)
-            print data
-        elif entity.HasField('vehicle'):
-            data = entity.vehicle
-            Vehicle.parse_gtfsrt_data(session, agency, data)
-        else:
-            data = entity
-            #print data
-            Alert.parse_gtfsrt_data(session, agency, data)
+    Base.parse_gtfsrt_feed(session, args.agency, feed)
 
 def main():
     #import pdb; pdb.set_trace()

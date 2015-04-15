@@ -59,14 +59,11 @@ class Position(Base):
         self.timestamp = data.timestamp
 
 
-
-
-
     @classmethod
-    def clear_latest_column(cls, session, car_co=''):
+    def clear_latest_column(cls, session, agency=''):
         ''' set all latest=True positions to false (for a give car company)
         '''
-        session.query(Position).filter(and_(Position.latest == True, Position.carshare_co == car_co)
+        session.query(Position).filter(and_(Position.latest == True, Position.agency == agency)
                               ).update({"latest":False}, synchronize_session=False)
 
     @classmethod

@@ -19,7 +19,7 @@ class Vehicle(Base):
         self.vehicle_id = vehicle_id
 
     @classmethod
-    def parse_gtfsrt_data(cls, session, agency, data):
+    def parse_gtfsrt_record(cls, session, agency, data):
         ''' create or update new Vehicles and positions
             :return Vehicle object
         '''

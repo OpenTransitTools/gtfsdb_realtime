@@ -10,8 +10,46 @@ class _Base(object):
     created = Column(DateTime, default=datetime.datetime.now())
     updated = Column(DateTime, default=datetime.datetime.now())
 
+
+    @classmethod
+    def get_data_type(cls, feed):
+        '''
+        :param data:
+        :return: type
+        '''
+        from .vehicle import Vehicle
+        from .alert import Alert
+
+        ret_val = None
+        for entity in data.entity:
+            if entity.HasField('trip_update'):
+                ret_val = Trip
+            elif entity.HasField('vehicle'):
+                ret_val = Vehicle
+            elif entity.HasField('alert'):
+                ret_val = Alert
+            else:
+                continue
+            break
+        return ret_val
+
+    @classmethod
+    def parse_gtfsrt_data(cls, session, agency, feed):
+        '''
+        :param session:
+        :param agency:
+        :param data:
+        :return:
+        '''
+        data_type = cls.get_data_type(feed)
+        if data_type:
+            for data in feed.entity:
+                data_type.parse_gtfsrt_record(session, agency, data)
+        else:
+            log.warn("not sure what type of data we've got")
+
     @abc.abstractmethod
-    def parse_gtfsrt_data(cls, session, agency, data):
+    def parse_gtfsrt_record(cls, session, agency, data):
         raise NotImplementedError("Please implement this method")
 
     @classmethod
