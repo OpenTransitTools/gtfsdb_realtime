@@ -25,23 +25,33 @@ class Vehicle(Base):
         '''
         ret_val = None
 
+        # step 1: query db for vehicle
         try:
-            # step 1: query db for vehicle
+            q = session.query(Vehicle).filter(
+                and_(
+                    Vehicle.vehicle_id == data.vehicle.id,
+                    Vehicle.agency == agency,
+                )
+            )
+            v = q.first()
+        except Exception, err:
+            log.exception(err)
 
-            # step 2: create or update vehicle
-            v = Vehicle(agency, data.vehicle.id)
-            session.add(v)
+        try:
+            # step 2: we didn't find an existing vehicle in the Vehicle table, so add a new one
+            if v is None:
+                v = Vehicle(agency, data.vehicle.id)
+                session.add(v)
 
-            # step 3: update vehicle position
-
-
+            # step 2b: set ret_val to our Vehicle (old or new)
             ret_val = v
 
+            # step 3: update the position record if need be
+            #p.set_position(lat, lon, address, city, state, zipcode)
         except Exception, err:
             log.exception(err)
             session.rollback()
         finally:
-            # step 4:
             try:
                 session.commit()
                 session.flush()
@@ -70,20 +80,20 @@ class Vehicle(Base):
         p = None
         try:
             q = session.query(Position).filter(
-                       and_(
-                            Position.vehicle_id == pid,
-                            Position.updated >= hours_ago,
-                            Position.lat == lat,
-                            Position.lon == lon,
-                        ) 
-                    )
+                and_(
+                    Position.vehicle_id == pid,
+                    Position.updated >= hours_ago,
+                    Position.lat == lat,
+                    Position.lon == lon,
+                )
+            )
             p = q.first()
             #import pdb; pdb.set_trace()
         except Exception, err:
             log.exception('Exception: {0}'.format(err))
 
         # step 2: we didn't find an existing position in the Position history table, so add a new one
-        try: 
+        try:
             if p is None:
                 p = Position()
                 p.vehicle_id  = pid
