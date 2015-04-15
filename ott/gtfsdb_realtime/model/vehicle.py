@@ -51,7 +51,7 @@ class Vehicle(Base):
 
             # step 3: update the position record if need be
             #print data
-            v.update_position(session, data)
+            v.update_position(session, agency, data)
         except Exception, err:
             log.exception(err)
             session.rollback()
@@ -67,7 +67,7 @@ class Vehicle(Base):
 
 
 
-    def update_position(self, session, data, time_span=144):
+    def update_position(self, session, agency, data, time_span=144):
         ''' query the db for a position for this vehicle ... if the vehicle appears to be parked in the
             same place as an earlier update, update the 
             NOTE: the position add/update needs to be committed to the db by the caller of this method 
@@ -99,6 +99,7 @@ class Vehicle(Base):
             if p is None:
                 p = Position()
                 p.vehicle_fk = self.id
+                p.agency = agency
                 session.add(p)
 
             # step 3: update the position record
