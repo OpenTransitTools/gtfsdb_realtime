@@ -18,22 +18,24 @@ class Position(Base):
     '''
     __tablename__ = 'positions'
 
-    lat = Column(Numeric(12,6), nullable=False)
-    lon = Column(Numeric(12,6), nullable=False)
-    bearing = Column(Numeric(3,3), nullable=False)
     latest  = Column(Boolean,  default=False)
 
-    vehicle_id = Column(String, nullable=False)
+    vehicle_fk = Column(Integer, nullable=False)
 
+    lat = Column(Numeric(12,6), nullable=False)
+    lon = Column(Numeric(12,6), nullable=False)
+    bearing = Column(Numeric(3,3))
+
+    vehicle_id = Column(String)
+    headsign  = Column(String)
     trip_id   = Column(String)
     route_id  = Column(String)
-    headsign  = Column(String)
     stop_id   = Column(String)
     stop_seq  = Column(Integer)
     status    = Column(String)
     timestamp = Column(String)
 
-    def set_position(self, lat, lon):
+    def set_position(self, lat, lon, bearing=None):
         ''' set the lat / lon of this object, and update the timestamp and 'latest' status (to True)
         '''
         self.lat = lat
@@ -41,14 +43,24 @@ class Position(Base):
         if hasattr(self, 'geom'):
             self.add_geom_to_dict(self.__dict__)
 
+        if bearing:
+            self.bearing
         self.updated = datetime.datetime.now()
         self.latest  = True
 
-    def set_attributes(self, obj):
-        try:
-            pass
-        except:
-            pass
+    def set_attributes(self, data):
+        self.vehicle_id = data.vehicle.id
+        self.headsign = data.vehicle.label
+        self.trip_id = data.trip.trip_id
+        self.route_id = data.trip.route_id
+        self.stop_id = data.stop_id
+        self.stop_seq = data.current_stop_sequence
+        self.status = data.current_status
+        self.timestamp = data.timestamp
+
+
+
+
 
     @classmethod
     def clear_latest_column(cls, session, car_co=''):
