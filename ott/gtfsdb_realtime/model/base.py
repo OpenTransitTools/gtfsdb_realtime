@@ -12,16 +12,17 @@ class _Base(object):
 
 
     @classmethod
-    def get_data_type(cls, feed):
+    def get_feed_type(cls, feed):
         '''
         :param data:
         :return: type
         '''
         from .vehicle import Vehicle
         from .alert import Alert
+        #from .trip import Trip
 
         ret_val = None
-        for entity in data.entity:
+        for entity in feed.entity:
             if entity.HasField('trip_update'):
                 ret_val = Trip
             elif entity.HasField('vehicle'):
@@ -34,22 +35,22 @@ class _Base(object):
         return ret_val
 
     @classmethod
-    def parse_gtfsrt_data(cls, session, agency, feed):
+    def parse_gtfsrt_feed(cls, session, agency, feed):
         '''
         :param session:
         :param agency:
         :param data:
         :return:
         '''
-        data_type = cls.get_data_type(feed)
-        if data_type:
-            for data in feed.entity:
-                data_type.parse_gtfsrt_record(session, agency, data)
+        feed_type = cls.get_feed_type(feed)
+        if feed_type:
+            for record in feed.entity:
+                feed_type.parse_gtfsrt_record(session, agency, record)
         else:
             log.warn("not sure what type of data we've got")
 
     @abc.abstractmethod
-    def parse_gtfsrt_record(cls, session, agency, data):
+    def parse_gtfsrt_record(cls, session, agency, record):
         raise NotImplementedError("Please implement this method")
 
     @classmethod

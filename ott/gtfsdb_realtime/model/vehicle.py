@@ -19,7 +19,7 @@ class Vehicle(Base):
         self.vehicle_id = vehicle_id
 
     @classmethod
-    def parse_gtfsrt_record(cls, session, agency, data):
+    def parse_gtfsrt_record(cls, session, agency, record):
         ''' create or update new Vehicles and positions
             :return Vehicle object
         '''
@@ -28,9 +28,13 @@ class Vehicle(Base):
 
         # step 1: query db for vehicle
         try:
+            # step 1a: get inner 'vehicle' record
+            record = record.vehicle
+
+            # step 1b: see if this is an existing vehicle
             q = session.query(Vehicle).filter(
                 and_(
-                    Vehicle.vehicle_id == data.vehicle.id,
+                    Vehicle.vehicle_id == record.vehicle.id,
                     Vehicle.agency == agency,
                 )
             )
@@ -41,7 +45,7 @@ class Vehicle(Base):
         try:
             # step 2: we didn't find an existing vehicle in the Vehicle table, so add a new one
             if v is None:
-                v = Vehicle(agency, data.vehicle.id)
+                v = Vehicle(agency, record.vehicle.id)
                 session.add(v)
                 session.commit()
                 session.flush()
@@ -51,7 +55,7 @@ class Vehicle(Base):
 
             # step 3: update the position record if need be
             #print data
-            v.update_position(session, agency, data)
+            v.update_position(session, agency, record)
         except Exception, err:
             log.exception(err)
             session.rollback()
