@@ -24,6 +24,7 @@ class Vehicle(Base):
             :return Vehicle object
         '''
         ret_val = None
+        v = None
 
         # step 1: query db for vehicle
         try:
@@ -42,6 +43,8 @@ class Vehicle(Base):
             if v is None:
                 v = Vehicle(agency, data.vehicle.id)
                 session.add(v)
+                session.commit()
+                session.flush()
 
             # step 2b: set ret_val to our Vehicle (old or new)
             ret_val = v
@@ -56,7 +59,8 @@ class Vehicle(Base):
             try:
                 session.commit()
                 session.flush()
-            except:
+            except Exception, err:
+                log.exception(err)
                 session.rollback()
 
         return ret_val
@@ -88,7 +92,7 @@ class Vehicle(Base):
             )
             p = q.first()
         except Exception, err:
-            log.exception('Exception: {0}'.format(err))
+            log.exception(err)
 
         # step 2: we didn't find an existing position in the Position history table, so add a new one
         try:
@@ -107,7 +111,8 @@ class Vehicle(Base):
             try:
                 session.commit()
                 session.flush()
-            except:
+            except Exception, err:
+                log.exception(err)
                 session.rollback()
 
         return p
