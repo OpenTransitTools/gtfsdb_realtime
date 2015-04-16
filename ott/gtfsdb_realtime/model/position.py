@@ -18,7 +18,7 @@ class Position(Base):
     '''
     __tablename__ = 'positions'
 
-    latest  = Column(Boolean,  default=False)
+    latest  = Column(Integer, default=1)
 
     vehicle_fk = Column(Integer, nullable=False)
 
@@ -60,11 +60,18 @@ class Position(Base):
 
 
     @classmethod
-    def clear_latest_column(cls, session, agency=''):
+    def xclear_latest_column(cls, session, agency=''):
         ''' set all latest=True positions to false (for a give car company)
         '''
         session.query(Position).filter(and_(Position.latest == True, Position.agency == agency)
-                              ).update({"latest":False}, synchronize_session=False)
+                                       ).update({"latest":False}, synchronize_session=False)
+
+    @classmethod
+    def clear_latest_column(cls, session, agency=''):
+        ''' set all latest=True positions to false (for a give car company)
+        '''
+        session.query(Position).filter(Position.agency == agency).update({'latest': Position.latest + 1})
+        #.update({"latest":False}, synchronize_session=False)
 
     @classmethod
     def add_geometry_column(cls, srid=4326):
