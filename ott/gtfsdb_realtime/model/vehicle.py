@@ -20,7 +20,9 @@ class Vehicle(Base):
 
     @classmethod
     def parse_gtfsrt_feed(cls, session, agency, feed):
-        pass
+        if feed and feed.entity and len(feed.entity) > 0:
+            Position.clear_latest_column(session, agency)
+            super(Vehicle, cls).parse_gtfsrt_feed(session, agency, feed)
 
     @classmethod
     def parse_gtfsrt_record(cls, session, agency, record):
