@@ -19,6 +19,10 @@ class Vehicle(Base):
         self.vehicle_id = vehicle_id
 
     @classmethod
+    def parse_gtfsrt_feed(cls, session, agency, feed):
+        pass
+
+    @classmethod
     def parse_gtfsrt_record(cls, session, agency, record):
         ''' create or update new Vehicles and positions
             :return Vehicle object

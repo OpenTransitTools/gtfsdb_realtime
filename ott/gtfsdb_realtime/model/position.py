@@ -44,7 +44,7 @@ class Position(Base):
             self.add_geom_to_dict(self.__dict__)
 
         if bearing:
-            self.bearing
+            self.bearing = bearing
         self.updated = datetime.datetime.now()
         self.latest  = True
 

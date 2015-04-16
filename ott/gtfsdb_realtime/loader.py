@@ -53,23 +53,18 @@ def init_parser():
     args = parser.parse_args()
     return args
 
-def parse(args, session):
+def parse(session, agency, feed_url):
     from google.transit import gtfs_realtime_pb2
     import urllib
 
-    from ott.gtfsdb_realtime.model.vehicle import Vehicle
-    from ott.gtfsdb_realtime.model.alert import Alert
-
     feed = gtfs_realtime_pb2.FeedMessage()
-    url = 'http://trimet.org/transweb/ws/V1/FeedSpecAlerts/appId/3819A6A38C72223198B560DF0/includeFuture/true'
-    #url = 'http://trimet.org/transweb/ws/V1/TripUpdate/appId/3819A6A38C72223198B560DF0/includeFuture/true'
-    url = 'http://developer.trimet.org/ws/gtfs/VehiclePositions/appId/3819A6A38C72223198B560DF0'
-    agency = "trimet"
-    if args.url and len(args.url) > 1:
-        url = args.url
-    response = urllib.urlopen(url)
+    response = urllib.urlopen(feed_url)
     feed.ParseFromString(response.read())
-    Base.parse_gtfsrt_feed(session, args.agency, feed)
+    feed_type = Base.get_feed_type(feed)
+    if feed_type:
+        feed_type.parse_gtfsrt_feed(session, agency, feed)
+    else:
+        log.warn("not sure what type of data we've got")
 
 def main():
     #import pdb; pdb.set_trace()
@@ -79,11 +74,15 @@ def main():
     db = Database(args.database_url, args.schema, args.geo)
     if args.create:
         db.create()
-
     session = db.get_session()
 
-    parse(args, session)
-
+    url = 'http://trimet.org/transweb/ws/V1/FeedSpecAlerts/appId/3819A6A38C72223198B560DF0/includeFuture/true'
+    url = 'http://trimet.org/transweb/ws/V1/TripUpdate/appId/3819A6A38C72223198B560DF0/includeFuture/true'
+    url = 'http://developer.trimet.org/ws/gtfs/VehiclePositions/appId/3819A6A38C72223198B560DF0'
+    if args.url and len(args.url) > 1:
+        url = args.url
+    parse(session, args.agency, url)
 
 if __name__ == '__main__':
     main()
+

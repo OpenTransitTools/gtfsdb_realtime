@@ -42,12 +42,8 @@ class _Base(object):
         :param data:
         :return:
         '''
-        feed_type = cls.get_feed_type(feed)
-        if feed_type:
-            for record in feed.entity:
-                feed_type.parse_gtfsrt_record(session, agency, record)
-        else:
-            log.warn("not sure what type of data we've got")
+        for record in feed.entity:
+            cls.parse_gtfsrt_record(session, agency, record)
 
     @abc.abstractmethod
     def parse_gtfsrt_record(cls, session, agency, record):
