@@ -1,7 +1,6 @@
 import logging
 log = logging.getLogger(__file__)
 
-import abc
 import datetime
 from sqlalchemy import Column, Index, Integer, Numeric, String, DateTime
 from sqlalchemy.sql import func, and_
@@ -75,8 +74,6 @@ class Vehicle(Base):
 
         return ret_val
 
-
-
     def update_position(self, session, agency, data, time_span=144):
         ''' query the db for a position for this vehicle ... if the vehicle appears to be parked in the
             same place as an earlier update, update the 
@@ -127,11 +124,3 @@ class Vehicle(Base):
                 session.rollback()
 
         return p
-
-
-
-def main():
-    p = Position()
-
-if __name__ == '__main__':
-    main()

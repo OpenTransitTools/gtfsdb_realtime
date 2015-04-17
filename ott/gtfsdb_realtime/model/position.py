@@ -24,7 +24,7 @@ class Position(Base):
 
     lat = Column(Numeric(12,6), nullable=False)
     lon = Column(Numeric(12,6), nullable=False)
-    bearing = Column(Numeric(3,3))
+    bearing = Column(Numeric(3,3), default=0)
 
     vehicle_id = Column(String)
     headsign  = Column(String)
@@ -49,6 +49,7 @@ class Position(Base):
         self.latest  = True
 
     def set_attributes(self, data):
+        #print data, data.current_status
         self.vehicle_id = data.vehicle.id
         self.headsign = data.vehicle.label
         self.trip_id = data.trip.trip_id
@@ -58,20 +59,11 @@ class Position(Base):
         self.status = data.current_status
         self.timestamp = data.timestamp
 
-
-    @classmethod
-    def xclear_latest_column(cls, session, agency=''):
-        ''' set all latest=True positions to false (for a give car company)
-        '''
-        session.query(Position).filter(and_(Position.latest == True, Position.agency == agency)
-                                       ).update({"latest":False}, synchronize_session=False)
-
     @classmethod
     def clear_latest_column(cls, session, agency=''):
         ''' set all latest=True positions to false (for a give car company)
         '''
         session.query(Position).filter(Position.agency == agency).update({'latest': Position.latest + 1})
-        #.update({"latest":False}, synchronize_session=False)
 
     @classmethod
     def add_geometry_column(cls, srid=4326):
@@ -80,4 +72,3 @@ class Position(Base):
     @classmethod
     def add_geom_to_dict(cls, row, srid=4326):
         row['geom'] = 'SRID={0};POINT({1} {2})'.format(srid, row['lon'], row['lat'])
-
