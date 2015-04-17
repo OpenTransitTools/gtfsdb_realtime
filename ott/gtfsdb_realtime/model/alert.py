@@ -15,7 +15,6 @@ class Alert(Base):
 
     def __init__(self, agency, alert_id):
         self.agency = agency
-        #self.alert_id = alert_id
         self.alert_id = agency
 
     name = Column(String)
