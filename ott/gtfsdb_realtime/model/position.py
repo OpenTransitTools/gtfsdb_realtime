@@ -38,6 +38,7 @@ class Position(Base):
     def set_position(self, lat, lon, bearing=None):
         ''' set the lat / lon of this object, and update the timestamp and 'latest' status (to True)
         '''
+        self.updated = datetime.datetime.now()
         self.lat = lat
         self.lon = lon
         if hasattr(self, 'geom'):
@@ -45,8 +46,6 @@ class Position(Base):
 
         if bearing:
             self.bearing = bearing
-        self.updated = datetime.datetime.now()
-        self.latest  = True
 
     def set_attributes(self, data):
         #print data, data.current_status
