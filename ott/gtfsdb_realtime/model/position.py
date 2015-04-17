@@ -50,13 +50,14 @@ class Position(Base):
 
     def set_attributes(self, data):
         #print data, data.current_status
+        #import pdb; pdb.set_trace()
         self.vehicle_id = data.vehicle.id
         self.headsign = data.vehicle.label
         self.trip_id = data.trip.trip_id
         self.route_id = data.trip.route_id
         self.stop_id = data.stop_id
         self.stop_seq = data.current_stop_sequence
-        self.status = data.current_status
+        self.status = data.VehicleStopStatus.Name(data.current_status)
         self.timestamp = data.timestamp
 
     @classmethod

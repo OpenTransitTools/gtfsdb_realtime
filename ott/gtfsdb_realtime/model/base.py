@@ -10,7 +10,6 @@ class _Base(object):
     created = Column(DateTime, default=datetime.datetime.now())
     updated = Column(DateTime, default=datetime.datetime.now())
 
-
     @classmethod
     def get_feed_type(cls, feed):
         '''

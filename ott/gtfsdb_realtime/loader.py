@@ -67,7 +67,6 @@ def parse(session, agency, feed_url):
         log.warn("not sure what type of data we've got")
 
 def main():
-    #import pdb; pdb.set_trace()
     args = init_parser()
     print args
 
