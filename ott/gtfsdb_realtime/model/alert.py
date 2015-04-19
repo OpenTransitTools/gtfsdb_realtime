@@ -18,13 +18,14 @@ class Alert(Base):
         self.alert_id = agency
 
     name = Column(String)
-    __mapper_args__ = Base.make_mapper(__tablename__)
+    #__mapper_args__ = Base.make_mapper(__tablename__)
 
     @classmethod
-    def clear_tables(cls, session):
+    def clear_tables(cls, session, agency):
         ''' clear out the positions and vehicles tables
         '''
-        Alert.delete()
+        session.query(Alert).filter(Alert.agency == agency).delete()
+
 
     @classmethod
     def parse_gtfsrt_record(cls, session, agency, record):

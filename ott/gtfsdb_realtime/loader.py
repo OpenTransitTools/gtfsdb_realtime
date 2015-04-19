@@ -50,6 +50,13 @@ def init_parser():
         action="store_true",
         help="drop / create database tables for vehicles"
     )
+    parser.add_argument(
+        '--clear',
+        '-clear',
+        '-cf',
+        action="store_true",
+        help="clear table(s) before loading"
+    )
     args = parser.parse_args()
     return args
 
@@ -63,7 +70,7 @@ def parse(session, agency, feed_url, clear_first=False):
     feed_type = Base.get_feed_type(feed)
     if feed_type:
         if clear_first:
-            feed_type.clear_tables(session)
+            feed_type.clear_tables(session, agency)
 
         feed_type.parse_gtfsrt_feed(session, agency, feed)
     else:
@@ -80,10 +87,10 @@ def main():
 
     url = 'http://trimet.org/transweb/ws/V1/FeedSpecAlerts/appId/3819A6A38C72223198B560DF0/includeFuture/true'
     #url = 'http://trimet.org/transweb/ws/V1/TripUpdate/appId/3819A6A38C72223198B560DF0/includeFuture/true'
-    #url = 'http://developer.trimet.org/ws/gtfs/VehiclePositions/appId/3819A6A38C72223198B560DF0'
+    url = 'http://developer.trimet.org/ws/gtfs/VehiclePositions/appId/3819A6A38C72223198B560DF0'
     if args.url and len(args.url) > 1:
         url = args.url
-    parse(session, args.agency, url)
+    parse(session, args.agency, url, args.clear)
 
 if __name__ == '__main__':
     main()
