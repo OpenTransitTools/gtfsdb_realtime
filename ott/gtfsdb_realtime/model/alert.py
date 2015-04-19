@@ -21,6 +21,12 @@ class Alert(Base):
     __mapper_args__ = Base.make_mapper(__tablename__)
 
     @classmethod
+    def clear_tables(cls, session):
+        ''' clear out the positions and vehicles tables
+        '''
+        Alert.delete()
+
+    @classmethod
     def parse_gtfsrt_record(cls, session, agency, record):
         ''' create or update new Alerts and positions
             :return Vehicle object
@@ -32,6 +38,7 @@ class Alert(Base):
 
             # step 2: create or update vehicle
             a = Alert(agency, record)
+            #print record
             session.add(a)
 
             # step 3: update vehicle position

@@ -18,6 +18,13 @@ class Vehicle(Base):
         self.vehicle_id = vehicle_id
 
     @classmethod
+    def clear_tables(cls, session):
+        ''' clear out the positions and vehicles tables
+        '''
+        Position.delete()
+        Vehicle.delete()
+
+    @classmethod
     def parse_gtfsrt_feed(cls, session, agency, feed):
         if feed and feed.entity and len(feed.entity) > 0:
             Position.clear_latest_column(session, agency)

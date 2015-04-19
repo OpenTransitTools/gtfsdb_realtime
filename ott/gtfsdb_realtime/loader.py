@@ -53,7 +53,7 @@ def init_parser():
     args = parser.parse_args()
     return args
 
-def parse(session, agency, feed_url):
+def parse(session, agency, feed_url, clear_first=False):
     from google.transit import gtfs_realtime_pb2
     import urllib
 
@@ -62,6 +62,9 @@ def parse(session, agency, feed_url):
     feed.ParseFromString(response.read())
     feed_type = Base.get_feed_type(feed)
     if feed_type:
+        if clear_first:
+            feed_type.clear_tables(session)
+
         feed_type.parse_gtfsrt_feed(session, agency, feed)
     else:
         log.warn("not sure what type of data we've got")

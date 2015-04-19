@@ -1,3 +1,6 @@
+import logging
+log = logging.getLogger(__file__)
+
 import abc
 import datetime
 from sqlalchemy.ext.declarative import declarative_base
@@ -9,6 +12,10 @@ class _Base(object):
     agency = Column(String, nullable=False)
     created = Column(DateTime, default=datetime.datetime.now())
     updated = Column(DateTime, default=datetime.datetime.now())
+
+    @classmethod
+    def clear_tables(cls, session):
+        log.warning("called from parent, so no idea what tables to clear")
 
     @classmethod
     def get_feed_type(cls, feed):

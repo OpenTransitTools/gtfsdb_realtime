@@ -1,13 +1,11 @@
+import logging
+log = logging.getLogger(__file__)
+
 from sqlalchemy import create_engine, event
 from sqlalchemy.pool import QueuePool
 from sqlalchemy.orm import sessionmaker
 
 from ott.gtfsdb_realtime.model.base import Base
-
-import logging
-logging.basicConfig()
-log = logging.getLogger(__file__)
-log.setLevel(logging.INFO)
 
 class Database(object):
 
