@@ -66,7 +66,6 @@ class Vehicle(Base):
             ret_val = v
 
             # step 3: update the position record if need be
-            #print data
             v.update_position(session, agency, record)
         except Exception, err:
             log.exception(err)
@@ -114,11 +113,12 @@ class Vehicle(Base):
                 p = Position()
                 p.vehicle_fk = self.id
                 p.agency = agency
+                p.set_attributes(data)
+                p.set_position(lat, lon, data.position.bearing)
                 session.add(p)
+            else:
+                p.set_updated()
 
-            # step 3: update the position record
-            p.set_position(lat, lon, data.position.bearing)
-            p.set_attributes(data)
         except Exception, err:
             log.exception(err)
             session.rollback()

@@ -35,10 +35,14 @@ class Position(Base):
     status    = Column(String)
     timestamp = Column(String)
 
+    def set_updated(self):
+        self.updated = datetime.datetime.now()
+        self.latest = 1
+
     def set_position(self, lat, lon, bearing=None):
         ''' set the lat / lon of this object, and update the timestamp and 'latest' status (to True)
         '''
-        self.updated = datetime.datetime.now()
+        self.set_updated()
         self.lat = lat
         self.lon = lon
         if hasattr(self, 'geom'):
