@@ -3,22 +3,20 @@ log = logging.getLogger(__file__)
 
 import datetime
 from sqlalchemy import Column, Index, Integer, Numeric, String, DateTime
-from sqlalchemy.sql import func, and_
 
 from ott.gtfsdb_realtime.model.base import Base
-from ott.gtfsdb_realtime.model.position import Position
 
 class Alert(Base):
     __tablename__ = 'alerts'
 
     alert_id = Column(String, nullable=False)
+    name = Column(String)
+    # http://docs.sqlalchemy.org/en/latest/orm/extensions/declarative/inheritance.html
+    #__mapper_args__ = Base.make_mapper(__tablename__)
 
     def __init__(self, agency, alert_id):
         self.agency = agency
         self.alert_id = agency
-
-    name = Column(String)
-    #__mapper_args__ = Base.make_mapper(__tablename__)
 
     @classmethod
     def clear_tables(cls, session, agency):
