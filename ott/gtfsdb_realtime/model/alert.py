@@ -5,7 +5,7 @@ import datetime
 from sqlalchemy import Column, Index, Integer, Numeric, String, DateTime
 
 from ott.gtfsdb_realtime.model.base import Base
-from ott.gtfsdb_realtime.model.route import Route
+from ott.gtfsdb_realtime.model.alert_entity import AlertEntity
 
 class Alert(Base):
     __tablename__ = 'alerts'
@@ -30,6 +30,7 @@ class Alert(Base):
     def clear_tables(cls, session, agency):
         ''' clear out the positions and vehicles tables
         '''
+        AlertEntity.clear_tables(session, agency)
         session.query(Alert).filter(Alert.agency == agency).delete()
 
     @classmethod
@@ -45,7 +46,6 @@ class Alert(Base):
             # step 2: create or update vehicle
             a = Alert(agency, record)
             session.add(a)
-            r = Route.get_route(session, agency, a.alert_id)
             print record
 
 
@@ -61,6 +61,7 @@ class Alert(Base):
             try:
                 session.commit()
                 session.flush()
+                AlertEntity.make_entities(session, agency, record)
             except:
                 session.rollback()
 
