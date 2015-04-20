@@ -11,11 +11,18 @@ class Alert(Base):
     __tablename__ = 'alerts'
 
     alert_id = Column(String, nullable=False)
-    name = Column(String)
-    # http://docs.sqlalchemy.org/en/latest/orm/extensions/declarative/inheritance.html
-    #__mapper_args__ = Base.make_mapper(__tablename__)
 
-    def __init__(self, agency, alert_id):
+    start = Column(Integer, index=True)
+    end = Column(Integer)
+
+    cause = Column(String)
+    effect = Column(String)
+
+    url = Column(String)
+    header_text = Column(String)
+    description_text = Column(String(4000))
+
+    def __init__(self, agency, data):
         self.agency = agency
         self.alert_id = agency
 
