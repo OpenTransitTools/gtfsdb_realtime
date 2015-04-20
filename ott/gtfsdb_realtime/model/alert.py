@@ -24,7 +24,6 @@ class Alert(Base):
         '''
         session.query(Alert).filter(Alert.agency == agency).delete()
 
-
     @classmethod
     def parse_gtfsrt_record(cls, session, agency, record):
         ''' create or update new Alerts and positions

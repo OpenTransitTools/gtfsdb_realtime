@@ -21,7 +21,7 @@ class Vehicle(Base):
     def clear_tables(cls, session, agency):
         ''' clear out the positions and vehicles tables
         '''
-        session.query(Position).filter(Position.agency == agency).delete()
+        Position.clear_tables(session, agency)
         session.query(Vehicle).filter(Vehicle.agency == agency).delete()
 
     @classmethod

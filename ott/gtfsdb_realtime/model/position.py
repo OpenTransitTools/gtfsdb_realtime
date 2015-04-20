@@ -35,6 +35,12 @@ class Position(Base):
     status    = Column(String)
     timestamp = Column(String)
 
+    @classmethod
+    def clear_tables(cls, session, agency):
+        ''' clear out the positions and vehicles tables
+        '''
+        session.query(Position).filter(Position.agency == agency).delete()
+
     def set_updated(self):
         self.updated = datetime.datetime.now()
         self.latest = 1
