@@ -5,6 +5,7 @@ import datetime
 from sqlalchemy import Column, Index, Integer, Numeric, String, DateTime
 
 from ott.gtfsdb_realtime.model.base import Base
+from ott.gtfsdb_realtime.model.route import Route
 
 class Alert(Base):
     __tablename__ = 'alerts'
@@ -36,8 +37,10 @@ class Alert(Base):
 
             # step 2: create or update vehicle
             a = Alert(agency, record)
-            #print record
             session.add(a)
+            r = Route.get_route(session, agency, a.alert_id)
+            print record
+
 
             # step 3: update vehicle position
 
