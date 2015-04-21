@@ -13,6 +13,8 @@ class _Base(object):
     created = Column(DateTime, default=datetime.datetime.now())
     updated = Column(DateTime, default=datetime.datetime.now())
 
+    lang = "en"
+
     @classmethod
     def clear_tables(cls, session):
         log.warning("called from parent, so no idea what tables to clear")
@@ -62,6 +64,29 @@ class _Base(object):
             'polymorphic_identity' : tablename,
             'with_polymorphic'     : '*'
         }
+
+
+    @classmethod
+    def get_translation(cls, string, lang, def_val=None):
+        ''' get a specific translation from a TranslatedString
+        '''
+        ret_val = def_val
+
+        # single translation, return it
+        if len(string.translation) == 1:
+            ret_val = string.translation[0].text
+        # find best translation match
+        elif len(string.translation) > 1:
+            for t in string.translation:
+                if t.language == lang:
+                    ret_val = t.text
+                    break
+                if t.language is None:
+                    ret_val = t.text
+                elif ret_val is None:
+                    ret_val = t.text
+        return ret_val
+
 
     @classmethod
     def from_dict(cls, attrs):
