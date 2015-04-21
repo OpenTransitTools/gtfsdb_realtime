@@ -1,7 +1,6 @@
 import logging
 log = logging.getLogger(__file__)
 
-import datetime
 from sqlalchemy import Column, Index, Integer, Numeric, String, DateTime
 from sqlalchemy.orm import deferred, object_session, relationship
 
@@ -24,7 +23,6 @@ class Alert(Base):
     description_text = Column(String)
 
     route_short_names = Column(String)
-
 
     entities = relationship(
         'AlertEntity',
