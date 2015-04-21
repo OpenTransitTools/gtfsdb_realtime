@@ -4,6 +4,7 @@ log = logging.getLogger(__file__)
 import datetime
 from sqlalchemy import Column, Index, Integer, Numeric, String, DateTime
 from sqlalchemy.sql import func, and_
+from sqlalchemy.orm import deferred, object_session, relationship
 
 from ott.gtfsdb_realtime.model.base import Base
 from ott.gtfsdb_realtime.model.position import Position
@@ -12,10 +13,19 @@ class Vehicle(Base):
     __tablename__ = 'vehicles'
 
     vehicle_id = Column(String, nullable=False)
+    license_plate = Column(String)
 
-    def __init__(self, agency, vehicle_id):
+    positions = relationship(
+        'Position',
+        primaryjoin='Vehicle.vehicle_id == Position.vehicle_id',
+        foreign_keys='(Vehicle.vehicle_id)',
+        uselist=True, viewonly=True
+    )
+
+    def __init__(self, agency, vehicle_id, license_plate=None):
         self.agency = agency
         self.vehicle_id = vehicle_id
+        self.license_plate = license_plate
 
     @classmethod
     def clear_tables(cls, session, agency):
@@ -57,7 +67,7 @@ class Vehicle(Base):
         try:
             # step 2: we didn't find an existing vehicle in the Vehicle table, so add a new one
             if v is None:
-                v = Vehicle(agency, record.vehicle.id)
+                v = Vehicle(agency, record.vehicle.id, record.vehicle.license_plate)
                 session.add(v)
                 session.commit()
                 session.flush()
