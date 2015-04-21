@@ -45,33 +45,46 @@ class AlertEntity(Base):
         # step 1: remove old entites
         cls.clear_tables(session, agency, alert_id)
 
-
         # step 2: loop thru the entities, and create AlertEntity objects
         for e in alert_record.informed_entity:
             a = AlertEntity(agency, alert_id)
             a.stop_id = e.stop_id
             a.route_id = e.route_id
             a.route_type = e.route_type
-
-            #a.trip = e.trip
-            #print e.trip
-
             session.add(a)
-
 
         # step 3: commit objects to db
         session.commit()
         session.flush()
 
+    @classmethod
+    def add_short_names(cls, gtfsdb_session, alert_orm, route_ids=[]):
+        ''' add all the route_short_names (from gtfsdb) to the Alert record as a comman separated string
+        '''
+        if gtfsdb_session:
+            short_names = []
+            try:
+                #import pdb; pdb.set_trace()
+                log.debug("query Route table")
+                from gtfsdb import Route
+                routes = gtfsdb_session.query(Route).filter(Route.route_id.in_(route_ids)).order_by(Route.route_sort_order)
+                for r in routes.all():
+                    nm = cls.make_pretty_short_name(r)
+                    if nm and nm not in short_names:
+                        short_names.append(nm)
+                alert_orm.route_short_names = ', '.join([str(x) for x in short_names])
+            except Exception, e:
+                log.exception(e)
 
-    def make_pretty_short_name(r):
+    @classmethod
+    def make_pretty_short_name(cls, gtfsdb_route):
         ''' override me ... I'm TriMet specific (e.g., MAX, WES)
         '''
         ret_val = None
-        if r.route_short_name and len(r.route_short_name) > 0:
-            ret_val = r.route_short_name
-        elif r.route_long_name and len(r.route_long_name) > 0:
-            nm = r.route_long_name
+        if gtfsdb_route.route_short_name and len(gtfsdb_route.route_short_name) > 0:
+            ret_val = gtfsdb_route.route_short_name
+        elif gtfsdb_route.route_long_name and len(gtfsdb_route.route_long_name) > 0:
+            nm = gtfsdb_route.route_long_name
             if "MAX " in nm:
                 ret_val = nm.replace(" Line", "")
             elif nm == "WES Commuter Rail":
@@ -79,23 +92,3 @@ class AlertEntity(Base):
             else:
                 ret_val = nm
         return ret_val
-
-
-    def add_short_names(opts, alert_orm, route_ids=[]):
-        ''' add all the route_short_names (from gtfsdb) to the Alert record as a comman separated string
-        '''
-        gtfs_db = get_gtfs_db(opts.dsn, opts.schema)
-        if gtfs_db:
-            short_names = []
-            try:
-                #import pdb; pdb.set_trace()
-                log.debug("query Route table")
-                from gtfsdb import Route
-                routes = gtfs_db.session.query(Route).filter(Route.route_id.in_(route_ids)).order_by(Route.route_sort_order)
-                for r in routes.all():
-                    nm = make_pretty_short_name(r)
-                    if nm and nm not in short_names:
-                        short_names.append(nm)
-                alert_orm.route_short_names = ', '.join([str(x) for x in short_names])
-            except Exception, e:
-                pass
