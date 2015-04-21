@@ -81,16 +81,14 @@ class Alert(Base):
         session.query(Alert).filter(Alert.agency == agency).delete()
 
     @classmethod
-    def get_route_ids(cls, alert):
-        route_ids=[]
-        for e in alert.entities:
-            if e.route_id:
-                route_ids.append(e)
-        return route_ids
+    def add_short_names(cls, gtfsdb_session, alert, route_ids=[], sep=', '):
+        ''' will add the route_short_names (from gtfsdb) to the Alert record as a comma separated string
 
-    @classmethod
-    def add_short_names(cls, gtfsdb_session, alert, route_ids=[]):
-        ''' add all the route_short_names (from gtfsdb) to the Alert record as a comman separated string
+        :param gtfsdb_session:
+        :param alert:
+        :param route_ids:
+        :param sep:
+        :return:
         '''
         if gtfsdb_session:
             short_names = []
@@ -103,13 +101,16 @@ class Alert(Base):
                     nm = cls.make_pretty_short_name(r)
                     if nm and nm not in short_names:
                         short_names.append(nm)
-                alert.route_short_names = ', '.join([str(x) for x in short_names])
+                alert.route_short_names = sep.join([str(x) for x in short_names])
             except Exception, e:
                 log.exception(e)
 
     @classmethod
     def make_pretty_short_name(cls, gtfsdb_route):
-        ''' override me ... I'm TriMet specific (e.g., MAX, WES)
+        ''' makes for a pretty short name (some of which is TriMet specific (e.g., MAX, WES), so override for different agency
+
+        :param gtfsdb_route:
+        :return: pretty string
         '''
         ret_val = None
         if gtfsdb_route.route_short_name and len(gtfsdb_route.route_short_name) > 0:
@@ -123,3 +124,16 @@ class Alert(Base):
             else:
                 ret_val = nm
         return ret_val
+
+    @classmethod
+    def get_route_ids(cls, alert):
+        ''' util routine to find routes ids attached for an alert
+
+        :param alert:
+        :return: list of route ids
+        '''
+        route_ids=[]
+        for e in alert.entities:
+            if e.route_id:
+                route_ids.append(e)
+        return route_ids
