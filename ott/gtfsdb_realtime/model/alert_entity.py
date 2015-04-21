@@ -14,7 +14,6 @@ class AlertEntity(Base):
     alert_id = Column(String, nullable=False)
 
     route_id = Column(String)
-    route_short_name = Column(String)
     route_type = Column(String)
 
     stop_id = Column(String)
@@ -34,6 +33,7 @@ class AlertEntity(Base):
     @classmethod
     def make_entities(cls, session, agency, alert_id, alert_record):
         ''' make alert entities, which attach an alert to a route, trip, stop or combination thereof
+            :see: https://developers.google.com/transit/gtfs-realtime/examples/alerts
 
         :param session:
         :param agency:
@@ -47,9 +47,16 @@ class AlertEntity(Base):
 
         # step 2: loop thru the entities, and create AlertEntity objects
         for e in alert_record.informed_entity:
-            if e:
-                a = AlertEntity(agency, alert_id)
-                session.add(a)
+            a = AlertEntity(agency, alert_id)
+            a.stop_id = e.stop_id
+            #a.trip = e.trip
+            a.route_id = e.route_id
+            a.route_type = e.route_type
+            #a.route_type = e.RouteType.Name(e.route_type)
+
+            session.add(a)
+
+
 
         # step 3: commit objects to db
         session.commit()
