@@ -17,7 +17,12 @@ class AlertEntity(Base):
     route_type = Column(String)
 
     stop_id = Column(String)
-    trip = Column(String)
+
+    # Collapsed TripDescriptor
+    trip_id = Column(String)
+    trip_route_id = Column(String)
+    trip_start_time = Column(String)
+    trip_start_date = Column(String, index=True)
 
     def __init__(self, agency, alert_id):
         self.agency = agency
@@ -51,6 +56,10 @@ class AlertEntity(Base):
             a.stop_id = e.stop_id
             a.route_id = e.route_id
             a.route_type = e.route_type
+            a.trip_id = e.trip.trip_id
+            a.trip_route_id = e.trip.route_id
+            a.trip_start_time = e.trip.start_time
+            a.trip_start_date = e.trip.start_date
             session.add(a)
 
         # step 3: commit objects to db
