@@ -22,9 +22,9 @@ class Alert(Base):
     header_text = Column(String)
     description_text = Column(String(4000))
 
-    def __init__(self, agency, data):
+    def __init__(self, agency, id):
         self.agency = agency
-        self.alert_id = agency
+        self.alert_id = id
 
     @classmethod
     def clear_tables(cls, session, agency):
@@ -44,13 +44,8 @@ class Alert(Base):
             # step 1: query db for vehicle
 
             # step 2: create or update vehicle
-            a = Alert(agency, record)
+            a = Alert(agency, record.id)
             session.add(a)
-            print record
-
-
-            # step 3: update vehicle position
-
             ret_val = a
 
         except Exception, err:
@@ -59,10 +54,11 @@ class Alert(Base):
         finally:
             # step 4:
             try:
+                AlertEntity.make_entities(session, agency, record.id, record.alert)
                 session.commit()
                 session.flush()
-                AlertEntity.make_entities(session, agency, record)
-            except:
+            except Exception, err:
+                log.exception(err)
                 session.rollback()
 
         return ret_val
