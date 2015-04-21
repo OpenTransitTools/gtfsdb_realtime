@@ -3,6 +3,7 @@ log = logging.getLogger(__file__)
 
 import datetime
 from sqlalchemy import Column, Index, Integer, Numeric, String, DateTime
+from sqlalchemy.orm import deferred, object_session, relationship
 
 from ott.gtfsdb_realtime.model.base import Base
 from ott.gtfsdb_realtime.model.alert_entity import AlertEntity
@@ -21,6 +22,13 @@ class Alert(Base):
     url = Column(String)
     header_text = Column(String)
     description_text = Column(String(4000))
+
+    entities = relationship(
+        'AlertEntity',
+        primaryjoin='Alert.alert_id == AlertEntity.alert_id',
+        foreign_keys='(Alert.alert_id)',
+        uselist=True, viewonly=True
+    )
 
     def __init__(self, agency, id):
         self.agency = agency
