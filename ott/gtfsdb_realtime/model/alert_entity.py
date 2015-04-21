@@ -65,39 +65,3 @@ class AlertEntity(Base):
         # step 3: commit objects to db
         session.commit()
         session.flush()
-
-    @classmethod
-    def add_short_names(cls, gtfsdb_session, alert_orm, route_ids=[]):
-        ''' add all the route_short_names (from gtfsdb) to the Alert record as a comman separated string
-        '''
-        if gtfsdb_session:
-            short_names = []
-            try:
-                #import pdb; pdb.set_trace()
-                log.debug("query Route table")
-                from gtfsdb import Route
-                routes = gtfsdb_session.query(Route).filter(Route.route_id.in_(route_ids)).order_by(Route.route_sort_order)
-                for r in routes.all():
-                    nm = cls.make_pretty_short_name(r)
-                    if nm and nm not in short_names:
-                        short_names.append(nm)
-                alert_orm.route_short_names = ', '.join([str(x) for x in short_names])
-            except Exception, e:
-                log.exception(e)
-
-    @classmethod
-    def make_pretty_short_name(cls, gtfsdb_route):
-        ''' override me ... I'm TriMet specific (e.g., MAX, WES)
-        '''
-        ret_val = None
-        if gtfsdb_route.route_short_name and len(gtfsdb_route.route_short_name) > 0:
-            ret_val = gtfsdb_route.route_short_name
-        elif gtfsdb_route.route_long_name and len(gtfsdb_route.route_long_name) > 0:
-            nm = gtfsdb_route.route_long_name
-            if "MAX " in nm:
-                ret_val = nm.replace(" Line", "")
-            elif nm == "WES Commuter Rail":
-                ret_val = "WES"
-            else:
-                ret_val = nm
-        return ret_val
