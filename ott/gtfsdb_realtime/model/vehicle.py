@@ -124,7 +124,7 @@ class Vehicle(Base):
                 p.vehicle_fk = self.id
                 p.agency = agency
                 p.set_attributes(data)
-                p.set_position(lat, lon, data.position.bearing)
+                p.set_position(lat, lon)
                 session.add(p)
             else:
                 p.set_updated()

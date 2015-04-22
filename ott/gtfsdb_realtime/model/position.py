@@ -25,6 +25,8 @@ class Position(Base):
     lat = Column(Numeric(12,6), nullable=False)
     lon = Column(Numeric(12,6), nullable=False)
     bearing = Column(Numeric(3,3), default=0)
+    odometer = Column(Numeric)
+    speed = Column(Numeric)
 
     vehicle_id = Column(String)
     headsign  = Column(String)
@@ -45,7 +47,7 @@ class Position(Base):
         self.updated = datetime.datetime.now()
         self.latest = 1
 
-    def set_position(self, lat, lon, bearing=None):
+    def set_position(self, lat, lon):
         ''' set the lat / lon of this object, and update the timestamp and 'latest' status (to True)
         '''
         self.set_updated()
@@ -54,12 +56,13 @@ class Position(Base):
         if hasattr(self, 'geom'):
             self.add_geom_to_dict(self.__dict__)
 
-        if bearing:
-            self.bearing = bearing
-
     def set_attributes(self, data):
         #print data, data.current_status
         #import pdb; pdb.set_trace()
+        self.bearing = data.position.bearing
+        self.odometer = data.position.odometer
+        self.speed = data.position.speed
+
         self.vehicle_id = data.vehicle.id
         self.headsign = data.vehicle.label
         self.trip_id = data.trip.trip_id
@@ -68,6 +71,7 @@ class Position(Base):
         self.stop_seq = data.current_stop_sequence
         self.status = data.VehicleStopStatus.Name(data.current_status)
         self.timestamp = data.timestamp
+
 
     @classmethod
     def clear_latest_column(cls, session, agency=''):
