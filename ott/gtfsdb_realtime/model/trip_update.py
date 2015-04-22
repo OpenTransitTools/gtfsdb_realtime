@@ -73,7 +73,7 @@ class TripUpdate(Base):
                         departure_uncertainty = stu.departure.uncertainty,
                 )
                 session.add(s)
-                ret_val.StopTimeUpdates.append(s)
+                #ret_val.StopTimeUpdates.append(s)
 
             session.add(ret_val)
         except Exception, err:

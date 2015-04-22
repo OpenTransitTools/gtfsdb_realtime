@@ -27,12 +27,12 @@ class _Base(object):
         '''
         from .vehicle import Vehicle
         from .alert import Alert
-        #from .trip import Trip
+        from .trip_update import TripUpdate
 
         ret_val = None
         for entity in feed.entity:
             if entity.HasField('trip_update'):
-                ret_val = Trip
+                ret_val = TripUpdate
             elif entity.HasField('vehicle'):
                 ret_val = Vehicle
             elif entity.HasField('alert'):
