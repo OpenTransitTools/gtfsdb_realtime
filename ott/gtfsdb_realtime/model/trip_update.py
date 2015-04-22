@@ -59,10 +59,12 @@ class TripUpdate(Base):
             ret_val = TripUpdate(agency, record.trip_update.trip.trip_id)
             ret_val.set_attributes_via_gtfsrt(record.trip_update)
             for stu in record.trip_update.stop_time_update:
+                #print stu
+                rel = stu.ScheduleRelationship.Name(stu.schedule_relationship)
                 s = StopTimeUpdate(
                         agency = agency,
                         trip_id = ret_val.trip_id,
-                        schedule_relationship = ret_val.schedule_relationship,
+                        schedule_relationship = rel,
                         stop_sequence = stu.stop_sequence,
                         stop_id = stu.stop_id,
                         arrival_delay = stu.arrival.delay,
