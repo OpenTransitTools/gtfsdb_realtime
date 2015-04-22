@@ -31,22 +31,12 @@ class TripUpdate(Base):
     )
     '''
 
-    def __init__(self, agency, id):
-        self.agency = agency
-        self.trip_id = id
-
     def set_attributes_via_gtfsrt(self, record):
-        self.route_id = record.trip.route_id
-        self.trip_start_time = record.trip.start_time
-        self.trip_start_date = record.trip.start_date
-
-        # get the schedule relationship as described in
-        # http://code.google.com/apis/protocolbuffers/docs/reference/python/google.protobuf.descriptor.EnumDescriptor-class.html
-        self.schedule_relationship = record.trip.ScheduleRelationship.Name(record.trip.schedule_relationship)
-
-        self.vehicle_id = record.vehicle.id
-        self.vehicle_label = record.vehicle.label
-        self.vehicle_license_plate = record.vehicle.license_plate
+        '''  populate other fields via record
+        :see http://code.google.com/apis/protocolbuffers/docs/reference/python/google.protobuf.descriptor.EnumDescriptor-class.html:
+        :param record:
+        :return:
+        '''
 
     @classmethod
     def parse_gtfsrt_record(cls, session, agency, record, timestamp):
@@ -56,23 +46,35 @@ class TripUpdate(Base):
         ret_val = None
 
         try:
-            ret_val = TripUpdate(agency, record.trip_update.trip.trip_id)
-            ret_val.set_attributes_via_gtfsrt(record.trip_update)
+            trip = record.trip_update.trip
+            vehicle = record.trip_update.vehicle
+            ret_val = TripUpdate(
+                agency = agency,
+                trip_id = trip.trip_id,
+                route_id = trip.route_id,
+                trip_start_time = trip.start_time,
+                trip_start_date = trip.start_date,
+                schedule_relationship = trip.ScheduleRelationship.Name(trip.schedule_relationship),
+                vehicle_id = vehicle.id,
+                vehicle_label = vehicle.label,
+                vehicle_license_plate = vehicle.license_plate,
+            )
+
             for stu in record.trip_update.stop_time_update:
                 #print stu
                 rel = stu.ScheduleRelationship.Name(stu.schedule_relationship)
                 s = StopTimeUpdate(
-                        agency = agency,
-                        trip_id = ret_val.trip_id,
-                        schedule_relationship = rel,
-                        stop_sequence = stu.stop_sequence,
-                        stop_id = stu.stop_id,
-                        arrival_delay = stu.arrival.delay,
-                        arrival_time = stu.arrival.time,
-                        arrival_uncertainty = stu.arrival.uncertainty,
-                        departure_delay = stu.departure.delay,
-                        departure_time = stu.departure.time,
-                        departure_uncertainty = stu.departure.uncertainty,
+                    agency = agency,
+                    #trip_id = trip.trip_id,
+                    schedule_relationship = rel,
+                    stop_sequence = stu.stop_sequence,
+                    stop_id = stu.stop_id,
+                    arrival_delay = stu.arrival.delay,
+                    arrival_time = stu.arrival.time,
+                    arrival_uncertainty = stu.arrival.uncertainty,
+                    departure_delay = stu.departure.delay,
+                    departure_time = stu.departure.time,
+                    departure_uncertainty = stu.departure.uncertainty,
                 )
                 session.add(s)
                 #ret_val.StopTimeUpdates.append(s)
