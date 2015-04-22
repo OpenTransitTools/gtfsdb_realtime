@@ -42,7 +42,7 @@ class TripUpdate(Base):
 
         # get the schedule relationship as described in
         # http://code.google.com/apis/protocolbuffers/docs/reference/python/google.protobuf.descriptor.EnumDescriptor-class.html
-        self.schedule_relationship = record.trip.DESCRIPTOR.enum_types_by_name['ScheduleRelationship'].values_by_number[record.trip.schedule_relationship].name
+        self.schedule_relationship = record.trip.ScheduleRelationship.Name(record.trip.schedule_relationship)
 
         self.vehicle_id = record.vehicle.id
         self.vehicle_label = record.vehicle.label
