@@ -46,7 +46,7 @@ class Alert(Base):
         self.description_text = self.get_translation(record.description_text, self.lang)
 
     @classmethod
-    def parse_gtfsrt_record(cls, session, agency, record):
+    def parse_gtfsrt_record(cls, session, agency, record, timestamp):
         ''' create or update new Alerts and positions
             :return Vehicle object
         '''

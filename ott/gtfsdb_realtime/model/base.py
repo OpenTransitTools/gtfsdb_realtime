@@ -50,11 +50,12 @@ class _Base(object):
         :param data:
         :return:
         '''
+        timestamp = datetime.datetime.utcfromtimestamp(feed.header.timestamp)
         for record in feed.entity:
-            cls.parse_gtfsrt_record(session, agency, record)
+            cls.parse_gtfsrt_record(session, agency, record, timestamp)
 
     @abc.abstractmethod
-    def parse_gtfsrt_record(cls, session, agency, record):
+    def parse_gtfsrt_record(cls, session, agency, record, timestamp):
         raise NotImplementedError("Please implement this method")
 
     @classmethod

@@ -41,7 +41,7 @@ class Vehicle(Base):
             super(Vehicle, cls).parse_gtfsrt_feed(session, agency, feed)
 
     @classmethod
-    def parse_gtfsrt_record(cls, session, agency, record):
+    def parse_gtfsrt_record(cls, session, agency, record, timestamp):
         ''' create or update new Vehicles and positions
             :return Vehicle object
         '''

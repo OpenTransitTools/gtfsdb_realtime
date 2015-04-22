@@ -3,57 +3,84 @@ log = logging.getLogger(__file__)
 
 import datetime
 from sqlalchemy import Column, Index, Integer, Numeric, String, DateTime
+from sqlalchemy.orm import deferred, object_session, relationship
 
 from ott.gtfsdb_realtime.model.base import Base
-from ott.gtfsdb_realtime.model.alert_entity import AlertEntity
+from ott.gtfsdb_realtime.model.stop_time_update import StopTimeUpdate
 
 class TripUpdate(Base):
-    __tablename__ = 'alerts'
+    __tablename__ = 'trip_updates'
 
-    trip_id = Column(String, nullable=False)
+    trip_id = Column(String, nullable=False, index=True)
+    route_id = Column(String, index=True)
+    trip_start_time = Column(String)
+    trip_start_date = Column(String, index=True)
+    schedule_relationship = Column(String)
 
-    start = Column(Integer, index=True)
-    end = Column(Integer)
+    # Collapsed VehicleDescriptor
+    vehicle_id = Column(String)
+    vehicle_label = Column(String)
+    vehicle_license_plate = Column(String)
 
-    header_text = Column(String)
-    description_text = Column(String(4000))
+    '''
+    entities = relationship(
+        'TripUpdate',
+        primaryjoin='TripUpdate.trip_id == StopTimeUpdate.trip_id',
+        foreign_keys='(TripUpdate.trip_id)',
+        uselist=True, viewonly=True
+    )
+    '''
 
     def __init__(self, agency, id):
         self.agency = agency
         self.trip_id = id
 
     def set_attributes_via_gtfsrt(self, record):
-        self.cause = record.DESCRIPTOR.enum_types_by_name['Cause'].values_by_number[record.cause].name
-        self.effect = record.DESCRIPTOR.enum_types_by_name['Effect'].values_by_number[record.effect].name
+        self.route_id = record.trip.route_id
+        self.trip_start_time = record.trip.start_time
+        self.trip_start_date = record.trip.start_date
 
-        if record.active_period:
-            self.start = record.active_period[0].start
-            self.end = record.active_period[0].end
-        if record.url:
-            self.url = self.get_translation(record.url, self.lang)
-        if record.header_text:
-            self.header_text = self.get_translation(record.header_text, self.lang)
-        if record.description_text:
-            self.description_text = self.get_translation(record.description_text, self.lang)
+        # get the schedule relationship as described in
+        # http://code.google.com/apis/protocolbuffers/docs/reference/python/google.protobuf.descriptor.EnumDescriptor-class.html
+        self.schedule_relationship = record.trip.DESCRIPTOR.enum_types_by_name['ScheduleRelationship'].values_by_number[record.trip.schedule_relationship].name
+
+        self.vehicle_id = record.vehicle.id
+        self.vehicle_label = record.vehicle.label
+        self.vehicle_license_plate = record.vehicle.license_plate
 
     @classmethod
-    def parse_gtfsrt_record(cls, session, agency, record):
-        ''' create or update new Alerts and positions
-            :return Vehicle object
+    def parse_gtfsrt_record(cls, session, agency, record, timestamp):
+        ''' create a new or update an existing Trip Update record
+            :return: TripUpdate object
         '''
         ret_val = None
 
         try:
-            ret_val = Alert(agency, record.id)
-            ret_val.set_attributes_via_gtfsrt(record.alert)
+            ret_val = TripUpdate(agency, record.trip_update.trip.trip_id)
+            ret_val.set_attributes_via_gtfsrt(record.trip_update)
+            for stu in record.trip_update.stop_time_update:
+                s = StopTimeUpdate(
+                        agency = agency,
+                        trip_id = ret_val.trip_id,
+                        schedule_relationship = ret_val.schedule_relationship,
+                        stop_sequence = stu.stop_sequence,
+                        stop_id = stu.stop_id,
+                        arrival_delay = stu.arrival.delay,
+                        arrival_time = stu.arrival.time,
+                        arrival_uncertainty = stu.arrival.uncertainty,
+                        departure_delay = stu.departure.delay,
+                        departure_time = stu.departure.time,
+                        departure_uncertainty = stu.departure.uncertainty,
+                )
+                session.add(s)
+                ret_val.StopTimeUpdates.append(s)
+
             session.add(ret_val)
         except Exception, err:
             log.exception(err)
             session.rollback()
         finally:
-            # step 4:
             try:
-                AlertEntity.make_entities(session, agency, record.id, record.alert)
                 session.commit()
                 session.flush()
             except Exception, err:
@@ -64,7 +91,7 @@ class TripUpdate(Base):
 
     @classmethod
     def clear_tables(cls, session, agency):
-        ''' clear out the positions and vehicles tables
+        ''' clear out the trip_updates table
         '''
-        AlertEntity.clear_tables(session, agency)
-        session.query(Alert).filter(Alert.agency == agency).delete()
+        session.query(TripUpdate).filter(TripUpdate.agency == agency).delete()
+
