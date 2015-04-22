@@ -31,13 +31,6 @@ class TripUpdate(Base):
     )
     '''
 
-    def set_attributes_via_gtfsrt(self, record):
-        '''  populate other fields via record
-        :see http://code.google.com/apis/protocolbuffers/docs/reference/python/google.protobuf.descriptor.EnumDescriptor-class.html:
-        :param record:
-        :return:
-        '''
-
     @classmethod
     def parse_gtfsrt_record(cls, session, agency, record, timestamp):
         ''' create a new or update an existing Trip Update record
@@ -61,12 +54,10 @@ class TripUpdate(Base):
             )
 
             for stu in record.trip_update.stop_time_update:
-                #print stu
-                rel = stu.ScheduleRelationship.Name(stu.schedule_relationship)
                 s = StopTimeUpdate(
                     agency = agency,
-                    #trip_id = trip.trip_id,
-                    schedule_relationship = rel,
+                    trip_id = trip.trip_id,
+                    schedule_relationship = stu.ScheduleRelationship.Name(stu.schedule_relationship),
                     stop_sequence = stu.stop_sequence,
                     stop_id = stu.stop_id,
                     arrival_delay = stu.arrival.delay,
