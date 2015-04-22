@@ -11,9 +11,9 @@ class StopTimeUpdate(Base):
     '''
     __tablename__ = 'stop_time_updates'
 
-    trip_id = Column(String)
-    stop_sequence = Column(Integer)
+    trip_id = Column(String, nullable=False)
     stop_id = Column(String, index=True)
+    stop_sequence = Column(Integer)
 
     # Collapsed StopTimeEvent
     arrival_delay = Column(Integer)

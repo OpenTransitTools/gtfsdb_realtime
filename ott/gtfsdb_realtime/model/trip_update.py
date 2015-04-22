@@ -22,14 +22,12 @@ class TripUpdate(Base):
     vehicle_label = Column(String)
     vehicle_license_plate = Column(String)
 
-    '''
     entities = relationship(
-        'TripUpdate',
+        'StopTimeUpdate',
         primaryjoin='TripUpdate.trip_id == StopTimeUpdate.trip_id',
         foreign_keys='(TripUpdate.trip_id)',
         uselist=True, viewonly=True
     )
-    '''
 
     @classmethod
     def parse_gtfsrt_record(cls, session, agency, record, timestamp):
@@ -52,6 +50,7 @@ class TripUpdate(Base):
                 vehicle_label = vehicle.label,
                 vehicle_license_plate = vehicle.license_plate,
             )
+            session.add(ret_val)
 
             for stu in record.trip_update.stop_time_update:
                 s = StopTimeUpdate(
@@ -70,7 +69,7 @@ class TripUpdate(Base):
                 session.add(s)
                 #ret_val.StopTimeUpdates.append(s)
 
-            session.add(ret_val)
+
         except Exception, err:
             log.exception(err)
             session.rollback()
