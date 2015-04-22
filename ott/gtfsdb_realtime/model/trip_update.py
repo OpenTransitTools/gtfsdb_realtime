@@ -22,7 +22,7 @@ class TripUpdate(Base):
     vehicle_label = Column(String)
     vehicle_license_plate = Column(String)
 
-    entities = relationship(
+    stop_times = relationship(
         'StopTimeUpdate',
         primaryjoin='TripUpdate.trip_id == StopTimeUpdate.trip_id',
         foreign_keys='(TripUpdate.trip_id)',
@@ -67,8 +67,6 @@ class TripUpdate(Base):
                     departure_uncertainty = stu.departure.uncertainty,
                 )
                 session.add(s)
-                #ret_val.StopTimeUpdates.append(s)
-
 
         except Exception, err:
             log.exception(err)
