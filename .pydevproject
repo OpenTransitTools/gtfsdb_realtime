@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?eclipse-pydev version="1.0"?>
-
-<pydev_project>
+<?xml version="1.0" ?><?eclipse-pydev version="1.0"?><pydev_project>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 2.7</pydev_property>
-</pydev_project>
+<pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH"><path>/java/DEV/gtfsdb_realtime</path><path>/java/DEV/gtfsdb_realtime/eggs/gtfs_realtime_bindings-0.0.4-py2.7.egg</path><path>/java/DEV/gtfsdb_realtime/eggs/SQLAlchemy-1.0.1-py2.7-macosx-10.10-intel.egg</path><path>/java/DEV/gtfsdb_realtime/eggs/GeoAlchemy2-0.2.4-py2.7.egg</path><path>/java/DEV/gtfsdb_realtime/eggs/geojson-1.0.9-py2.7.egg</path><path>/java/DEV/gtfsdb_realtime/eggs/simplejson-3.6.5-py2.7-macosx-10.10-intel.egg</path><path>/java/DEV/gtfsdb_realtime/eggs/argparse-1.3.0-py2.7.egg</path><path>/java/DEV/utils</path><path>/java/DEV/gtfsdb_realtime/eggs/protobuf-2.6.1-py2.7.egg</path><path>/Library/Python/2.7/site-packages/setuptools-1.1-py2.7.egg</path></pydev_pathproperty></pydev_project>
