@@ -24,7 +24,7 @@ class Position(Base):
 
     lat = Column(Numeric(12,6), nullable=False)
     lon = Column(Numeric(12,6), nullable=False)
-    bearing = Column(Numeric(3,3), default=0)
+    bearing = Column(Numeric, default=0)
     odometer = Column(Numeric)
     speed = Column(Numeric)
 
