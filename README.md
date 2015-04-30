@@ -29,7 +29,7 @@ Install and use via the gtfsdb source tree:
    - bin/loader --database_url sqlite:///gtfsrt.db --url http://developer.trimet.org/ws/gtfs/VehiclePositions/appId/<your app id>
    - bin/loader --database_url sqlite:///gtfsrt.db --url http://developer.trimet.org/ws/gtfs/TripUpdate/appId/<your app id>
    - bin/loader --database_url sqlite:///gtfsrt.db --url http://developer.trimet.org/ws/gtfs/FeedSpecAlerts/includeFuture/true/appId/<your app id>
-   - bin/loader --database_url postgresql://postgres@localhost:5432 --schema gtfsdbrt --is_geospatial --url http://developer.trimet.org/ws/gtfs/VehiclePositions/appId/<your app id>
+   - bin/loader --database_url postgresql://postgres@localhost:5432/<db name> --schema gtfsdb_realtime --geo --url http://developer.trimet.org/ws/gtfs/VehiclePositions/appId/<your app id>
 
 The best way to get gtfsdb_realtime up and running is via the python 'buildout' and 'easy_install' tools.
 Highly recommended to first install easy_install (setup tools) and buildout (e.g., easy_install zc.buildout)
