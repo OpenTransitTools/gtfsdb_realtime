@@ -1,4 +1,5 @@
 import os
+import sys
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -11,9 +12,9 @@ requires = [
     'argparse',
     'simplejson',
     'geojson',
-    'geoalchemy2>=0.2.4',
-    'sqlalchemy>=0.9',
     'gtfs-realtime-bindings',
+    'geoalchemy2>=0.2.4',
+    'sqlalchemy<1.2',  # v1.2 doesn't allow Boolean values of '0' and '1', so this the simple workaround
 ]
 
 
