@@ -59,7 +59,7 @@ setup(
     extras_require=extras_require,
     entry_points="""\
         [console_scripts]
-        loader = ott.gtfsdb_realtime.loader:main
+        gtfsdb-rt-loader = ott.gtfsdb_realtime.loader:main
     """,
 
 )
