@@ -1,14 +1,15 @@
-import logging
-log = logging.getLogger(__file__)
-
 from sqlalchemy import Column, String, Integer
 from sqlalchemy.sql import func, and_
 
 from ott.gtfsdb_realtime.model.base import Base
 
+import logging
+log = logging.getLogger(__file__)
+
+
 class StopTimeUpdate(Base):
-    ''' https://developers.google.com/transit/gtfs-realtime/examples/
-    '''
+    """ https://developers.google.com/transit/gtfs-realtime/examples/
+    """
     __tablename__ = 'stop_time_updates'
 
     trip_id = Column(String, nullable=False)
