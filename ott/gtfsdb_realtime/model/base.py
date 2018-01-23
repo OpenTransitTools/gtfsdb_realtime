@@ -1,10 +1,11 @@
-import logging
-log = logging.getLogger(__file__)
-
 import abc
 import datetime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, String, Integer, DateTime
+
+import logging
+log = logging.getLogger(__file__)
+
 
 class _Base(object):
 
@@ -21,10 +22,10 @@ class _Base(object):
 
     @classmethod
     def get_feed_type(cls, feed):
-        '''
+        """
         :param data:
         :return: type
-        '''
+        """
         from .vehicle import Vehicle
         from .alert import Alert
         from .trip_update import TripUpdate
@@ -44,12 +45,12 @@ class _Base(object):
 
     @classmethod
     def parse_gtfsrt_feed(cls, session, agency, feed):
-        '''
+        """
         :param session:
         :param agency:
         :param data:
         :return:
-        '''
+        """
         timestamp = datetime.datetime.utcfromtimestamp(feed.header.timestamp)
         for record in feed.entity:
             cls.parse_gtfsrt_record(session, agency, record, timestamp)
@@ -61,16 +62,16 @@ class _Base(object):
     @classmethod
     def make_mapper(cls, tablename, column=agency):
         return {
-            'polymorphic_on'       : column,
-            'polymorphic_identity' : tablename,
-            'with_polymorphic'     : '*'
+            'polymorphic_on': column,
+            'polymorphic_identity': tablename,
+            'with_polymorphic': '*'
         }
 
 
     @classmethod
     def get_translation(cls, string, lang, def_val=None):
-        ''' get a specific translation from a TranslatedString
-        '''
+        """ get a specific translation from a TranslatedString
+        """
         ret_val = def_val
 
         # single translation, return it
@@ -96,8 +97,8 @@ class _Base(object):
         return c
 
     def to_dict(self):
-        ''' convert a SQLAlchemy object into a dict that is serializable to JSON
-        ''' 
+        """ convert a SQLAlchemy object into a dict that is serializable to JSON
+        """ 
         ret_val = self.__dict__.copy()
 
         # the __dict__ on a SQLAlchemy object contains hidden crap that we delete from the class dict
@@ -115,8 +116,8 @@ class _Base(object):
 
     @classmethod
     def to_dict_list(cls, list):
-        ''' apply to_dict() to all elements in list, and return new / resulting list...
-        '''
+        """ apply to_dict() to all elements in list, and return new / resulting list...
+        """
         ret_val = []
         for l in list:
             if hasattr(l,"to_dict"):
@@ -126,10 +127,10 @@ class _Base(object):
 
     @classmethod
     def bulk_load(cls, engine, records, remove_old=True):
-        ''' load a bunch of records at once from a list (first clearing out the table).
+        """ load a bunch of records at once from a list (first clearing out the table).
             note that the records array has to be dict structures, ala
             http://docs.sqlalchemy.org/en/latest/core/connections.html#sqlalchemy.engine.Connection.execute
-        '''
+        """
         table = cls.__table__
         if remove_old:
             engine.execute(table.delete())
@@ -154,7 +155,6 @@ class _Base(object):
             # bit of recursion to hit sub classes
             for c in cls.__subclasses__():
                 c.set_geometry(is_geospatial)
-
 
 
 def get_session(self):

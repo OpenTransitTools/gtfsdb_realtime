@@ -1,14 +1,15 @@
-import logging
-log = logging.getLogger(__file__)
-
 from sqlalchemy import Column, String
 from sqlalchemy.sql import func, and_
 
 from ott.gtfsdb_realtime.model.base import Base
 
+import logging
+log = logging.getLogger(__file__)
+
+
 class AlertEntity(Base):
-    ''' https://developers.google.com/transit/gtfs-realtime/examples/alerts
-    '''
+    """ https://developers.google.com/transit/gtfs-realtime/examples/alerts
+    """
     __tablename__ = 'alert_entities'
 
     alert_id = Column(String, nullable=False)
@@ -37,7 +38,7 @@ class AlertEntity(Base):
 
     @classmethod
     def make_entities(cls, session, agency, alert_id, alert_record):
-        ''' make alert entities, which attach an alert to a route, trip, stop or combination thereof
+        """ make alert entities, which attach an alert to a route, trip, stop or combination thereof
             :see: https://developers.google.com/transit/gtfs-realtime/service-alerts
             :see: https://developers.google.com/transit/gtfs-realtime/examples/alerts
 
@@ -45,7 +46,7 @@ class AlertEntity(Base):
         :param agency:
         :param alert_record:
         :return:
-        '''
+        """
 
         # step 1: remove old entites
         cls.clear_tables(session, agency, alert_id)

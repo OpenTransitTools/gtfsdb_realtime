@@ -29,8 +29,8 @@ class Vehicle(Base):
 
     @classmethod
     def clear_tables(cls, session, agency):
-        ''' clear out the positions and vehicles tables
-        '''
+        """ clear out the positions and vehicles tables
+        """
         Position.clear_tables(session, agency)
         session.query(Vehicle).filter(Vehicle.agency == agency).delete()
 
@@ -42,9 +42,9 @@ class Vehicle(Base):
 
     @classmethod
     def parse_gtfsrt_record(cls, session, agency, record, timestamp):
-        ''' create or update new Vehicles and positions
+        """ create or update new Vehicles and positions
             :return Vehicle object
-        '''
+        """
         ret_val = None
         v = None
 
@@ -91,10 +91,10 @@ class Vehicle(Base):
         return ret_val
 
     def update_position(self, session, agency, data, time_span=144):
-        ''' query the db for a position for this vehicle ... if the vehicle appears to be parked in the
+        """ query the db for a position for this vehicle ... if the vehicle appears to be parked in the
             same place as an earlier update, update the 
             NOTE: the position add/update needs to be committed to the db by the caller of this method 
-        '''
+        """
 
         # step 0: cast some variables
         lat = round(data.position.latitude,  6)

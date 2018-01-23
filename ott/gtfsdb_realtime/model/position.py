@@ -9,13 +9,13 @@ from sqlalchemy.orm import deferred, relationship
 from ott.gtfsdb_realtime.model.base import Base
 
 class Position(Base):
-    ''' holds a history of the coordinates of a vehicle...
+    """ holds a history of the coordinates of a vehicle...
 
         IMPORTANT: datetime.datetime.now() is the datestamp used, which is local to where the server is hosted...
                    this could be problematic for a system that's hosted in a place not in the same timezone as the app.
                    If you ever host this app, and want to host in another locale, you should refactor datetime.datetime.now()
                    so that date is UTC based, etc...
-    '''
+    """
     __tablename__ = 'positions'
 
     latest  = Column(Integer, default=1)
@@ -39,8 +39,8 @@ class Position(Base):
 
     @classmethod
     def clear_tables(cls, session, agency):
-        ''' clear out the positions and vehicles tables
-        '''
+        """ clear out the positions and vehicles tables
+        """
         session.query(Position).filter(Position.agency == agency).delete()
 
     def set_updated(self):
@@ -48,8 +48,8 @@ class Position(Base):
         self.latest = 1
 
     def set_position(self, lat, lon):
-        ''' set the lat / lon of this object, and update the timestamp and 'latest' status (to True)
-        '''
+        """ set the lat / lon of this object, and update the timestamp and 'latest' status (to True)
+        """
         self.set_updated()
         self.lat = lat
         self.lon = lon
@@ -75,8 +75,8 @@ class Position(Base):
 
     @classmethod
     def clear_latest_column(cls, session, agency=''):
-        ''' set all latest=True positions to false (for a give car company)
-        '''
+        """ set all latest=True positions to false (for a give car company)
+        """
         session.query(Position).filter(Position.agency == agency).update({'latest': Position.latest + 1})
 
     @classmethod

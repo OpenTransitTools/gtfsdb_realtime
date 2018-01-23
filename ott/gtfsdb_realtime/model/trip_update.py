@@ -31,9 +31,9 @@ class TripUpdate(Base):
 
     @classmethod
     def parse_gtfsrt_record(cls, session, agency, record, timestamp):
-        ''' create a new or update an existing Trip Update record
+        """ create a new or update an existing Trip Update record
             :return: TripUpdate object
-        '''
+        """
         ret_val = None
 
         try:
@@ -83,7 +83,7 @@ class TripUpdate(Base):
 
     @classmethod
     def clear_tables(cls, session, agency):
-        ''' clear out the trip_updates table
-        '''
+        """ clear out the trip_updates table
+        """
         session.query(TripUpdate).filter(TripUpdate.agency == agency).delete()
 

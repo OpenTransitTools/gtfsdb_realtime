@@ -1,10 +1,11 @@
+from ott.gtfsdb_realtime.model.database import Database
+from ott.gtfsdb_realtime.model.base import Base
+
 import argparse
 import logging
 logging.basicConfig()
 log = logging.getLogger(__file__)
 
-from ott.gtfsdb_realtime.model.database import Database
-from ott.gtfsdb_realtime.model.base import Base
 
 def init_parser():
     parser = argparse.ArgumentParser(
@@ -61,6 +62,7 @@ def init_parser():
     args = parser.parse_args()
     return args
 
+
 def parse(session, agency, feed_url, clear_first=False):
     from google.transit import gtfs_realtime_pb2
     import urllib
@@ -77,6 +79,7 @@ def parse(session, agency, feed_url, clear_first=False):
     else:
         log.warn("not sure what type of data we've got")
 
+
 def main():
     args = init_parser()
     print args
@@ -92,6 +95,7 @@ def main():
     if args.url and len(args.url) > 1:
         url = args.url
     parse(session, args.agency, url, args.clear)
+
 
 if __name__ == '__main__':
     main()

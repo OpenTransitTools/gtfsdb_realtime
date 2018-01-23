@@ -1,11 +1,12 @@
-import logging
-log = logging.getLogger(__file__)
-
 from sqlalchemy import Column, Index, Integer, Numeric, String, DateTime
 from sqlalchemy.orm import deferred, object_session, relationship
 
 from ott.gtfsdb_realtime.model.base import Base
 from ott.gtfsdb_realtime.model.alert_entity import AlertEntity
+
+import logging
+log = logging.getLogger(__file__)
+
 
 class Alert(Base):
     __tablename__ = 'alerts'
@@ -47,9 +48,9 @@ class Alert(Base):
 
     @classmethod
     def parse_gtfsrt_record(cls, session, agency, record, timestamp):
-        ''' create or update new Alerts and positions
+        """ create or update new Alerts and positions
             :return Vehicle object
-        '''
+        """
         ret_val = None
 
         try:
@@ -73,21 +74,21 @@ class Alert(Base):
 
     @classmethod
     def clear_tables(cls, session, agency):
-        ''' clear out the positions and vehicles tables
-        '''
+        """ clear out the positions and vehicles tables
+        """
         AlertEntity.clear_tables(session, agency)
         session.query(Alert).filter(Alert.agency == agency).delete()
 
     @classmethod
     def add_short_names(cls, gtfsdb_session, alert, route_ids=[], sep=', '):
-        ''' will add the route_short_names (from gtfsdb) to the Alert record as a comma separated string
+        """ will add the route_short_names (from gtfsdb) to the Alert record as a comma separated string
 
         :param gtfsdb_session:
         :param alert:
         :param route_ids:
         :param sep:
         :return:
-        '''
+        """
         if gtfsdb_session:
             short_names = []
             try:
@@ -105,11 +106,11 @@ class Alert(Base):
 
     @classmethod
     def make_pretty_short_name(cls, gtfsdb_route):
-        ''' makes for a pretty short name (some of which is TriMet specific (e.g., MAX, WES), so override for different agency
+        """ makes for a pretty short name (some of which is TriMet specific (e.g., MAX, WES), so override for different agency
 
         :param gtfsdb_route:
         :return: pretty string
-        '''
+        """
         ret_val = None
         if gtfsdb_route.route_short_name and len(gtfsdb_route.route_short_name) > 0:
             ret_val = gtfsdb_route.route_short_name
@@ -125,11 +126,11 @@ class Alert(Base):
 
     @classmethod
     def get_route_ids(cls, alert):
-        ''' util routine to find routes ids attached for an alert
+        """ util routine to find routes ids attached for an alert
 
         :param alert:
         :return: list of route ids
-        '''
+        """
         route_ids=[]
         for e in alert.entities:
             if e.route_id:
