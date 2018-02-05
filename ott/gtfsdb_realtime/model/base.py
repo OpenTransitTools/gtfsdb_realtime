@@ -23,7 +23,7 @@ class _Base(object):
     @classmethod
     def get_feed_type(cls, feed):
         """
-        :param data:
+        :param feed:
         :return: type
         """
         from .vehicle import Vehicle
@@ -48,7 +48,7 @@ class _Base(object):
         """
         :param session:
         :param agency:
-        :param data:
+        :param feed:
         :return:
         """
         timestamp = datetime.datetime.utcfromtimestamp(feed.header.timestamp)
@@ -66,7 +66,6 @@ class _Base(object):
             'polymorphic_identity': tablename,
             'with_polymorphic': '*'
         }
-
 
     @classmethod
     def get_translation(cls, string, lang, def_val=None):
@@ -88,7 +87,6 @@ class _Base(object):
                 elif ret_val is None:
                     ret_val = t.text
         return ret_val
-
 
     @classmethod
     def from_dict(cls, attrs):
@@ -158,9 +156,9 @@ class _Base(object):
 
 
 def get_session(self):
-        Session = sessionmaker(bind=self.db)
-        session = Session()
-        return session
+    Session = sessionmaker(bind=self.db)
+    session = Session()
+    return session
 
 
 Base = declarative_base(cls=_Base)

@@ -131,7 +131,7 @@ class Alert(Base):
         :param alert:
         :return: list of route ids
         """
-        route_ids=[]
+        route_ids = []
         for e in alert.entities:
             if e.route_id:
                 route_ids.append(e)

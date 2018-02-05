@@ -1,6 +1,3 @@
-import logging
-log = logging.getLogger(__file__)
-
 import datetime
 from sqlalchemy import Column, Index, Integer, Numeric, String, DateTime
 from sqlalchemy.sql import func, and_
@@ -8,6 +5,10 @@ from sqlalchemy.orm import deferred, object_session, relationship
 
 from ott.gtfsdb_realtime.model.base import Base
 from ott.gtfsdb_realtime.model.position import Position
+
+import logging
+log = logging.getLogger(__file__)
+
 
 class Vehicle(Base):
     __tablename__ = 'vehicles'
