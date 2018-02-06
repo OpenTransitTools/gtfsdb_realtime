@@ -9,6 +9,9 @@ log = logging.getLogger(__file__)
 
 
 class Database(object):
+    """
+    TODO make this look like gtfsdb's db.py ... things like 'schema', etc...
+    """
 
     def __init__(self, url, schema=None, is_geospatial=False, pool_size=20):
         self.url = url

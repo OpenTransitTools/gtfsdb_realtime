@@ -48,8 +48,9 @@ class Alert(Base):
 
     @classmethod
     def parse_gtfsrt_record(cls, session, agency, record, timestamp):
-        """ create or update new Alerts and positions
-            :return Vehicle object
+        """
+        create or update new Alerts and positions
+        :return Vehicle object
         """
         ret_val = None
 
@@ -74,14 +75,16 @@ class Alert(Base):
 
     @classmethod
     def clear_tables(cls, session, agency):
-        """ clear out the positions and vehicles tables
+        """
+        clear out the positions and vehicles tables
         """
         AlertEntity.clear_tables(session, agency)
         session.query(Alert).filter(Alert.agency == agency).delete()
 
     @classmethod
     def add_short_names(cls, gtfsdb_session, alert, route_ids=[], sep=', '):
-        """ will add the route_short_names (from gtfsdb) to the Alert record as a comma separated string
+        """
+        will add the route_short_names (from gtfsdb) to the Alert record as a comma separated string
 
         :param gtfsdb_session:
         :param alert:
@@ -106,8 +109,8 @@ class Alert(Base):
 
     @classmethod
     def make_pretty_short_name(cls, gtfsdb_route):
-        """ makes for a pretty short name (some of which is TriMet specific (e.g., MAX, WES), so override for different agency
-
+        """
+        makes for a pretty short name (some of which is TriMet specific (e.g., MAX, WES), so override for different agency
         :param gtfsdb_route:
         :return: pretty string
         """
