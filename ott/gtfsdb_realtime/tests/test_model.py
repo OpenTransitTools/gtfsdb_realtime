@@ -4,6 +4,7 @@ except ImportError:
     import unittest
 
 from ott.gtfsdb_realtime.model.alert import Alert
+from ott.gtfsdb_realtime.model.vehicle import Vehicle
 from ott.gtfsdb_realtime.model.database import Database
 
 import logging
@@ -31,5 +32,16 @@ class TestAlerts(unittest.TestCase, BasicModelTests):
 
     def test_alert_entity(self):
         alert = self.sess().query(Alert).first()
-        elist = alert.entities
-        self.assertTrue(len(elist) >= 1)
+        self.assertTrue(len(alert.entities) >= 1)
+
+
+class TestVehicles(unittest.TestCase, BasicModelTests):
+
+    def test_vehicles(self):
+        vlist = self.sess().query(Vehicle).all()
+        self.assertTrue(len(vlist) >= 1)
+
+    def test_vehicle_positions(self):
+        vehicle = self.sess().query(Vehicle).first()
+        self.assertTrue(len(vehicle.positions) >= 1)
+
