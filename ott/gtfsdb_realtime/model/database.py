@@ -12,6 +12,7 @@ class Database(object):
     """
     TODO make this look like gtfsdb's db.py ... things like 'schema', etc...
     """
+    db_singleton = None
 
     def __init__(self, url, schema=None, is_geospatial=False, pool_size=20):
         self.url = url
@@ -33,9 +34,13 @@ class Database(object):
         return session
 
     @classmethod
-    def make_database_pool(cls):
-        log.info("create the db pool")
-        return Database()
+    def make_session(cls, url, schema, is_geospatial=False, create_db=False, pool_size=20):
+        if cls.db_singleton is None:
+            cls.db_singleton = Database(url, schema, is_geospatial, pool_size)
+            if create_db:
+                cls.db_singleton.create()
+        session = cls.db_singleton.get_session()
+        return session
 
     @classmethod
     def connection(cls, raw_con, connection_record):

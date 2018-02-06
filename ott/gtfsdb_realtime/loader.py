@@ -84,6 +84,10 @@ def parse(session, agency_id, feed_url, clear_first=False):
     return ret_val
 
 
+def make_session(url, schema, is_geospatial=False, create_db=False):
+    return Database.make_session(url, schema, is_geospatial, create_db)
+
+
 def load_agency_data(session, agency_id, trips_url, alerts_url, vehicles_url):
     ret_val = True
 
@@ -105,19 +109,11 @@ def load_agency_data(session, agency_id, trips_url, alerts_url, vehicles_url):
     return ret_val
 
 
-def get_db_session(url, schema, geo, create):
-    db = Database(url, schema, geo)
-    if create:
-        db.create()
-    session = db.get_session()
-    return session
-
-
 def main():
     args = init_parser()
     print args
 
-    session = get_db_session(args.database_url, args.schema, args.geo, args.create)
+    session = Database.make_session(args.database_url, args.schema, args.geo, args.create)
 
     url = 'http://trimet.org/transweb/ws/V1/FeedSpecAlerts/appId/3819A6A38C72223198B560DF0/includeFuture/true'
     url = 'http://trimet.org/transweb/ws/V1/TripUpdate/appId/3819A6A38C72223198B560DF0/includeFuture/true'

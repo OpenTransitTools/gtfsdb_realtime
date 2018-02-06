@@ -18,10 +18,11 @@ class BasicModelTests(object):
     url = 'postgresql+psycopg2://geoserve@maps7:5432/ott'
     schema = 'xmas'
 
-    def sess(self):
-        if self.db is None:
-            self.db = Database(self.url, self.schema)
-        return self.db.get_session()
+    @classmethod
+    def sess(cls):
+        if cls.db is None:
+            cls.db = Database(cls.url, cls.schema)
+        return cls.db.get_session()
 
 
 class TestAlerts(unittest.TestCase, BasicModelTests):
