@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.pool import QueuePool
 from sqlalchemy.orm import sessionmaker
 
+from ott.utils import db_utils
 from ott.gtfsdb_realtime.model.base import Base
 
 import logging
@@ -44,17 +45,5 @@ class Database(object):
 
     @classmethod
     def connection(cls, raw_con, connection_record):
-        """ This method is called for each new SQLAlchemy database connection. I'm using it as a connection decorator to
-            add math routines to a sqllite database
-
-            @note: check out the call to (above): event.listen(self.engine, 'connect', Database.connection)
-            @see:  http://docs.sqlalchemy.org/en/rel_0_8/core/events.html#sqlalchemy.events.PoolEvents
-        """
         if 'sqlite' in type(raw_con).__module__:
-            import math
-            raw_con.create_function("sin",     1, math.sin)
-            raw_con.create_function("cos",     1, math.cos)
-            raw_con.create_function("acos",    1, math.acos)
-            raw_con.create_function("sqrt",    1, math.sqrt)
-            raw_con.create_function("pow",     2, math.pow)
-            raw_con.create_function("radians", 1, math.radians)
+            db_utils.add_math_to_sqllite(raw_con, connection_record)
