@@ -1,66 +1,11 @@
 from ott.gtfsdb_realtime.model.database import Database
 from ott.gtfsdb_realtime.model.base import Base
 
-import argparse
+from ott.utils.parse.cmdline import db_cmdline
+
 import logging
 logging.basicConfig()
 log = logging.getLogger(__file__)
-
-
-def init_parser():
-    parser = argparse.ArgumentParser(
-        prog='controller',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-    parser.add_argument(
-        '--url',
-        '-url',
-        '-u',
-        required='true',
-        help="url to gtfs-realtime data"
-    )
-    parser.add_argument(
-        '--agency',
-        '-agency',
-        '-a',
-        default="trimet",
-        help="agency name (string)"
-    )
-    parser.add_argument(
-        '--database_url',
-        '-d',
-        required='true',
-        help="(geo) database url ala dialect+driver://user:password@host/dbname[?key=value..]"
-    )
-    parser.add_argument(
-        '--schema',
-        '-schema',
-        '-s',
-        help="database schema"
-    )
-    parser.add_argument(
-        '--geo',
-        '-geo',
-        '-g',
-        action="store_true",
-        help="add geometry columns"
-    )
-    parser.add_argument(
-        '--create',
-        '-create',
-        '-c',
-        action="store_true",
-        help="drop / create database tables for vehicles"
-    )
-    parser.add_argument(
-        '--clear',
-        '-clear',
-        '-cf',
-        action="store_true",
-        help="clear table(s) before loading"
-    )
-    args = parser.parse_args()
-    return args
 
 
 def parse(session, agency_id, feed_url, clear_first=False):
@@ -110,7 +55,8 @@ def load_agency_data(session, agency_id, trips_url, alerts_url, vehicles_url):
 
 
 def main():
-    args = init_parser()
+    cmdline = db_cmdline.gtfsdb_parser()
+    args = cmdline.parse_args()
     print args
 
     session = Database.make_session(args.database_url, args.schema, args.geo, args.create)
