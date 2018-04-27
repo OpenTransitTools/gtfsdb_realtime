@@ -11,7 +11,7 @@ log = logging.getLogger(__file__)
 
 
 class Vehicle(Base):
-    __tablename__ = 'vehicles'
+    __tablename__ = 'rt_vehicles'
 
     vehicle_id = Column(String, nullable=False)
     license_plate = Column(String)
@@ -34,6 +34,7 @@ class Vehicle(Base):
         """
         Position.clear_tables(session, agency)
         session.query(Vehicle).filter(Vehicle.agency == agency).delete()
+        session.commit()
 
     @classmethod
     def parse_gtfsrt_feed(cls, session, agency, feed):

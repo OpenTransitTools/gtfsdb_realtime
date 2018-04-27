@@ -9,7 +9,7 @@ log = logging.getLogger(__file__)
 
 
 class TripUpdate(Base):
-    __tablename__ = 'trip_updates'
+    __tablename__ = 'rt_trip_updates'
 
     trip_id = Column(String, nullable=False, index=True)
     route_id = Column(String, index=True)

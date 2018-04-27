@@ -1,22 +1,22 @@
 import datetime
-import geojson
 
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, Index, Integer, Numeric, String, Boolean, DateTime, ForeignKey, ForeignKeyConstraint
-from sqlalchemy.sql import func, and_
-from sqlalchemy.orm import deferred, relationship
 
 from ott.gtfsdb_realtime.model.base import Base
 
+
 class Position(Base):
     """ holds a history of the coordinates of a vehicle...
+
+        TODO: determine how well we're saving historic position data off .... by trip / block / svc day, etc....
 
         IMPORTANT: datetime.datetime.now() is the datestamp used, which is local to where the server is hosted...
                    this could be problematic for a system that's hosted in a place not in the same timezone as the app.
                    If you ever host this app, and want to host in another locale, you should refactor datetime.datetime.now()
                    so that date is UTC based, etc...
     """
-    __tablename__ = 'positions'
+    __tablename__ = 'rt_vehicle_positions'
 
     latest  = Column(Integer, default=1)
 
@@ -42,6 +42,7 @@ class Position(Base):
         """ clear out the positions and vehicles tables
         """
         session.query(Position).filter(Position.agency == agency).delete()
+        session.commit()
 
     def set_updated(self):
         self.updated = datetime.datetime.now()
@@ -57,7 +58,6 @@ class Position(Base):
             self.add_geom_to_dict(self.__dict__)
 
     def set_attributes(self, data):
-        #print data, data.current_status
         #import pdb; pdb.set_trace()
         self.bearing = data.position.bearing
         self.odometer = data.position.odometer
@@ -71,7 +71,6 @@ class Position(Base):
         self.stop_seq = data.current_stop_sequence
         self.status = data.VehicleStopStatus.Name(data.current_status)
         self.timestamp = data.timestamp
-
 
     @classmethod
     def clear_latest_column(cls, session, agency=''):

@@ -9,7 +9,7 @@ log = logging.getLogger(__file__)
 
 
 class Alert(Base):
-    __tablename__ = 'alerts'
+    __tablename__ = 'rt_alerts'
 
     alert_id = Column(String, nullable=False)
 

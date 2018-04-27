@@ -10,7 +10,7 @@ log = logging.getLogger(__file__)
 class StopTimeUpdate(Base):
     """ https://developers.google.com/transit/gtfs-realtime/examples/
     """
-    __tablename__ = 'stop_time_updates'
+    __tablename__ = 'rt_stop_time_updates'
 
     trip_id = Column(String, nullable=False)
     stop_id = Column(String, index=True)

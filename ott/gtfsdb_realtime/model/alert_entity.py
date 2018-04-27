@@ -10,7 +10,7 @@ log = logging.getLogger(__file__)
 class AlertEntity(Base):
     """ https://developers.google.com/transit/gtfs-realtime/examples/alerts
     """
-    __tablename__ = 'alert_entities'
+    __tablename__ = 'rt_alert_entities'
 
     alert_id = Column(String, nullable=False)
 

@@ -66,18 +66,24 @@ def grab_feed(feed_url):
 
 def store_feed(session, agency_id, feed_type, feed, clear_tables_first):
     ret_val = False
+
+    # step 1: create a savepoint
+    session.begin_nested()
     try:
-        #session.start_trans()
+        # step 2: clear content from existing tables
         if clear_tables_first:
             feed_type.clear_tables(session, agency_id)
+
+        # step 3: add gtfsrt data to db
         feed_type.parse_gtfsrt_feed(session, agency_id, feed)
         ret_val = True
     except Exception as e:
+        # step 4: something bad happened ... roll back to our old savepoint
+        session.rollback()
         log.warn(e)
-        # session.roll_back()
     finally:
-        pass
-        # session.end_trans()
+        # step 5: commit whatever's in the session
+        session.commit()
     return ret_val
 
 
@@ -92,12 +98,13 @@ def main():
     cmdline = db_cmdline.gtfs_rt_parser(api_key_required=True, api_key_msg="Get a TriMet API Key at http://developer.trimet.org/appid/registration")
     args = cmdline.parse_args()
 
-    session = Database.make_session(args.database_url, args.schema, args.is_geospatial, args.create)
+    schema = string_utils.get_val(args.schema, args.agency)
+    session = Database.make_session(args.database_url, schema, args.is_geospatial, args.create)
 
     api_key = string_utils.get_val(args.api_key, '<your key here>')
-    aurl = string_utils.get_val(args.alerts_url, 'http://trimet.org/transweb/ws/V1/FeedSpecAlerts/includeFuture/true/appId/' + api_key)
-    turl = string_utils.get_val(args.trips_url, 'http://trimet.org/transweb/ws/V1/TripUpdate/includeFuture/true/appId/' + api_key)
-    vurl = string_utils.get_val(args.vehicles_url, 'http://developer.trimet.org/ws/gtfs/VehiclePositions/includeFuture/true/appId/' + api_key)
+    aurl = string_utils.get_val(args.alerts_url, 'http://developer.trimet.org/ws/V1/FeedSpecAlerts/includeFuture/true/appId/' + api_key)
+    turl = string_utils.get_val(args.trips_url, 'http://developer.trimet.org/ws/V1/TripUpdate/appId/' + api_key)
+    vurl = string_utils.get_val(args.vehicles_url, 'http://developer.trimet.org/ws/gtfs/VehiclePositions/appId/' + api_key)
     no_errors = load_multiple_agency_feeds(session, args.agency, aurl, turl, vurl)
     if no_errors:
         log.info("Thinking that loading went well...")
