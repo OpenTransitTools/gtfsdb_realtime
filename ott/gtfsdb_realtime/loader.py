@@ -58,15 +58,16 @@ def load_agency_data(session, agency_id, alerts_url, trips_url, vehicles_url):
 
 
 def main():
-    cmdline = db_cmdline.gtfs_rt_parser()
+    cmdline = db_cmdline.gtfs_rt_parser(api_key_required=True, api_key_msg="Get a TriMet API Key at http://developer.trimet.org/appid/registration")
     args = cmdline.parse_args()
     print args
 
     session = Database.make_session(args.database_url, args.schema, args.is_geospatial, args.create)
 
-    aurl = string_utils.get_val(args.alerts_url, 'http://trimet.org/transweb/ws/V1/FeedSpecAlerts/appId/3819A6A38C72223198B560DF0/includeFuture/true')
-    turl = string_utils.get_val(args.trips_url, 'http://trimet.org/transweb/ws/V1/TripUpdate/appId/3819A6A38C72223198B560DF0/includeFuture/true')
-    vurl = string_utils.get_val(args.vehicles_url, 'http://developer.trimet.org/ws/gtfs/VehiclePositions/appId/3819A6A38C72223198B560DF0')
+    api_key = string_utils.get_val(args.api_key, '<your key here>')
+    aurl = string_utils.get_val(args.alerts_url, 'http://trimet.org/transweb/ws/V1/FeedSpecAlerts/includeFuture/true/appId/' + api_key)
+    turl = string_utils.get_val(args.trips_url, 'http://trimet.org/transweb/ws/V1/TripUpdate/includeFuture/true/appId/' + api_key)
+    vurl = string_utils.get_val(args.vehicles_url, 'http://developer.trimet.org/ws/gtfs/VehiclePositions/includeFuture/true/appId/' + api_key)
     no_errors = load_agency_data(session, args.agency, aurl, turl, vurl)
     if no_errors:
         print "Thinking that loading went well..."
