@@ -58,7 +58,6 @@ class Position(Base):
             self.add_geom_to_dict(self.__dict__)
 
     def set_attributes(self, data):
-        #import pdb; pdb.set_trace()
         self.bearing = data.position.bearing
         self.odometer = data.position.odometer
         self.speed = data.position.speed

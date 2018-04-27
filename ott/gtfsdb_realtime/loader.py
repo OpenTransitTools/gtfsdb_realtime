@@ -73,6 +73,11 @@ def store_feed(session, agency_id, feed_type, feed, clear_tables_first):
         # step 2: clear content from existing tables
         if clear_tables_first:
             feed_type.clear_tables(session, agency_id)
+            # TODO this doesn't seem to be deleting data....
+            # TODO: also, do you want to be deleting vehicle position data, if you're recording a history????
+            # TODO: we probably need a "clear / don't clear" mechanism on this ... what if we want to append multiple feeds into single table space?
+
+        #import pdb; pdb.set_trace()
 
         # step 3: add gtfsrt data to db
         feed_type.parse_gtfsrt_feed(session, agency_id, feed)
