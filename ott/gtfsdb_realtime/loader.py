@@ -2,6 +2,7 @@ from ott.gtfsdb_realtime.model.database import Database
 from ott.gtfsdb_realtime.model.base import Base
 
 from ott.utils.parse.cmdline import db_cmdline
+from ott.utils import string_utils
 
 import logging
 logging.basicConfig()
@@ -9,6 +10,7 @@ log = logging.getLogger(__file__)
 
 
 def parse(session, agency_id, feed_url, clear_first=False):
+    """ :see: https://developers.google.com/transit/gtfs-realtime/examples/ """
     from google.transit import gtfs_realtime_pb2
     import urllib
 
@@ -30,19 +32,20 @@ def parse(session, agency_id, feed_url, clear_first=False):
 
 
 def make_session(url, schema, is_geospatial=False, create_db=False):
+    """ wrap Database.make_session() ... might rethink this """
     return Database.make_session(url, schema, is_geospatial, create_db)
 
 
-def load_agency_data(session, agency_id, trips_url, alerts_url, vehicles_url):
+def load_agency_data(session, agency_id, alerts_url, trips_url, vehicles_url):
     ret_val = True
-
-    if trips_url:
-        r = parse(session, agency_id, trips_url)
-        if not r:
-            ret_val = False
 
     if alerts_url:
         r = parse(session, agency_id, alerts_url)
+        if not r:
+            ret_val = False
+
+    if trips_url:
+        r = parse(session, agency_id, trips_url)
         if not r:
             ret_val = False
 
@@ -55,18 +58,20 @@ def load_agency_data(session, agency_id, trips_url, alerts_url, vehicles_url):
 
 
 def main():
-    cmdline = db_cmdline.gtfsdb_parser()
+    cmdline = db_cmdline.gtfs_rt_parser()
     args = cmdline.parse_args()
     print args
 
-    session = Database.make_session(args.database_url, args.schema, args.geo, args.create)
+    session = Database.make_session(args.database_url, args.schema, args.is_geospatial, args.create)
 
-    url = 'http://trimet.org/transweb/ws/V1/FeedSpecAlerts/appId/3819A6A38C72223198B560DF0/includeFuture/true'
-    url = 'http://trimet.org/transweb/ws/V1/TripUpdate/appId/3819A6A38C72223198B560DF0/includeFuture/true'
-    #url = 'http://developer.trimet.org/ws/gtfs/VehiclePositions/appId/3819A6A38C72223198B560DF0'
-    if args.url and len(args.url) > 1:
-        url = args.url
-    parse(session, args.agency, url, args.clear)
+    aurl = string_utils.get_val(args.alerts_url, 'http://trimet.org/transweb/ws/V1/FeedSpecAlerts/appId/3819A6A38C72223198B560DF0/includeFuture/true')
+    turl = string_utils.get_val(args.trips_url, 'http://trimet.org/transweb/ws/V1/TripUpdate/appId/3819A6A38C72223198B560DF0/includeFuture/true')
+    vurl = string_utils.get_val(args.vehicles_url, 'http://developer.trimet.org/ws/gtfs/VehiclePositions/appId/3819A6A38C72223198B560DF0')
+    no_errors = load_agency_data(session, args.agency, aurl, turl, vurl)
+    if no_errors:
+        print "Thinking that loading went well..."
+    else:
+        print "Errors Loading???"
 
 
 if __name__ == '__main__':
