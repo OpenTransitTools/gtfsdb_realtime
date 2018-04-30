@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
 
 
-def load_multiple_agency_feeds(session, agency_id, alerts_url=None, trips_url=None, vehicles_url=None):
+def load_agency_feeds(session, agency_id, alerts_url=None, trips_url=None, vehicles_url=None):
     """
     This is a main entry for loading one or more GTFS-RT feeds ...
     """
@@ -110,7 +110,7 @@ def main():
     aurl = string_utils.get_val(args.alerts_url, 'http://developer.trimet.org/ws/V1/FeedSpecAlerts/includeFuture/true/appId/' + api_key)
     turl = string_utils.get_val(args.trips_url, 'http://developer.trimet.org/ws/V1/TripUpdate/appId/' + api_key)
     vurl = string_utils.get_val(args.vehicles_url, 'http://developer.trimet.org/ws/gtfs/VehiclePositions/appId/' + api_key)
-    no_errors = load_multiple_agency_feeds(session, args.agency, aurl, turl, vurl)
+    no_errors = load_agency_feeds(session, args.agency, aurl, turl, vurl)
     if no_errors:
         log.info("Thinking that loading went well...")
     else:
