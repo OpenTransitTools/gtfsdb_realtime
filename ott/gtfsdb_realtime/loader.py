@@ -3,10 +3,12 @@ from ott.gtfsdb_realtime.model.base import Base
 
 from ott.utils.parse.cmdline import db_cmdline
 from ott.utils import string_utils
+from ott.utils import gtfs_utils
 
 import logging
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
+
 
 
 def load_agency_feeds(session, agency_id, alerts_url=None, trips_url=None, vehicles_url=None):
@@ -50,6 +52,7 @@ def load_gtfsrt_feed(session, agency_id, feed_url, clear_tables_first=True):
 
 def grab_feed(feed_url):
     """
+    download a feed from a url
     :see: https://developers.google.com/transit/gtfs-realtime/examples/
     """
     import urllib
@@ -65,6 +68,9 @@ def grab_feed(feed_url):
 
 
 def store_feed(session, agency_id, feed_type, feed, clear_tables_first):
+    """
+    put a gtfs-rt feed into a database
+    """
     ret_val = False
 
     # step 1: create a savepoint
@@ -97,7 +103,34 @@ def make_session(url, schema, is_geospatial=False, create_db=False):
     return Database.make_session(url, schema, is_geospatial, create_db)
 
 
-def main():
+def load_feeds_via_config(feed, db_url, is_geospatial=True, create_db=False):
+    """
+    insert a GTFS feed into configured db
+    """
+    ret_val = True
+
+    # step 1: agency and schema
+    agency_id = feed.get('agency_id')
+    schema = feed.get('schema', agency_id.lower())
+
+    # step 2: get urls to this feed's
+    trips_url = gtfs_utils.get_realtime_trips_url(feed)
+    alerts_url = gtfs_utils.get_realtime_alerts_url(feed)
+    vehicles_url = gtfs_utils.get_realtime_vehicles_url(feed)
+
+    # step 3: load them there gtfs-rt feeds
+    try:
+        log.info("loading gtfsdb_realtime db {} {}".format(db_url, schema))
+        session = make_session(db_url, schema, is_geospatial, create_db)
+        ret_val = load_agency_feeds(session, agency_id, trips_url, alerts_url, vehicles_url)
+    except Exception as e:
+        log.error("DATABASE ERROR : {}".format(e))
+        ret_val = False
+
+    return ret_val
+
+
+def load_feeds_via_cmdline():
     """ this main() function will call TriMet's GTFS-RT apis by default (as and example of how to load the system) """
 
     cmdline = db_cmdline.gtfs_rt_parser(api_key_required=True, api_key_msg="Get a TriMet API Key at http://developer.trimet.org/appid/registration")
@@ -116,6 +149,9 @@ def main():
     else:
         log.info("Errors Loading???")
 
+
+def main():
+    load_feeds_via_cmdline()
 
 if __name__ == '__main__':
     main()
