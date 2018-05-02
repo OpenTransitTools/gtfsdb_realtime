@@ -60,6 +60,7 @@ setup(
     entry_points="""\
         [console_scripts]
         gtfsdb-rt-loader = ott.gtfsdb_realtime.loader:main
+        gtfsrt-get-alerts = ott.gtfsdb_realtime.queries:get_alerts
     """,
 
 )
