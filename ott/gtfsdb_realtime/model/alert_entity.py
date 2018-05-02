@@ -1,9 +1,10 @@
-from sqlalchemy import Column, String
-from sqlalchemy.sql import func, and_
+from sqlalchemy import Column, ForeignKey, String, Integer
+from sqlalchemy.orm import relationship, backref
 
 from ott.gtfsdb_realtime.model.base import Base
 
 import logging
+logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
 
 
@@ -29,10 +30,10 @@ class AlertEntity(Base):
         self.alert_id = alert_id
 
     @classmethod
-    def clear_tables(cls, session, agency, id=None):
+    def clear_tables(cls, session, agency, alert_id=None):
         q = session.query(AlertEntity).filter(AlertEntity.agency == agency)
-        if id:
-            q = q.filter(AlertEntity.alert_id == id)
+        if alert_id:
+            q = q.filter(AlertEntity.alert_id == alert_id)
         q.delete()
 
     @classmethod
@@ -90,4 +91,3 @@ class AlertEntity(Base):
         except Exception as e:
             log.warn(e)
         return ret_val
-
