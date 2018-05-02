@@ -19,7 +19,6 @@ class AlertEntity(Base):
 
     stop_id = Column(String)
 
-    # Collapsed TripDescriptor
     trip_id = Column(String)
     trip_route_id = Column(String)
     trip_start_time = Column(String)
@@ -31,25 +30,21 @@ class AlertEntity(Base):
 
     @classmethod
     def clear_tables(cls, session, agency, id=None):
+        q = session.query(AlertEntity).filter(AlertEntity.agency == agency)
         if id:
-            session.query(AlertEntity).filter(and_(AlertEntity.agency == agency, AlertEntity.alert_id == id)).delete()
-        else:
-            session.query(AlertEntity).filter(AlertEntity.agency == agency).delete()
+            q = q.filter(AlertEntity.alert_id == id)
+        q.delete()
 
     @classmethod
-    def make_entities(cls, session, agency, alert_id, alert_record):
+    def make_entities(cls, session, agency, alert_id, alert_record, clear_first=True):
         """ make alert entities, which attach an alert to a route, trip, stop or combination thereof
             :see: https://developers.google.com/transit/gtfs-realtime/service-alerts
             :see: https://developers.google.com/transit/gtfs-realtime/examples/alerts
-
-        :param session:
-        :param agency:
-        :param alert_record:
-        :return:
         """
 
         # step 1: remove old entites
-        cls.clear_tables(session, agency, alert_id)
+        if clear_first:
+            cls.clear_tables(session, agency, alert_id)
 
         # step 2: loop thru the entities, and create AlertEntity objects
         for e in alert_record.informed_entity:
@@ -66,3 +61,33 @@ class AlertEntity(Base):
         # step 3: commit objects to db
         session.commit()
         session.flush()
+
+    @classmethod
+    def query_via_route_id(cls, session, route_id, agency_id=None, stop_id=None, def_val=[]):
+        """ get array of alerts per route """
+        ret_val = def_val
+        try:
+            log.info("Alerts via route: {}, agency: {}, stop: {}".format(route_id, agency_id, stop_id))
+            q = session.query(AlertEntity).filter(AlertEntity.route_id == route_id)
+            if agency_id:
+                q = q.filter(AlertEntity.agency == agency_id)
+            if stop_id:
+                q = q.filter(AlertEntity.stop_id == stop_id)
+            ret_val = q.all()
+        except Exception as e:
+            log.warn(e)
+        return ret_val
+
+    @classmethod
+    def query_via_stop_id(cls, session, stop_id, agency_id=None, def_val=[]):
+        ret_val = def_val
+        try:
+            log.info("Alerts via stop: {0}".format(stop_id))
+            q = session.query(AlertEntity).filter(AlertEntity.stop_id == stop_id)
+            if agency_id:
+                q = q.filter(AlertEntity.agency == agency_id)
+            ret_val = q.all()
+        except Exception as e:
+            log.warn(e)
+        return ret_val
+

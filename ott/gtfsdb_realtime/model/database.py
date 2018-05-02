@@ -61,9 +61,9 @@ class Database(object):
         self._schema = val
         try:
             if self._schema and len(self._schema) > 0:
+                Base.set_schema(self._schema)
                 from sqlalchemy.schema import CreateSchema
                 self.engine.execute(CreateSchema(self._schema))
-                Base.set_schema(self._schema)
         except Exception as e:
             log.info("NOTE: couldn't create schema {0} (schema might already exist)\n{1}".format(self._schema, e))
 

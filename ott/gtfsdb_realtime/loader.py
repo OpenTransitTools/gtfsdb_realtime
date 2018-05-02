@@ -10,7 +10,6 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
 
 
-
 def load_agency_feeds(session, agency_id, alerts_url=None, trips_url=None, vehicles_url=None):
     """
     This is a main entry for loading one or more GTFS-RT feeds ...
@@ -83,8 +82,6 @@ def store_feed(session, agency_id, feed_type, feed, clear_tables_first):
             # TODO: also, do you want to be deleting vehicle position data, if you're recording a history????
             # TODO: we probably need a "clear / don't clear" mechanism on this ... what if we want to append multiple feeds into single table space?
 
-        # import pdb; pdb.set_trace()
-
         # step 3: add gtfsrt data to db
         feed_type.parse_gtfsrt_feed(session, agency_id, feed)
         ret_val = True
@@ -96,11 +93,6 @@ def store_feed(session, agency_id, feed_type, feed, clear_tables_first):
         # step 5: commit whatever's in the session
         session.commit()
     return ret_val
-
-
-def make_session(url, schema, is_geospatial=False, create_db=False):
-    """ wrap Database.make_session() ... might rethink this """
-    return Database.make_session(url, schema, is_geospatial, create_db)
 
 
 def load_feeds_via_config(feed, db_url, is_geospatial=True, create_db=False):
@@ -121,7 +113,7 @@ def load_feeds_via_config(feed, db_url, is_geospatial=True, create_db=False):
     # step 3: load them there gtfs-rt feeds
     try:
         log.info("loading gtfsdb_realtime db {} {}".format(db_url, schema))
-        session = make_session(db_url, schema, is_geospatial, create_db)
+        session = Database.make_session(db_url, schema, is_geospatial, create_db)
         ret_val = load_agency_feeds(session, agency_id, trips_url, alerts_url, vehicles_url)
     except Exception as e:
         log.error("DATABASE ERROR : {}".format(e))
@@ -132,11 +124,12 @@ def load_feeds_via_config(feed, db_url, is_geospatial=True, create_db=False):
 
 def load_feeds_via_cmdline():
     """ this main() function will call TriMet's GTFS-RT apis by default (as and example of how to load the system) """
+    # import pdb; pdb.set_trace()
 
     cmdline = gtfs_cmdline.gtfs_rt_parser(api_key_required=True, api_key_msg="Get a TriMet API Key at http://developer.trimet.org/appid/registration")
     args = cmdline.parse_args()
 
-    schema = string_utils.get_val(args.schema, args.agency)
+    schema = string_utils.get_val(args.schema, args.agency.lower())
     session = Database.make_session(args.database_url, schema, args.is_geospatial, args.create)
 
     api_key = string_utils.get_val(args.api_key, '<your key here>')

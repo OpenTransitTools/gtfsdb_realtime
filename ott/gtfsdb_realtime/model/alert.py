@@ -50,7 +50,6 @@ class Alert(Base):
     def parse_gtfsrt_record(cls, session, agency, record, timestamp):
         """
         create or update new Alerts and positions
-        :return Vehicle object
         """
         ret_val = None
 
@@ -58,16 +57,15 @@ class Alert(Base):
             ret_val = Alert(agency, record.id)
             ret_val.set_attributes_via_gtfsrt(record.alert)
             session.add(ret_val)
-        except Exception, err:
+        except Exception as err:
             log.exception(err)
             session.rollback()
         finally:
-            # step 4:
             try:
                 AlertEntity.make_entities(session, agency, record.id, record.alert)
                 session.commit()
                 session.flush()
-            except Exception, err:
+            except Exception as err:
                 log.exception(err)
                 session.rollback()
 
@@ -85,12 +83,6 @@ class Alert(Base):
     def add_short_names(cls, gtfsdb_session, alert, route_ids=[], sep=', '):
         """
         will add the route_short_names (from gtfsdb) to the Alert record as a comma separated string
-
-        :param gtfsdb_session:
-        :param alert:
-        :param route_ids:
-        :param sep:
-        :return:
         """
         if gtfsdb_session:
             short_names = []
@@ -104,15 +96,13 @@ class Alert(Base):
                     if nm and nm not in short_names:
                         short_names.append(nm)
                 alert.route_short_names = sep.join([str(x) for x in short_names])
-            except Exception, e:
+            except Exception as e:
                 log.exception(e)
 
     @classmethod
     def make_pretty_short_name(cls, gtfsdb_route):
         """
         makes for a pretty short name (some of which is TriMet specific (e.g., MAX, WES), so override for different agency
-        :param gtfsdb_route:
-        :return: pretty string
         """
         ret_val = None
         if gtfsdb_route.route_short_name and len(gtfsdb_route.route_short_name) > 0:
@@ -129,9 +119,8 @@ class Alert(Base):
 
     @classmethod
     def get_route_ids(cls, alert):
-        """ util routine to find routes ids attached for an alert
-
-        :param alert:
+        """
+        util routine to find routes ids attached for an alert
         :return: list of route ids
         """
         route_ids = []

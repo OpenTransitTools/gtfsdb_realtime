@@ -46,10 +46,6 @@ class _Base(object):
     @classmethod
     def parse_gtfsrt_feed(cls, session, agency, feed):
         """
-        :param session:
-        :param agency:
-        :param feed:
-        :return:
         """
         timestamp = datetime.datetime.utcfromtimestamp(feed.header.timestamp)
         for record in feed.entity:
@@ -73,11 +69,11 @@ class _Base(object):
         """
         ret_val = def_val
 
-        # single translation, return it
         if len(string.translation) == 1:
+            # single translation, return it
             ret_val = string.translation[0].text
-        # find best translation match
         elif len(string.translation) > 1:
+            # find best translation match
             for t in string.translation:
                 if t.language == lang:
                     ret_val = t.text
@@ -153,12 +149,5 @@ class _Base(object):
             # bit of recursion to hit sub classes
             for c in cls.__subclasses__():
                 c.set_geometry(is_geospatial)
-
-
-def get_session(self):
-    Session = sessionmaker(bind=self.db)
-    session = Session()
-    return session
-
 
 Base = declarative_base(cls=_Base)
