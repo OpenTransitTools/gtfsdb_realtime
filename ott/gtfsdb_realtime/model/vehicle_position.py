@@ -6,7 +6,7 @@ from sqlalchemy import Column, Index, Integer, Numeric, String, Boolean, DateTim
 from ott.gtfsdb_realtime.model.base import Base
 
 
-class Position(Base):
+class VehiclePosition(Base):
     """ holds a history of the coordinates of a vehicle...
 
         TODO: determine how well we're saving historic position data off .... by trip / block / svc day, etc....
@@ -39,9 +39,10 @@ class Position(Base):
 
     @classmethod
     def clear_tables(cls, session, agency):
-        """ clear out the positions and vehicles tables
         """
-        session.query(Position).filter(Position.agency == agency).delete()
+        clear out the positions and vehicles tables
+        """
+        session.query(VehiclePosition).filter(VehiclePosition.agency == agency).delete()
         session.commit()
 
     def set_updated(self):
@@ -75,7 +76,7 @@ class Position(Base):
     def clear_latest_column(cls, session, agency=''):
         """ set all latest=True positions to false (for a give car company)
         """
-        session.query(Position).filter(Position.agency == agency).update({'latest': Position.latest + 1})
+        session.query(VehiclePosition).filter(VehiclePosition.agency == agency).update({'latest': VehiclePosition.latest + 1})
 
     @classmethod
     def add_geometry_column(cls, srid=4326):

@@ -17,7 +17,6 @@ class TripUpdate(Base):
     trip_start_date = Column(String, index=True)
     schedule_relationship = Column(String)
 
-    # Collapsed VehicleDescriptor
     vehicle_id = Column(String)
     vehicle_label = Column(String)
     vehicle_license_plate = Column(String)
@@ -68,14 +67,14 @@ class TripUpdate(Base):
                 )
                 session.add(s)
 
-        except Exception, err:
+        except Exception as err:
             log.exception(err)
             session.rollback()
         finally:
             try:
                 session.commit()
                 session.flush()
-            except Exception, err:
+            except Exception as err:
                 log.exception(err)
                 session.rollback()
 

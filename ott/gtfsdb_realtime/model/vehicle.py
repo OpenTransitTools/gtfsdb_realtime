@@ -4,7 +4,7 @@ from sqlalchemy.sql import func, and_
 from sqlalchemy.orm import deferred, object_session, relationship
 
 from ott.gtfsdb_realtime.model.base import Base
-from ott.gtfsdb_realtime.model.position import Position
+from ott.gtfsdb_realtime.model.vehicle_position import VehiclePosition
 
 import logging
 log = logging.getLogger(__file__)
@@ -17,8 +17,8 @@ class Vehicle(Base):
     license_plate = Column(String)
 
     positions = relationship(
-        'Position',
-        primaryjoin='Vehicle.vehicle_id == Position.vehicle_id',
+        'VehiclePosition',
+        primaryjoin='Vehicle.vehicle_id == VehiclePosition.vehicle_id',
         foreign_keys='(Vehicle.vehicle_id)',
         uselist=True, viewonly=True
     )
@@ -30,16 +30,17 @@ class Vehicle(Base):
 
     @classmethod
     def clear_tables(cls, session, agency):
-        """ clear out the positions and vehicles tables
         """
-        Position.clear_tables(session, agency)
+        clear out the positions and vehicles tables
+        """
+        VehiclePosition.clear_tables(session, agency)
         session.query(Vehicle).filter(Vehicle.agency == agency).delete()
         session.commit()
 
     @classmethod
     def parse_gtfsrt_feed(cls, session, agency, feed):
         if feed and feed.entity and len(feed.entity) > 0:
-            Position.clear_latest_column(session, agency)
+            VehiclePosition.clear_latest_column(session, agency)
             super(Vehicle, cls).parse_gtfsrt_feed(session, agency, feed)
 
     @classmethod
@@ -63,7 +64,7 @@ class Vehicle(Base):
                 )
             )
             v = q.first()
-        except Exception, err:
+        except Exception as err:
             log.exception(err)
 
         try:
@@ -79,14 +80,14 @@ class Vehicle(Base):
 
             # step 3: update the position record if need be
             v.update_position(session, agency, record)
-        except Exception, err:
+        except Exception as err:
             log.exception(err)
             session.rollback()
         finally:
             try:
                 session.commit()
                 session.flush()
-            except Exception, err:
+            except Exception as err:
                 log.exception(err)
                 session.rollback()
 
@@ -107,22 +108,22 @@ class Vehicle(Base):
         hours_ago = datetime.datetime.now() - datetime.timedelta(hours=time_span)
         p = None
         try:
-            q = session.query(Position).filter(
+            q = session.query(VehiclePosition).filter(
                 and_(
-                    Position.vehicle_fk == self.id,
-                    Position.updated >= hours_ago,
-                    Position.lat == lat,
-                    Position.lon == lon,
+                    VehiclePosition.vehicle_fk == self.id,
+                    VehiclePosition.updated >= hours_ago,
+                    VehiclePosition.lat == lat,
+                    VehiclePosition.lon == lon,
                 )
             )
             p = q.first()
-        except Exception, err:
+        except Exception as err:
             log.exception(err)
 
         # step 2: we didn't find an existing position in the Position history table, so add a new one
         try:
             if p is None:
-                p = Position()
+                p = VehiclePosition()
                 p.vehicle_fk = self.id
                 p.agency = agency
                 p.set_attributes(data)
@@ -131,15 +132,14 @@ class Vehicle(Base):
             else:
                 p.set_updated()
 
-        except Exception, err:
+        except Exception as err:
             log.exception(err)
             session.rollback()
         finally:
             try:
                 session.commit()
                 session.flush()
-            except Exception, err:
+            except Exception as err:
                 log.exception(err)
                 session.rollback()
-
         return p

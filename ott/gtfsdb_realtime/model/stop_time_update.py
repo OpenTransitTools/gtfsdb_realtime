@@ -16,12 +16,10 @@ class StopTimeUpdate(Base):
     stop_id = Column(String, index=True)
     stop_sequence = Column(Integer)
 
-    # Collapsed StopTimeEvent
     arrival_delay = Column(Integer)
     arrival_time = Column(Integer)
     arrival_uncertainty = Column(Integer)
 
-    # Collapsed StopTimeEvent
     departure_delay = Column(Integer)
     departure_time = Column(Integer)
     departure_uncertainty = Column(Integer)
