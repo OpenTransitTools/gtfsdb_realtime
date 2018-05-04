@@ -9,7 +9,8 @@ log = logging.getLogger(__file__)
 
 
 class AlertEntity(Base):
-    """ https://developers.google.com/transit/gtfs-realtime/examples/alerts
+    """
+    https://developers.google.com/transit/gtfs-realtime/examples/alerts
     """
     __tablename__ = 'rt_alert_entities'
 
@@ -38,9 +39,10 @@ class AlertEntity(Base):
 
     @classmethod
     def make_entities(cls, session, agency, alert_id, alert_record, clear_first=True):
-        """ make alert entities, which attach an alert to a route, trip, stop or combination thereof
-            :see: https://developers.google.com/transit/gtfs-realtime/service-alerts
-            :see: https://developers.google.com/transit/gtfs-realtime/examples/alerts
+        """
+        make alert entities, which attach an alert to a route, trip, stop or combination thereof
+        :see: https://developers.google.com/transit/gtfs-realtime/service-alerts
+        :see: https://developers.google.com/transit/gtfs-realtime/examples/alerts
         """
 
         # step 1: remove old entites
