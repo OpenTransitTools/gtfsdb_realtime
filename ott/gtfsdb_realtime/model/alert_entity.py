@@ -93,3 +93,25 @@ class AlertEntity(Base):
         except Exception as e:
             log.warn(e)
         return ret_val
+
+    @classmethod
+    def unique_alert_entity_sort(cls, alert_entity_list, filter_future=False, filter_past=True, inverse_sort=True):
+        """ de-duplicate and sort alerts from an entity list """
+        ret_val = []
+
+        # step 1: sort for unique alerts (and also sort past / future, if specified)
+        alert_hash = {}
+        now = Date.now()
+        for e in alert_entity_list:
+            if filter_past and e.end < now: continue
+            if filter_future and e.begin > now: continue
+            alert_hash[e.alert_id] = e.alert
+
+        # step 2: sort trips
+        ret_val = alert_hash.values()
+        #lambda ret_val : inverse_sort
+
+        return ret_val
+
+
+
