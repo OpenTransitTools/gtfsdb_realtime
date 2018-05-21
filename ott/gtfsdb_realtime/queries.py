@@ -7,8 +7,10 @@ def get_sessiion(args):
     session = Database.make_session(args.database_url, args.schema, args.is_geospatial, args.create)
     return session
 
+
 def print_alert(alert):
     print alert.description_text
+
 
 def get_alerts_via_route(args):
     session = get_sessiion(args)

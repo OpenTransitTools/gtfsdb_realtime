@@ -146,6 +146,7 @@ def load_feeds_via_cmdline():
 def main():
     load_feeds_via_cmdline()
 
+
 if __name__ == '__main__':
     main()
 

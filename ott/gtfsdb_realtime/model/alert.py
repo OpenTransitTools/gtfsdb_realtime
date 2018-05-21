@@ -32,6 +32,7 @@ class Alert(Base):
         backref=backref("alert", lazy="joined", uselist=False),
         uselist=True, viewonly=True
     )
+
     def __init__(self, agency, id):
         self.agency = agency
         self.alert_id = id
@@ -46,6 +47,14 @@ class Alert(Base):
         self.header_text = self.get_translation(record.header_text, self.lang)
         self.description_text = self.get_translation(record.description_text, self.lang)
 
+    def get_route_ids(self):
+        """ :return list of route ids (could be a single route / single row list) for this alert """
+        ret_val = []
+        for e in alert.entities:
+            if e and e.route_id:
+                ret_val.append(e.route_id)
+        return ret_val
+
     @classmethod
     def parse_gtfsrt_record(cls, session, agency, record, timestamp):
         """
@@ -56,6 +65,7 @@ class Alert(Base):
         try:
             ret_val = Alert(agency, record.id)
             ret_val.set_attributes_via_gtfsrt(record.alert)
+
             session.add(ret_val)
         except Exception as err:
             log.exception(err)
@@ -109,7 +119,7 @@ class Alert(Base):
             ret_val = gtfsdb_route.route_short_name
         elif gtfsdb_route.route_long_name and len(gtfsdb_route.route_long_name) > 0:
             nm = gtfsdb_route.route_long_name
-            if "MAX " in nm:
+            if nm.endswith(" Line"):
                 ret_val = nm.replace(" Line", "")
             elif nm == "WES Commuter Rail":
                 ret_val = "WES"
