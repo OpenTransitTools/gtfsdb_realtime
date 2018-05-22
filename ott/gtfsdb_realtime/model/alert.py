@@ -55,6 +55,26 @@ class Alert(Base):
                 ret_val.append(e.route_id)
         return ret_val
 
+    def add_short_names(self, gtfsdb_session, sep=', '):
+        """
+        will add the route_short_names (from gtfsdb) to the Alert record as a comma separated string
+        """
+        if gtfsdb_session:
+            short_names = []
+            try:
+                route_ids = self.get_route_ids()
+                if len(route_ids) > 0:
+                    log.debug("query Route table")
+                    from gtfsdb import Route
+                    routes = gtfsdb_session.query(Route).filter(Route.route_id.in_(route_ids)).order_by(Route.route_sort_order)
+                    for r in routes.all():
+                        nm = cls.make_pretty_short_name(r)
+                        if nm and nm not in short_names:
+                            short_names.append(nm)
+                    alert.route_short_names = sep.join([str(x) for x in short_names])
+            except Exception as e:
+                log.exception(e)
+
     @classmethod
     def parse_gtfsrt_record(cls, session, agency, record, timestamp):
         """
@@ -65,7 +85,6 @@ class Alert(Base):
         try:
             ret_val = Alert(agency, record.id)
             ret_val.set_attributes_via_gtfsrt(record.alert)
-
             session.add(ret_val)
         except Exception as err:
             log.exception(err)
@@ -73,6 +92,8 @@ class Alert(Base):
         finally:
             try:
                 AlertEntity.make_entities(session, agency, record.id, record.alert)
+                session.commit()
+                ret_val.add_short_names(session)
                 session.commit()
                 session.flush()
             except Exception as err:
@@ -90,29 +111,10 @@ class Alert(Base):
         session.query(Alert).filter(Alert.agency == agency).delete()
 
     @classmethod
-    def add_short_names(cls, gtfsdb_session, alert, route_ids=[], sep=', '):
-        """
-        will add the route_short_names (from gtfsdb) to the Alert record as a comma separated string
-        """
-        if gtfsdb_session:
-            short_names = []
-            try:
-                #import pdb; pdb.set_trace()
-                log.debug("query Route table")
-                from gtfsdb import Route
-                routes = gtfsdb_session.query(Route).filter(Route.route_id.in_(route_ids)).order_by(Route.route_sort_order)
-                for r in routes.all():
-                    nm = cls.make_pretty_short_name(r)
-                    if nm and nm not in short_names:
-                        short_names.append(nm)
-                alert.route_short_names = sep.join([str(x) for x in short_names])
-            except Exception as e:
-                log.exception(e)
-
-    @classmethod
     def make_pretty_short_name(cls, gtfsdb_route):
         """
-        makes for a pretty short name (some of which is TriMet specific (e.g., MAX, WES), so override for different agency
+        get either the route short name, or look to convert the route long name into a shorter name...
+        NOTE: makes call to an agency_specific... method, which can be overwritten to add customization of long to short name
         """
         ret_val = None
         if gtfsdb_route.route_short_name and len(gtfsdb_route.route_short_name) > 0:
@@ -121,20 +123,17 @@ class Alert(Base):
             nm = gtfsdb_route.route_long_name
             if nm.endswith(" Line"):
                 ret_val = nm.replace(" Line", "")
-            elif nm == "WES Commuter Rail":
-                ret_val = "WES"
             else:
-                ret_val = nm
+                ret_val = cls.agency_specific_long_to_short_name(nm)
         return ret_val
 
     @classmethod
-    def get_route_ids(cls, alert):
+    def agency_specific_long_to_short_name(cls, long_route_name):
         """
-        util routine to find routes ids attached for an alert
-        :return: list of route ids
+        makes for a short name from a route long name
+        below is TriMet specific (e.g., WES), so override for different agency
         """
-        route_ids = []
-        for e in alert.entities:
-            if e.route_id:
-                route_ids.append(e)
-        return route_ids
+        ret_val = long_route_name
+        if nm == "WES Commuter Rail":
+            ret_val = "WES"
+        return ret_val
