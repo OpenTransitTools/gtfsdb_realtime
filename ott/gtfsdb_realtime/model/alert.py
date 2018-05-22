@@ -50,7 +50,7 @@ class Alert(Base):
     def get_route_ids(self):
         """ :return list of route ids (could be a single route / single row list) for this alert """
         ret_val = []
-        for e in alert.entities:
+        for e in self.entities:
             if e and e.route_id:
                 ret_val.append(e.route_id)
         return ret_val

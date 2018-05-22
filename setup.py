@@ -9,6 +9,7 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
     'ott.utils',
+    'gtfsdb',
     'argparse',
     'simplejson',
     'geojson',
@@ -51,6 +52,7 @@ setup(
     ),
     dependency_links=[
         'git+https://github.com/OpenTransitTools/utils.git#egg=ott.utils-0.1.0',
+        'git+https://github.com/OpenTransitTools/gtfsdb.git#egg=gtfsdb-0.1.7',
     ],
     packages=find_packages(),
     include_package_data=True,
