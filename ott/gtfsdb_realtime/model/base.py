@@ -82,6 +82,10 @@ class _Base(object):
                     ret_val = t.text
                 elif ret_val is None:
                     ret_val = t.text
+
+        # strip whitespace
+        if ret_val:
+            ret_val = ret_val.strip()
         return ret_val
 
     @classmethod
