@@ -132,8 +132,8 @@ def load_feeds_via_cmdline():
 
     schema = string_utils.get_val(args.schema, args.agency.lower())
     session = Database.make_session(args.database_url, schema, args.is_geospatial, args.create)
-    from gtfsdb.model import db
-    db.Database.prep_gtfsdb_model_classes(schema, args.is_geospatial)
+    import gtfsdb
+    gtfsdb.Database.prep_gtfsdb_model_classes(schema, args.is_geospatial)
 
     api_key = string_utils.get_val(args.api_key, '<your key here>')
     aurl = string_utils.get_val(args.alerts_url, 'http://developer.trimet.org/ws/V1/FeedSpecAlerts/includeFuture/true/appId/' + api_key)

@@ -11,7 +11,10 @@ log = logging.getLogger(__file__)
 
 class Database(object):
     """
-    TODO make this look like gtfsdb's db.py ... things like 'schema', etc...
+    TODO: maybe inherit from GTFSDB's Database object?  Do we need two?
+    TODO: Also have to init GTFSDB, so maybe inherit is better
+          @see: loader.py  import gtfsdb
+           gtfsdb.Database.prep_gtfsdb_model_classes(schema, args.is_geospatial)
     """
     db_singleton = None
 
