@@ -44,8 +44,6 @@ class Alert(Base):
         self.start = record.active_period[0].start
         self.end = record.active_period[0].end
         self.url = self.get_translation(record.url, self.lang)
-
-        # todo: trim alert stirngs ... one current alert has a leading \n
         self.header_text = self.get_translation(record.header_text, self.lang)
         self.description_text = self.get_translation(record.description_text, self.lang)
 
