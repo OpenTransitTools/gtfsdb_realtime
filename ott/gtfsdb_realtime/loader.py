@@ -126,11 +126,14 @@ def load_feeds_via_cmdline():
     """ this main() function will call TriMet's GTFS-RT apis by default (as and example of how to load the system) """
     # import pdb; pdb.set_trace()
 
+
     cmdline = gtfs_cmdline.gtfs_rt_parser(api_key_required=True, api_key_msg="Get a TriMet API Key at http://developer.trimet.org/appid/registration")
     args = cmdline.parse_args()
 
     schema = string_utils.get_val(args.schema, args.agency.lower())
     session = Database.make_session(args.database_url, schema, args.is_geospatial, args.create)
+    from gtfsdb.model import db
+    db.Database.prep_gtfsdb_model_classes(schema, args.is_geospatial)
 
     api_key = string_utils.get_val(args.api_key, '<your key here>')
     aurl = string_utils.get_val(args.alerts_url, 'http://developer.trimet.org/ws/V1/FeedSpecAlerts/includeFuture/true/appId/' + api_key)

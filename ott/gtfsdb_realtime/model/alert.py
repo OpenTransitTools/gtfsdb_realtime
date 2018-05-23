@@ -68,10 +68,10 @@ class Alert(Base):
                     from gtfsdb import Route
                     routes = gtfsdb_session.query(Route).filter(Route.route_id.in_(route_ids)).order_by(Route.route_sort_order)
                     for r in routes.all():
-                        nm = cls.make_pretty_short_name(r)
+                        nm = self.make_pretty_short_name(r)
                         if nm and nm not in short_names:
                             short_names.append(nm)
-                    alert.route_short_names = sep.join([str(x) for x in short_names])
+                    self.route_short_names = sep.join([str(x) for x in short_names])
             except Exception as e:
                 log.exception(e)
 
