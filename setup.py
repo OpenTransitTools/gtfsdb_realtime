@@ -62,7 +62,8 @@ setup(
     entry_points="""\
         [console_scripts]
         gtfsrt-load = ott.gtfsdb_realtime.loader:main
-        gtfsrt-get-alerts = ott.gtfsdb_realtime.queries:get_alerts
+        gtfsrt-get-alerts = ott.gtfsdb_realtime.control.alert_queries:get_alerts_cmd
+        gtfsrt-get-vehicles = ott.gtfsdb_realtime.control.vehicle_queries:get_vehicles_cmd
     """,
 
 )
