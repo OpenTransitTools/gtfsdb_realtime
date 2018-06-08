@@ -14,8 +14,8 @@ requires = [
     'simplejson',
     'geojson',
     'gtfs-realtime-bindings',
-    'geoalchemy2>=0.2.4',
-    'sqlalchemy<1.2',  # v1.2 doesn't allow Boolean values of '0' and '1', so this the simple workaround
+    'geoalchemy2',
+    'sqlalchemy'
 ]
 
 
@@ -27,10 +27,6 @@ extras_require = dict(
     dev=dev_extras,
     postgresql=postgresql_extras,
 )
-
-if sys.version_info[:2] <= (2, 6):
-    requires.append('argparse>=1.2.1')
-    extras_require['dev'].append('unittest2')
 
 setup(
     name='ott.gtfsdb_realtime',
@@ -49,6 +45,7 @@ setup(
         'License :: OSI Approved :: Mozilla-derived (MPL)',
         'Natural Language :: English',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.7',
     ),
     dependency_links=[
         'git+https://github.com/OpenTransitTools/utils.git#egg=ott.utils-0.1.0',
