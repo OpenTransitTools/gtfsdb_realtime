@@ -9,10 +9,11 @@ def query_vehicles(args):
     ret_val = []
 
     """ query the db and return list of vehicles"""
-    vehicles = [1, 3]
-    vehicles =
-    for i in vehicles:
-        ret_val.append(args)
+    from ott.gtfsdb_realtime.model.vehicle import Vehicle
+    session = get_sessiion(args)
+    vehicles = session.query(Vehicle).all()
+    for v in vehicles:
+        ret_val.append(v)
 
     return ret_val
 
