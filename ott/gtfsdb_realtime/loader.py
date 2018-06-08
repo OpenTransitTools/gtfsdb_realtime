@@ -130,7 +130,7 @@ def load_feeds_via_cmdline():
     cmdline = gtfs_cmdline.gtfs_rt_parser(api_key_required=True, api_key_msg="Get a TriMet API Key at http://developer.trimet.org/appid/registration")
     args = cmdline.parse_args()
 
-    schema = string_utils.get_val(args.schema, args.agency.lower())
+    schema = string_utils.get_val(args.schema, args.agency_id.lower())
     session = Database.make_session(args.database_url, schema, args.is_geospatial, args.create)
     import gtfsdb
     gtfsdb.Database.prep_gtfsdb_model_classes(schema, args.is_geospatial)
@@ -139,7 +139,7 @@ def load_feeds_via_cmdline():
     aurl = string_utils.get_val(args.alerts_url, 'http://developer.trimet.org/ws/V1/FeedSpecAlerts/includeFuture/true/appId/' + api_key)
     turl = string_utils.get_val(args.trips_url, 'http://developer.trimet.org/ws/V1/TripUpdate/appId/' + api_key)
     vurl = string_utils.get_val(args.vehicles_url, 'http://developer.trimet.org/ws/gtfs/VehiclePositions/appId/' + api_key)
-    no_errors = load_agency_feeds(session, args.agency, aurl, turl, vurl)
+    no_errors = load_agency_feeds(session, args.agency_id, aurl, turl, vurl)
     if no_errors:
         log.info("Thinking that loading went well...")
     else:
