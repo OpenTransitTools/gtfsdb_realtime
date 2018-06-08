@@ -3,6 +3,7 @@ from ott.gtfsdb_realtime.model.base import Base
 
 from ott.utils.parse.cmdline import gtfs_cmdline
 from ott.utils import string_utils
+from ott.utils import db_utils
 from ott.utils import gtfs_utils
 
 import logging
@@ -125,13 +126,12 @@ def load_feeds_via_config(feed, db_url, is_geospatial=True, create_db=False):
 def load_feeds_via_cmdline():
     """ this main() function will call TriMet's GTFS-RT apis by default (as and example of how to load the system) """
     # import pdb; pdb.set_trace()
-
-
     cmdline = gtfs_cmdline.gtfs_rt_parser(api_key_required=True, api_key_msg="Get a TriMet API Key at http://developer.trimet.org/appid/registration")
     args = cmdline.parse_args()
 
     schema = string_utils.get_val(args.schema, args.agency_id.lower())
-    session = Database.make_session(args.database_url, schema, args.is_geospatial, args.create)
+    url = db_utils.check_localhost(args.database_url)
+    session = Database.make_session(url, schema, args.is_geospatial, args.create)
     import gtfsdb
     gtfsdb.Database.prep_gtfsdb_model_classes(schema, args.is_geospatial)
 
