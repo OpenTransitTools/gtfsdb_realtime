@@ -1,4 +1,4 @@
-from ott.gtfsdb_realtimemodel.database import Database
+from ott.gtfsdb_realtime.model.database import Database
 
 
 def get_sessiion(args):
