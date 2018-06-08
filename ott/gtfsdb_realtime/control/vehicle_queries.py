@@ -2,7 +2,7 @@ from ott.utils.parse.cmdline import db_cmdline
 from ott.utils.parse.cmdline import gtfs_cmdline
 
 from base import get_sessiion
-from vehicle_ws_response_legacy import make_response
+from vehicle_geojson import make_response
 
 
 def query_vehicles(args):
@@ -11,7 +11,7 @@ def query_vehicles(args):
     """ query the db and return list of vehicles"""
     # todo
     for i in range(10):
-        ret_val.push(args)
+        ret_val.append(args)
 
     return ret_val
 

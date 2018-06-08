@@ -30,14 +30,14 @@ def make_vehcile(v):
 
 def make_response(vehicles):
     ret_val = {
-        "success": true,
+        "success": True,
         "total": 0,
         "type": "FeatureCollection",
         "features": []
     }
     for v in vehicles:
         v = make_vehcile(v)
-        ret_val['features'].push(v)
+        ret_val['features'].append(v)
         ret_val['total'] += 1
 
     return ret_val
