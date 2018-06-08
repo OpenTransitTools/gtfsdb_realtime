@@ -1,8 +1,16 @@
 
+
+
 def set_coord(vehicle, lat, lon):
     vehicle["properties"]['lat'] = lat
     vehicle["properties"]['lon'] = lon
     vehicle["geometry"]["coordinates"] = [lon, lat]
+
+
+def set_time(vehicle, position):
+    vehicle["properties"]['minutes'] = 111
+    vehicle["properties"]['seconds'] = 111
+    vehicle["properties"]['reportDate'] = "XXX"
 
 
 def make_vehcile(v, i):
@@ -14,19 +22,21 @@ def make_vehcile(v, i):
             "lon": -000.111,
             "lat": 00.111,
             "heading": float(position.bearing),
-            "direction": 1,
 
             # old schedule vars for map
+            "direction": 111, # no equal in gtfsdb-rt (is there a need to /q gtfs route_dir for this??)
             "tripNumber": position.trip_id, #todo int utils safe
             "routeNumber": 1,
             "routeNumberPadded": "001", #todo int utils safe padding
 
             "agencyId": position.agency,
             "stopId": position.stop_id,
+            "stopSequence": position.stop_seq,
             "routeId": position.route_id,
             "tripId": position.trip_id,
             "blockId": position.vehicle_fk,
 
+            "status": position.vehicle_fk,
             "vehicleNumber": v.vehicle_id,
             "destination": position.headsign,
             "minutes": 1,
@@ -39,7 +49,9 @@ def make_vehcile(v, i):
             "coordinates": [-0.111, 0.111]
         }
     }
+
     set_coord(ret_val, float(position.lat), float(position.lon))
+    set_time(ret_val, position)
 
     return ret_val
 
