@@ -9,7 +9,7 @@ def print_alert(alert):
 
 def get_alerts_via_route(args):
     session = get_sessiion(args)
-    from model.alert_entity import AlertEntity
+    from ott.gtfsdb_realtime.model.alert_entity import AlertEntity
     entities = AlertEntity.query_via_route_id(session, args.route_id)
     return entities
 
@@ -17,14 +17,14 @@ def get_alerts_via_route(args):
 def get_alerts_via_stop(args):
     print "\n\nVIA STOP " + args.stop_id
     session = get_sessiion(args)
-    from model.alert_entity import AlertEntity
+    from ott.gtfsdb_realtime.model.alert_entity import AlertEntity
     entities = AlertEntity.query_via_stop_id(session, args.stop_id)
     return entities
 
 
 def get_all_alerts(args):
     ret_val = []
-    from model.alert import Alert
+    from ott.gtfsdb_realtime.model.alert import Alert
     session = get_sessiion(args)
     alerts = session.query(Alert).all()
     for a in alerts:
