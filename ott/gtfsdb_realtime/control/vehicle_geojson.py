@@ -14,7 +14,7 @@ def set_coord(vehicle, lat, lon):
 def set_time(vehicle, position):
     ts = float(position.timestamp)
     t = datetime.datetime.fromtimestamp(ts)
-    pretty_date_time = t.strftime('%Y-%m-%d %I:%M %p')
+    pretty_date_time = t.strftime('%Y-%m-%d %I:%M %p').replace(" 0", " ")
 
     vehicle["properties"]['minutes'] = 111
     vehicle["properties"]['seconds'] = 111
