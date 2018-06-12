@@ -1,4 +1,8 @@
-
+"""
+TODO: in the future, we might want to show vehicles positions both from scheduled (GTFS) and real-time (GTFS-RT) datasets ...
+      in that tobe (todo) world, we should define a single 'vehicle' service with Swagger, autogen the DAOs in OTT's api
+      section, and then use both gtfsdb and gtfsdb_realtime to populate 2 varities of object / service
+"""
 
 
 def set_coord(vehicle, lat, lon):
