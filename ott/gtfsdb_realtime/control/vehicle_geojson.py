@@ -3,7 +3,7 @@ TODO: in the future, we might want to show vehicles positions both from schedule
       in that tobe (todo) world, we should define a single 'vehicle' service with Swagger, autogen the DAOs in OTT's api
       section, and then use both gtfsdb and gtfsdb_realtime to populate 2 varities of object / service
 """
-
+import datetime
 
 def set_coord(vehicle, lat, lon):
     vehicle["properties"]['lat'] = lat
@@ -12,12 +12,19 @@ def set_coord(vehicle, lat, lon):
 
 
 def set_time(vehicle, position):
+    ts = float(position.timestamp)
+    t = datetime.datetime.fromtimestamp(ts)
+    pretty_date_time = t.strftime('%Y-%m-%d %I:%M %p')
+
     vehicle["properties"]['minutes'] = 111
     vehicle["properties"]['seconds'] = 111
-    vehicle["properties"]['reportDate'] = "XXX"
+    vehicle["properties"]['reportDate'] = str(pretty_date_time)
 
 
 def make_vehcile(v, i):
+    """
+    :return:
+    """
     position = v.positions[0]
 
     ret_val = {
@@ -38,7 +45,7 @@ def make_vehcile(v, i):
             "stopSequence": position.stop_seq,
             "routeId": position.route_id,
             "tripId": position.trip_id,
-            "blockId": position.vehicle_fk,
+            "blockId": "TODO ... need to look at gtfsdb",
 
             "status": position.vehicle_fk,
             "vehicleNumber": v.vehicle_id,
