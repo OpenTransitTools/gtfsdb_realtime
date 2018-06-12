@@ -14,10 +14,13 @@ def set_coord(vehicle, lat, lon):
 def set_time(vehicle, position):
     ts = float(position.timestamp)
     t = datetime.datetime.fromtimestamp(ts)
-    pretty_date_time = t.strftime('%Y-%m-%d %I:%M %p').replace(" 0", " ")
+    pretty_date_time = t.strftime('%x %I:%M %p').replace(" 0", " ")
 
-    vehicle["properties"]['minutes'] = 111
-    vehicle["properties"]['seconds'] = 111
+    diff = datetime.datetime.now() - t
+    min_sec_diff = divmod(diff.days * 86400 + diff.seconds, 60)
+
+    vehicle["properties"]['minutes'] = min_sec_diff[0]
+    vehicle["properties"]['seconds'] = min_sec_diff[1]
     vehicle["properties"]['reportDate'] = str(pretty_date_time)
 
 
@@ -79,6 +82,6 @@ def make_response(vehicles):
         v = make_vehcile(v, i)
         ret_val['features'].append(v)
         ret_val['total'] += 1
-        break
+        #break
 
     return ret_val
