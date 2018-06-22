@@ -4,11 +4,20 @@ TODO: in the future, we might want to show vehicles positions both from schedule
       section, and then use both gtfsdb and gtfsdb_realtime to populate 2 varities of object / service
 """
 import datetime
+from ott.utils import geo_utils
 
-def set_coord(vehicle, lat, lon):
-    vehicle["properties"]['lat'] = lat
+def set_coord(vehicle, lat, lon, convert="GOOGLE"):
     vehicle["properties"]['lon'] = lon
-    vehicle["geometry"]["coordinates"] = [lon, lat]
+    vehicle["properties"]['lat'] = lat
+
+    # convert if requested...then set geojson coordinates field
+    x = lon; y = lat
+    if convert == "OSPN":
+        x, y = geo_utils.to_OSPN(lon, lat)
+    if convert == "GOOGLE" or convert == "900913":
+        x, y = geo_utils.to_meters(lon, lat)
+        #x, y = geo_utils.to_900913(lon, lat)
+    vehicle["geometry"]["coordinates"] = [x, y]
 
 
 def set_time(vehicle, position):
