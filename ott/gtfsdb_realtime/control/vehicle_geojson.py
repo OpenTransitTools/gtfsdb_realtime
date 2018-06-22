@@ -6,6 +6,7 @@ TODO: in the future, we might want to show vehicles positions both from schedule
 import datetime
 from ott.utils import geo_utils
 
+
 def set_coord(vehicle, lat, lon, convert="GOOGLE"):
     vehicle["properties"]['lon'] = lon
     vehicle["properties"]['lat'] = lat
@@ -79,8 +80,7 @@ def make_vehcile(v, i):
     return ret_val
 
 
-
-def make_response(vehicles):
+def make_response_as_dict(vehicles):
     ret_val = {
         "success": True,
         "total": 0,
@@ -91,6 +91,16 @@ def make_response(vehicles):
         v = make_vehcile(v, i)
         ret_val['features'].append(v)
         ret_val['total'] += 1
-        #break
 
     return ret_val
+
+
+def make_response_as_json_str(vehicles, pretty):
+    import json
+    json_dict = make_response_as_dict(vehicles)
+    ret_val = json.dumps(json_dict)
+    return ret_val
+
+
+def make_response(vehicles, pretty=True):
+    return make_response_as_json_str(vehicles, pretty)
