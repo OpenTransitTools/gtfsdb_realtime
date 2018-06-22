@@ -1,8 +1,8 @@
 from ott.utils.parse.cmdline import db_cmdline
 from ott.utils.parse.cmdline import gtfs_cmdline
 
-from base import get_sessiion
-from vehicle_geojson import make_response
+from .base import get_sessiion
+from .vehicle_geojson import make_response
 
 
 def query_vehicles(args):

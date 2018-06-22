@@ -1,5 +1,4 @@
 from sqlalchemy import Column, ForeignKey, String, Integer
-from sqlalchemy.orm import relationship, backref
 
 from ott.gtfsdb_realtime.model.base import Base
 
