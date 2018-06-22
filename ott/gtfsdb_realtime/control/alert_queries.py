@@ -4,7 +4,7 @@ from .base import get_sessiion
 
 
 def print_alert(alert):
-    print alert.description_text
+    print(alert.description_text)
 
 
 def get_alerts_via_route(args):
@@ -15,7 +15,7 @@ def get_alerts_via_route(args):
 
 
 def get_alerts_via_stop(args):
-    print "\n\nVIA STOP " + args.stop_id
+    print("\n\nVIA STOP " + args.stop_id)
     session = get_sessiion(args)
     from ott.gtfsdb_realtime.model.alert_entity import AlertEntity
     entities = AlertEntity.query_via_stop_id(session, args.stop_id)
@@ -55,6 +55,6 @@ def get_alerts_cmd():
         msg = "ALL ALERTS"
         entities = get_all_alerts(args)
 
-    print "\n\n", msg, ":"
+    print("\n\n", msg, ":")
     for e in entities:
         print_alert(e.alert)
