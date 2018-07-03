@@ -1,5 +1,7 @@
 from pyramid.config import Configurator
 
+from ott.utils import object_utils
+
 import logging
 log = logging.getLogger(__file__)
 ECHO = True
@@ -27,19 +29,19 @@ def main(global_config, **settings):
 
 
 def olconnect(settings):
-    u = obj.safe_dict_val(settings, 'sqlalchemy.url')
-    s = obj.safe_dict_val(settings, 'sqlalchemy.schema')
-    g = obj.safe_dict_val(settings, 'sqlalchemy.is_geospatial', False)
+    u = object_utils.safe_dict_val(settings, 'sqlalchemy.url')
+    s = object_utils.safe_dict_val(settings, 'sqlalchemy.schema')
+    g = object_utils.safe_dict_val(settings, 'sqlalchemy.is_geospatial', False)
     log.info("Database(url={0}, schema={1}, is_geospatial={2})".format(u, s, g))
     return MyGtfsdb(url=u, schema=s, is_geospatial=g)
 
 
 def pyramid_to_gtfsdb_params(settings):
     global ECHO
-    u = obj.safe_dict_val(settings, 'sqlalchemy.url')
-    s = obj.safe_dict_val(settings, 'sqlalchemy.schema')
-    g = obj.safe_dict_val(settings, 'sqlalchemy.is_geospatial', False)
-    ECHO = obj.safe_dict_val(settings, 'sqlalchemy.echo', False)
+    u = object_utils.safe_dict_val(settings, 'sqlalchemy.url')
+    s = object_utils.safe_dict_val(settings, 'sqlalchemy.schema')
+    g = object_utils.safe_dict_val(settings, 'sqlalchemy.is_geospatial', False)
+    ECHO = object_utils.safe_dict_val(settings, 'sqlalchemy.echo', False)
     return {'url':u, 'schema':s, 'is_geospatial':g}
 
 

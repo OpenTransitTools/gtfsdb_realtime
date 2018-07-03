@@ -9,8 +9,8 @@ log = logging.getLogger(__file__)
 cache_long = 36000  # 10 hours
 cache_short = 600   # 10 minutes
 
-system_err_msg = ServerError()
-data_not_found = DatabaseNotFound()
+#system_err_msg = ServerError()
+#data_not_found = DatabaseNotFound()
 
 # database
 DB = None

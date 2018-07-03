@@ -1,5 +1,4 @@
 import os
-import sys
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -15,9 +14,13 @@ requires = [
     'geojson',
     'gtfs-realtime-bindings',
     'geoalchemy2',
-    'sqlalchemy'
-]
+    'sqlalchemy',
 
+    'pyramid < 1.8',
+    'pyramid_tm',
+    'pyramid_exclog',
+    'waitress',
+]
 
 dev_extras = []
 oracle_extras = ['cx_oracle>=5.1']
@@ -57,6 +60,9 @@ setup(
     install_requires=requires,
     extras_require=extras_require,
     entry_points="""\
+        [paste.app_factory]
+        main = ott.gtfsdb_realtime.pyramid.app:main
+
         [console_scripts]
         gtfsrt-load = ott.gtfsdb_realtime.loader:main
         gtfsrt-get-alerts = ott.gtfsdb_realtime.control.alert_queries:get_alerts_cmd
