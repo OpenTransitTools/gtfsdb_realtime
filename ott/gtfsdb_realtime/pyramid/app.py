@@ -11,7 +11,6 @@ def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
     config = Configurator(settings=settings)
-    db = connect(settings)
 
     # logging config for pserve / wsgi
     if settings and 'logging_config_file' in settings:
@@ -19,11 +18,13 @@ def main(global_config, **settings):
         setup_logging(settings['logging_config_file'])
 
     import views
+    db = None
+    #db = connect(settings)
     views.set_config(settings)
     views.set_db(db)
 
     config.include(views.do_view_config)
-    config.scan('ott.services.pyramid')
+    config.scan('ott.gtfsdb_realtime.pyramid')
 
     return config.make_wsgi_app()
 
