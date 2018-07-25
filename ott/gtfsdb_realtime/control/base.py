@@ -5,6 +5,7 @@ from ott.gtfsdb_realtime.model.database import Database
 # TODO: move these to Database()  ?
 
 def get_session(url, schema=None, is_geospatial=False, create=False):
+    # import pdb; pdb.set_trace()
     session = Database.make_session(url, schema, is_geospatial, create)
     return session
 

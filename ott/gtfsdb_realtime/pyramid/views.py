@@ -4,6 +4,7 @@ from pyramid.view import view_config
 from ott.gtfsdb_realtime.control.alert_queries import get_alerts_via_route
 from ott.gtfsdb_realtime.control.alert_queries import get_alerts_via_stop
 from ott.gtfsdb_realtime.control.vehicle_queries import query_vehicles
+from ott.gtfsdb_realtime.control.vehicle_geojson import make_response
 from ott.utils.svr.pyramid import response_utils
 
 from ott.utils.svr.pyramid.globals import *
@@ -30,7 +31,9 @@ def do_view_config(cfg):
 def all_vehicles(request):
     ret_val = None
     try:
-        ret_val = None
+        vehicles_db = query_vehicles(APP_CONFIG.db)
+        vehicles_geojson = make_response(vehicles_db)
+        ret_val = response_utils.json_response(vehicles_geojson)
     except Exception as e:
         log.warn(e)
     finally:

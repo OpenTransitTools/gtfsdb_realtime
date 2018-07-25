@@ -24,13 +24,15 @@ requires = [
 ]
 
 dev_extras = []
+extras_require = dict(
+    dev=dev_extras
+)
+
 oracle_extras = ['cx_oracle>=5.1']
 postgresql_extras = ['psycopg2>=2.4.2']
 
-extras_require = dict(
-    dev=dev_extras,
-    postgresql=postgresql_extras,
-)
+# NOTE: add pyschopg to requires, else pserve is incomplete
+requires.append(postgresql_extras)
 
 setup(
     name='ott.gtfsdb_realtime',
