@@ -12,8 +12,9 @@ def main(global_config, **config):
     """
     app = AppConfig(**config)
 
-    from ott.gtfsdb_realtime.control.base import make_db_via_config
-    db = make_db_via_config(app.config)
+    from ott.gtfsdb_realtime.model.database import Database
+    u, s, g = app.db_params_from_config()
+    db = Database(u, s, g)
     app.set_db(db)
 
     import views
