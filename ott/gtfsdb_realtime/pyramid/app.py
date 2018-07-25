@@ -12,8 +12,8 @@ def main(global_config, **config):
     """
     app = AppConfig(**config)
 
-    from ott.gtfsdb_realtime.control.base import get_session_via_config
-    db = get_session_via_config(app.config)
+    from ott.gtfsdb_realtime.control.base import make_db_via_config
+    db = make_db_via_config(app.config)
     app.set_db(db)
 
     import views

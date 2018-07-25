@@ -24,6 +24,7 @@ class Database(object):
         event.listen(self.engine, 'connect', Database.connection)
 
         # note ... set these after creating self.engine
+        self.Session = sessionmaker(bind=self.engine)
         self.schema = schema
         self.is_geospatial = is_geospatial
 
@@ -32,14 +33,13 @@ class Database(object):
         Base.metadata.create_all(bind=self.engine)
 
     def get_session(self):
-        Session = sessionmaker(bind=self.engine)
-        session = Session()
+        session = self.Session()
         return session
 
     @classmethod
-    def make_session(cls, url, schema, is_geospatial=False, create_db=False, pool_size=20):
+    def make_session(cls, url, schema, is_geospatial=False, create_db=False):
         if cls.db_singleton is None:
-            cls.db_singleton = Database(url, schema, is_geospatial, pool_size)
+            cls.db_singleton = Database(url, schema, is_geospatial)
             if create_db:
                 cls.db_singleton.create()
         session = cls.db_singleton.get_session()
