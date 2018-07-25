@@ -31,7 +31,7 @@ def do_view_config(cfg):
 def all_vehicles(request):
     ret_val = None
     try:
-        vehicles_db = query_vehicles(APP_CONFIG.db.get_session())
+        vehicles_db = query_vehicles(APP_CONFIG.db.session)
         vehicles_geojson = make_response(vehicles_db)
         ret_val = response_utils.json_response(vehicles_geojson)
     except Exception as e:

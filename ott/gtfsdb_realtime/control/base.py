@@ -15,7 +15,7 @@ def get_session_via_cmdline(args):
 
 
 def get_session_via_config(config):
-    return make_db_via_config(config).get_session()
+    return make_db_via_config(config).session
 
 
 def make_db_via_config(config):

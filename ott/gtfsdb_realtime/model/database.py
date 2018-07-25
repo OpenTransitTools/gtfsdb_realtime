@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, event
 from sqlalchemy.pool import QueuePool
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 from ott.utils import db_utils
 from ott.gtfsdb_realtime.model.base import Base
@@ -24,7 +24,8 @@ class Database(object):
         event.listen(self.engine, 'connect', Database.connection)
 
         # note ... set these after creating self.engine
-        self.Session = sessionmaker(bind=self.engine)
+        self.session_factory = sessionmaker(bind=self.engine)
+        self.Session = scoped_session(self.session_factory)
         self.schema = schema
         self.is_geospatial = is_geospatial
 
@@ -32,7 +33,8 @@ class Database(object):
         Base.metadata.drop_all(bind=self.engine)
         Base.metadata.create_all(bind=self.engine)
 
-    def get_session(self):
+    @property
+    def session(self):
         session = self.Session()
         return session
 
@@ -42,8 +44,7 @@ class Database(object):
             cls.db_singleton = Database(url, schema, is_geospatial)
             if create_db:
                 cls.db_singleton.create()
-        session = cls.db_singleton.get_session()
-        return session
+        return cls.db_singleton.session
 
     @property
     def is_geospatial(self):
