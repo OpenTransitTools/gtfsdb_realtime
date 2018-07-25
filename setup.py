@@ -15,6 +15,7 @@ requires = [
     'gtfs-realtime-bindings',
     'geoalchemy2',
     'sqlalchemy',
+    'zope.sqlalchemy',
 
     'pyramid < 1.8',
     'pyramid_tm',

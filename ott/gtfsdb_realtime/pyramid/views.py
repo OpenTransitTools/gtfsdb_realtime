@@ -1,3 +1,11 @@
+from pyramid.response import Response
+from pyramid.view import view_config
+
+from ott.gtfsdb_realtime.control.alert_queries import get_alerts_via_route
+from ott.gtfsdb_realtime.control.alert_queries import get_alerts_via_stop
+from ott.gtfsdb_realtime.control.vehicle_queries import query_vehicles
+from ott.utils.svr.pyramid import response_utils
+
 from ott.utils.svr.pyramid.globals import *
 
 import logging
@@ -23,8 +31,6 @@ def all_vehicles(request):
     ret_val = None
     try:
         ret_val = None
-    except NoResultFound, e:
-        log.warn(e)
     except Exception as e:
         log.warn(e)
     finally:

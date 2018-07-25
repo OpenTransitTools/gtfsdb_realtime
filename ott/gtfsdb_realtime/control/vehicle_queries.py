@@ -1,18 +1,20 @@
 from ott.utils.parse.cmdline import db_cmdline
 from ott.utils.parse.cmdline import gtfs_cmdline
 
-from .base import get_sessiion
+from .base import get_session_via_cmdline
 from .vehicle_geojson import make_response
 
 
-def query_vehicles(args):
+def query_vehicles(session, routes=None, bbox=None, filter=None):
+    """
+    query the db and return list of vehicles
+    """
     ret_val = []
 
-    """ query the db and return list of vehicles"""
     from ott.gtfsdb_realtime.model.vehicle import Vehicle
-    session = get_sessiion(args)
     vehicles = session.query(Vehicle).all()
     for v in vehicles:
+        # TODO filers....
         ret_val.append(v)
 
     return ret_val
@@ -26,9 +28,10 @@ def get_vehicles_cmd():
     gtfs_cmdline.route_option(parser)
     gtfs_cmdline.stop_option(parser)
     args = parser.parse_args()
+    session = get_session_via_cmdline(args)
 
     # make response objects
-    vehicles = query_vehicles(args)
+    vehicles = query_vehicles(session)
     ret_val = make_response(vehicles)
     return ret_val
 
