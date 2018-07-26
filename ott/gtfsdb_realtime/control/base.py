@@ -2,7 +2,27 @@ from ott.utils import db_utils
 from ott.utils import object_utils
 from ott.gtfsdb_realtime.model.database import Database
 
-# TODO: move these to Database()  ?
+import logging
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__file__)
+
+
+class Base(object):
+    @classmethod
+    def query_all(cls, session, agency_id=None, def_val=[]):
+        log.info("abstract method")
+        return def_val
+
+    @classmethod
+    def query_via_route_id(cls, session, route_id, agency_id=None, def_val=[]):
+        log.info("abstract method")
+        return def_val
+
+    @classmethod
+    def query_via_stop_id(cls, session, stop_id, agency_id=None, def_val=[]):
+        log.info("abstract method")
+        return def_val
+
 
 def get_session(url, schema=None, is_geospatial=False, create=False):
     session = Database.make_session(url, schema, is_geospatial, create)
@@ -19,8 +39,6 @@ def get_session_via_config(config):
 
 
 def make_db_via_config(config):
-    u = object_utils.safe_dict_val(config, 'sqlalchemy.url')
-    s = object_utils.safe_dict_val(config, 'sqlalchemy.schema')
-    g = object_utils.safe_dict_val(config, 'sqlalchemy.is_geospatial', False)
+    u, s, g = db_utils.db_params_from_config(config)
     db = Database(u, s, g)
     return db
