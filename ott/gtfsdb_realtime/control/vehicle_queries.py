@@ -12,9 +12,16 @@ def query_vehicles(session, routes=None, bbox=None, filter=None):
     ret_val = []
 
     from ott.gtfsdb_realtime.model.vehicle import Vehicle
-    vehicles = session.query(Vehicle).all()
+    vehicles = session.query(Vehicle)
+    if routes:
+        vehicles = vehicles.all()
+    elif bbox:
+        vehicles = vehicles.all()
+    vehicles = vehicles.all()
     for v in vehicles:
-        # TODO filers....
+        if filter:
+            # TODO filers....
+            pass
         ret_val.append(v)
 
     return ret_val
