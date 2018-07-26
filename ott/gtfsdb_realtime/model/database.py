@@ -18,14 +18,13 @@ class Database(object):
     """
     db_singleton = None
 
-    def __init__(self, url, schema=None, is_geospatial=False, pool_size=20):
+    def __init__(self, url, schema=None, is_geospatial=False, pool_size=20, session_extenstion=None):
         self.url = url
         self.engine = create_engine(url, poolclass=QueuePool, pool_size=pool_size)
         event.listen(self.engine, 'connect', Database.connection)
 
         # note ... set these after creating self.engine
-        self.session_factory = sessionmaker(bind=self.engine)
-        self.Session = scoped_session(self.session_factory)
+        self._make_session_class(session_extenstion)
         self.schema = schema
         self.is_geospatial = is_geospatial
 
@@ -37,6 +36,15 @@ class Database(object):
     def session(self):
         session = self.Session()
         return session
+
+    def _make_session_class(self, extension=None):
+        """
+        this makes the Session() class ... the extension is for things like
+        :see http://docs.sqlalchemy.org/en/latest/orm/contextual.html?highlight=scoped%20session :
+        :see https://www.programcreek.com/python/example/97518/zope.sqlalchemy.ZopeTransactionExtension :
+        """
+        self.session_factory = sessionmaker(bind=self.engine, extension=extension)
+        self.Session = scoped_session(self.session_factory)
 
     @classmethod
     def make_session(cls, url, schema, is_geospatial=False, create_db=False):
