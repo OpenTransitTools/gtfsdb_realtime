@@ -2,6 +2,7 @@ import datetime
 
 from geoalchemy2 import Geometry
 from sqlalchemy import Column, Index, Integer, Numeric, String, Boolean, DateTime, ForeignKey, ForeignKeyConstraint
+from sqlalchemy.orm import relationship
 
 from ott.gtfsdb_realtime.model.base import Base
 
@@ -21,6 +22,7 @@ class VehiclePosition(Base):
     latest  = Column(Integer, default=1)
 
     vehicle_fk = Column(Integer, nullable=False)
+    vehicle = None
 
     lat = Column(Numeric(12,6), nullable=False)
     lon = Column(Numeric(12,6), nullable=False)

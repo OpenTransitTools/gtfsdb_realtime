@@ -16,37 +16,19 @@ class AlertQueries(Base):
     inverse_sort = True
 
     @classmethod
-    def query_via_route_id(cls, session, route_id, agency_id=None, limit=None, def_val=[]):
-        ret_val = def_val
-        try:
-            q = cls._base_query(session, AlertEntity, route_id, None, agency_id, limit)
-            ret_val = q.all()
-        except Exception as e:
-            log.warn(e)
-        return ret_val
+    def query_via_route_id(cls, session, route_id, agency_id=None, limit=None):
+        return cls._base_query(session, AlertEntity, route_id, None, agency_id, limit)
 
     @classmethod
-    def query_via_stop_id(cls, session, stop_id, agency_id=None, limit=None, def_val=[]):
-        ret_val = def_val
-        try:
-            q = cls._base_query(session, AlertEntity, None, stop_id, agency_id, limit)
-            ret_val = q.all()
-        except Exception as e:
-            log.warn(e)
-        return ret_val
+    def query_via_stop_id(cls, session, stop_id, agency_id=None, limit=None):
+        return cls._base_query(session, AlertEntity, None, stop_id, agency_id, limit)
 
     @classmethod
-    def query_all(cls, session, agency_id=None, limit=None, def_val=[]):
-        ret_val = def_val
-        try:
-            q = cls._base_query(session, AlertEntity, None, None, agency_id, limit)
-            ret_val = q.all()
-        except Exception as e:
-            log.warn(e)
-        return ret_val
+    def query_all(cls, session, agency_id=None, limit=None):
+        return cls._base_query(session, AlertEntity, None, None, agency_id, limit)
 
     @classmethod
-    def unique_alert_entity_sort(cls, alert_entity_list):
+    def unique_sort(cls, alert_entity_list):
         """
         de-duplicate and sort alerts from an entity list
         """
@@ -62,7 +44,7 @@ class AlertQueries(Base):
 
         # step 2: sort trips
         ret_val = alert_hash.values()
-        #lambda ret_val : cls.inverse_sort
+        # ret_val.sort(key=lambda x: x.start, reverse=reverse_sort)
         return ret_val
 
     @classmethod
@@ -102,10 +84,10 @@ def get_alerts_cmd():
             se = a.query_via_stop_id(session, args.stop_id, limit=args.limit)
         entities = ae + se
     else:
-        msg = "ALL ALERTS"
+        msg = "ALL"
         entities = a.query_all(session, limit=args.limit)
 
-    print("\n\n{}:".format(msg))
+    print("\n\n{} ALERTS:".format(msg))
     for i, e in enumerate(entities):
         a.print_alert(i+1, e.alert)
         print("\n")

@@ -6,6 +6,10 @@ TODO: in the future, we might want to show vehicles positions both from schedule
 import datetime
 from ott.utils import geo_utils
 
+import logging
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__file__)
+
 
 def set_coord(vehicle, lat, lon, convert="GOOGLE"):
     vehicle["properties"]['lon'] = lon
@@ -36,9 +40,18 @@ def set_time(vehicle, position):
 
 def make_vehcile(v, i):
     """
-    :return:
+    :return a geojson property map for a vehicle...:
     """
-    position = v.positions[0]
+    # import pdb; pdb.set_trace()
+
+    # note: we might get either Vehicle or Position objects here based on how the query happened
+    #       so we first have to get both the position and the vehicle objects
+    from vehicle_position import VehiclePosition
+    if isinstance(v, VehiclePosition):
+        position = v
+        v = position.vehicle[0]
+    else:
+        position = v.positions[0]
 
     ret_val = {
         "properties": {
@@ -88,9 +101,13 @@ def make_response_as_dict(vehicles):
         "features": []
     }
     for i, v in enumerate(vehicles):
-        v = make_vehcile(v, i)
-        ret_val['features'].append(v)
-        ret_val['total'] += 1
+        try:
+            v = make_vehcile(v, i)
+            ret_val['features'].append(v)
+            ret_val['total'] += 1
+        except Exception as e:
+            log.warn(e)
+            continue
 
     return ret_val
 

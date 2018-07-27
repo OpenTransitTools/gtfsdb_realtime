@@ -20,7 +20,8 @@ class Vehicle(Base):
         'VehiclePosition',
         primaryjoin='Vehicle.vehicle_id == VehiclePosition.vehicle_id',
         foreign_keys='(Vehicle.vehicle_id)',
-        uselist=True, viewonly=True
+        uselist=True, viewonly=True,
+        backref="vehicle"
     )
 
     def __init__(self, agency, vehicle_id, license_plate=None):
