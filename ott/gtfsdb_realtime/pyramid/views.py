@@ -50,11 +50,15 @@ def vehicles_via_stop(request):
 
 
 def _make_vehicle_response(vehicle_query_call):
-    """ util function that wraps various vehicle queries above with boilerplate work to generate the service response """
+    """
+    util function that wraps various vehicle queries above with boilerplate work to generate the service response
+    NOTE: using "lambda: VehicleQueries.x(params...)" above allows me to notate a normal looking function call (complete with params), and
+          then pass it here as a parameter the actual call in line of some other code ... very cool (usually hate lamda / anonymous functions, but...)
+    """
     #import pdb; pdb.set_trace()
     ret_val = None
     try:
-        vehicles_db = vehicle_query_call()
+        vehicles_db = vehicle_query_call() # make call to VehcleQueries.query...() within our try/catch
         vehicles_geojson = VehicleQueries.to_geojson(vehicles_db)
         ret_val = response_utils.json_response(vehicles_geojson)
     except Exception as e:
