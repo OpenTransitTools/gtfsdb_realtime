@@ -15,41 +15,32 @@ class AlertQueries(Base):
     filter_past = True
     inverse_sort = True
 
+
     @classmethod
-    def query_via_route_id(cls, session, route_id, agency_id=None, stop_id=None, def_val=[]):
+    def query_via_route_id(cls, session, route_id, agency_id=None, limit=None, def_val=[]):
         ret_val = def_val
         try:
-            log.info("Alerts via route: {}, agency: {}, stop: {}".format(route_id, agency_id, stop_id))
-            q = session.query(AlertEntity).filter(AlertEntity.route_id == route_id)
-            if agency_id:
-                q = q.filter(AlertEntity.agency == agency_id)
-            if stop_id:
-                q = q.filter(AlertEntity.stop_id == stop_id)
+            q = cls._base_query(session, AlertEntity, route_id, None, agency_id, limit)
             ret_val = q.all()
         except Exception as e:
             log.warn(e)
         return ret_val
 
     @classmethod
-    def query_via_stop_id(cls, session, stop_id, agency_id=None, def_val=[]):
+    def query_via_stop_id(cls, session, stop_id, agency_id=None, limit=None, def_val=[]):
         ret_val = def_val
         try:
-            log.info("Alerts via stop: {0}".format(stop_id))
-            q = session.query(AlertEntity).filter(AlertEntity.stop_id == stop_id)
-            if agency_id:
-                q = q.filter(AlertEntity.agency == agency_id)
+            q = cls._base_query(session, AlertEntity, None, stop_id, agency_id, limit)
             ret_val = q.all()
         except Exception as e:
             log.warn(e)
         return ret_val
 
     @classmethod
-    def query_all(cls, session, agency_id=None, def_val=[]):
+    def query_all(cls, session, agency_id=None, limit=None, def_val=[]):
         ret_val = def_val
         try:
-            q = session.query(AlertEntity)
-            if agency_id:
-                q = q.filter(AlertEntity.agency == agency_id)
+            q = cls._base_query(session, AlertEntity, None, None, agency_id, limit)
             ret_val = q.all()
         except Exception as e:
             log.warn(e)
@@ -76,8 +67,8 @@ class AlertQueries(Base):
         return ret_val
 
     @classmethod
-    def print_alert(cls, alert):
-        print(alert.description_text)
+    def print_alert(cls, index="", alert=None):
+        print("{}: {}".format(index, alert.description_text))
 
 
 def get_alerts_cmd():
@@ -89,8 +80,7 @@ def get_alerts_cmd():
     from .base import get_session_via_cmdline
 
     parser = db_cmdline.db_parser('bin/gtfsrt-get-alerts')
-    gtfs_cmdline.route_option(parser)
-    gtfs_cmdline.stop_option(parser)
+    gtfs_cmdline.simple_stop_route_parser(parser)
     args = parser.parse_args()
     session = get_session_via_cmdline(args)
 
@@ -100,22 +90,23 @@ def get_alerts_cmd():
     a.inverse_sort = False
     print(a.inverse_sort, AlertQueries.inverse_sort)
 
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     msg = "VIA"
     if args.route_id or args.stop_id:
         ae = []
         se = []
         if args.route_id:
             msg += " ROUTES"
-            ae = a.query_via_route_id(session, args.route_id)
+            ae = a.query_via_route_id(session, args.route_id, limit=args.limit)
         if args.stop_id:
             msg += " STOPS"
-            se = a.query_via_stop_id(session, args.stop_id)
+            se = a.query_via_stop_id(session, args.stop_id, limit=args.limit)
         entities = ae + se
     else:
         msg = "ALL ALERTS"
-        entities = a.query_all(session)
+        entities = a.query_all(session, limit=args.limit)
 
     print("\n\n{}:".format(msg))
-    for e in entities:
-        a.print_alert(e.alert)
+    for i, e in enumerate(entities):
+        a.print_alert(i+1, e.alert)
+        print("\n")

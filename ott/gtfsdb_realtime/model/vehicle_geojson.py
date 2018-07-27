@@ -98,7 +98,10 @@ def make_response_as_dict(vehicles):
 def make_response_as_json_str(vehicles, pretty):
     import json
     json_dict = make_response_as_dict(vehicles)
-    ret_val = json.dumps(json_dict)
+    if pretty:
+        ret_val = json.dumps(json_dict, indent=4, sort_keys=True)
+    else:
+        ret_val = json.dumps(json_dict)
     return ret_val
 
 
