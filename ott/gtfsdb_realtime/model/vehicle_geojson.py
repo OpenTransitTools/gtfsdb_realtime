@@ -105,5 +105,5 @@ def make_response_as_json_str(vehicles, pretty):
     return ret_val
 
 
-def make_response(vehicles, pretty=True):
+def make_response(vehicles, pretty=False):
     return make_response_as_json_str(vehicles, pretty)
