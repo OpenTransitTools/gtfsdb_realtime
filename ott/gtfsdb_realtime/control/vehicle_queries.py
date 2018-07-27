@@ -29,6 +29,10 @@ class VehicleQueries(Base):
         return cls._base_query(session, Vehicle, None, None, agency_id, limit)
 
     @classmethod
+    def query_via_route_id(cls, session, route_id, agency_id=None, limit=None):
+        return cls._base_query(session, VehiclePosition, route_id, None, agency_id, limit)
+
+    @classmethod
     def unique_sort(cls, vehicle_list):
         """
         de-duplicate and sort alerts from an entity list
@@ -82,7 +86,9 @@ class VehicleQueries(Base):
 
 def get_vehicles_cmd():
     """
-    bin/gtfsrt-get-vehicles
+    command line query of vehicles.
+    example:
+      bin/gtfsrt-get-vehicles -d loc -s trimet -g -rt "100,75"
     """
     # import pdb; pdb.set_trace()
     parser = db_cmdline.db_parser('bin/gtfsrt-get-vehicles')

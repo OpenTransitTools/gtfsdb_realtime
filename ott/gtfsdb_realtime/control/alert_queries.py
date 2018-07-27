@@ -54,7 +54,9 @@ class AlertQueries(Base):
 
 def get_alerts_cmd():
     """
-    cmdline alerts query function
+    command line query of vehicles.
+    example:
+      bin/gtfsrt-get-alerts -d loc -s trimet -l 5
     """
     from ott.utils.parse.cmdline import db_cmdline
     from ott.utils.parse.cmdline import gtfs_cmdline
