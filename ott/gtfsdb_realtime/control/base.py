@@ -7,10 +7,6 @@ log = logging.getLogger(__file__)
 
 
 class Base(object):
-    @classmethod
-    def query_all(cls, session, agency_id=None, limit=None, def_val=[]):
-        log.info("abstract method")
-        return def_val
 
     @classmethod
     def query_via_route_id(cls, session, route_id, agency_id=None, limit=None, def_val=[]):
@@ -19,6 +15,11 @@ class Base(object):
 
     @classmethod
     def query_via_stop_id(cls, session, stop_id, agency_id=None, limit=None, def_val=[]):
+        log.info("abstract method")
+        return def_val
+
+    @classmethod
+    def query_all(cls, session, agency_id=None, limit=None, def_val=[]):
         log.info("abstract method")
         return def_val
 

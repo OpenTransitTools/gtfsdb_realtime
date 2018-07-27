@@ -15,7 +15,6 @@ class AlertQueries(Base):
     filter_past = True
     inverse_sort = True
 
-
     @classmethod
     def query_via_route_id(cls, session, route_id, agency_id=None, limit=None, def_val=[]):
         ret_val = def_val

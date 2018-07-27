@@ -13,15 +13,15 @@ log = logging.getLogger(__file__)
 class VehicleQueries(Base):
 
     @classmethod
-    def query_via_route_id(cls, session, route_id, agency_id=None, def_val=[]):
+    def query_via_route_id(cls, session, route_id, agency_id=None, limit=None, def_val=[]):
         return def_val
 
     @classmethod
-    def query_via_stop_id(cls, session, stop_id, agency_id=None, def_val=[]):
+    def query_via_stop_id(cls, session, stop_id, agency_id=None, limit=None, def_val=[]):
         return def_val
 
     @classmethod
-    def query_all(cls, session, agency_id=None, limit=500, def_val=[]):
+    def query_all(cls, session, agency_id=None, limit=None, def_val=[]):
         ret_val = def_val
 
         from ott.gtfsdb_realtime.model.vehicle import Vehicle
