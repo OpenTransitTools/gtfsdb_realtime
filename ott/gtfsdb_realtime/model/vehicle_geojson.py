@@ -11,33 +11,6 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
 
 
-def set_coord(vehicle, lat, lon, convert="GOOGLE"):
-    vehicle["properties"]['lon'] = lon
-    vehicle["properties"]['lat'] = lat
-
-    # convert if requested...then set geojson coordinates field
-    x = lon; y = lat
-    if convert == "OSPN":
-        x, y = geo_utils.to_OSPN(lon, lat)
-    if convert == "GOOGLE" or convert == "900913":
-        x, y = geo_utils.to_meters(lon, lat)
-        #x, y = geo_utils.to_900913(lon, lat)
-    vehicle["geometry"]["coordinates"] = [x, y]
-
-
-def set_time(vehicle, position):
-    ts = float(position.timestamp)
-    t = datetime.datetime.fromtimestamp(ts)
-    pretty_date_time = t.strftime('%x %I:%M %p').replace(" 0", " ")
-
-    diff = datetime.datetime.now() - t
-    min_sec_diff = divmod(diff.days * 86400 + diff.seconds, 60)
-
-    vehicle["properties"]['minutes'] = min_sec_diff[0]
-    vehicle["properties"]['seconds'] = min_sec_diff[1]
-    vehicle["properties"]['reportDate'] = str(pretty_date_time)
-
-
 def make_vehcile(v, i):
     """
     :return a geojson property map for a vehicle...:
@@ -64,7 +37,7 @@ def make_vehcile(v, i):
             "direction": 111,  # no equal in gtfsdb-rt (is there a need to /q gtfs route_dir for this??)
             "tripNumber": position.trip_id, #todo int utils safe
             "routeNumber": 1,
-            "routeNumberPadded": "001", #todo int utils safe padding
+            "routeNumberPadded": "001",
 
             "agencyId": position.agency,
             "stopId": position.stop_id,
@@ -87,10 +60,48 @@ def make_vehcile(v, i):
         }
     }
 
-    set_coord(ret_val, float(position.lat), float(position.lon))
-    set_time(ret_val, position)
+    _set_coord(ret_val, float(position.lat), float(position.lon))
+    _set_time(ret_val, position)
+    _set_route_number(ret_val)
 
     return ret_val
+
+
+def _set_coord(vehicle, lat, lon, convert="GOOGLE"):
+    vehicle["properties"]['lon'] = lon
+    vehicle["properties"]['lat'] = lat
+
+    # convert if requested...then set geojson coordinates field
+    x = lon; y = lat
+    if convert == "OSPN":
+        x, y = geo_utils.to_OSPN(lon, lat)
+    if convert == "GOOGLE" or convert == "900913":
+        x, y = geo_utils.to_meters(lon, lat)
+        #x, y = geo_utils.to_900913(lon, lat)
+    vehicle["geometry"]["coordinates"] = [x, y]
+
+
+def _set_time(vehicle, position):
+    ts = float(position.timestamp)
+    t = datetime.datetime.fromtimestamp(ts)
+    pretty_date_time = t.strftime('%x %I:%M %p').replace(" 0", " ")
+
+    diff = datetime.datetime.now() - t
+    min_sec_diff = divmod(diff.days * 86400 + diff.seconds, 60)
+
+    vehicle["properties"]['minutes'] = min_sec_diff[0]
+    vehicle["properties"]['seconds'] = min_sec_diff[1]
+    vehicle["properties"]['reportDate'] = str(pretty_date_time)
+
+
+def _set_route_number(vehicle):
+    try:
+        route_id = vehicle["properties"]['routeId'].strip()
+        vehicle["properties"]['routeNumber'] = route_id
+        vehicle["properties"]['routeNumberPadded'] = route_id.zfill(3)
+        vehicle["properties"]['routeNumber'] = int(route_id) # this could be dicy
+    except:
+        pass
 
 
 def make_response_as_dict(vehicles):
