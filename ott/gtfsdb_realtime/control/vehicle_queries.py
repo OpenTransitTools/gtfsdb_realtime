@@ -84,14 +84,14 @@ class VehicleQueries(Base):
         return ret_val
 
 
-def get_vehicles_cmd():
+def vehicles_command_line():
     """
     command line query of vehicles.
     example:
-      bin/gtfsrt-get-vehicles -d loc -s trimet -g -rt "100,75"
+      bin/gtfsrt-vehicles-cmd -d loc -s trimet -rt "100,75"
     """
     # import pdb; pdb.set_trace()
-    parser = db_cmdline.db_parser('bin/gtfsrt-get-vehicles')
+    parser = db_cmdline.db_parser('bin/gtfsrt-vehicles-cmd')
     gtfs_cmdline.simple_stop_route_parser(parser)
     args = parser.parse_args()
     session = get_session_via_cmdline(args)

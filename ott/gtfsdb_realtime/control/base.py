@@ -74,7 +74,6 @@ class Base(object):
         return ret_val
 
 
-
 def get_session(url, schema=None, is_geospatial=False, create=False):
     session = Database.make_session(url, schema, is_geospatial, create)
     return session

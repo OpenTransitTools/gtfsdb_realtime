@@ -52,17 +52,17 @@ class AlertQueries(Base):
         print("{}: {}".format(index, alert.description_text))
 
 
-def get_alerts_cmd():
+def alerts_command_line():
     """
     command line query of vehicles.
     example:
-      bin/gtfsrt-get-alerts -d loc -s trimet -l 5
+      bin/gtfsrt-alerts-cmd -d loc -s trimet -l 7
     """
     from ott.utils.parse.cmdline import db_cmdline
     from ott.utils.parse.cmdline import gtfs_cmdline
     from .base import get_session_via_cmdline
 
-    parser = db_cmdline.db_parser('bin/gtfsrt-get-alerts')
+    parser = db_cmdline.db_parser('bin/gtfsrt-alerts-cmd')
     gtfs_cmdline.simple_stop_route_parser(parser)
     args = parser.parse_args()
     session = get_session_via_cmdline(args)
