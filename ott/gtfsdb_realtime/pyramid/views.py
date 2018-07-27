@@ -29,7 +29,7 @@ def do_view_config(cfg):
 
 @view_config(route_name='all_vehicles', renderer='json', http_cache=CACHE_SHORT)
 def all_vehicles(request):
-    ret_val = _make_response(lambda: VehicleQueries.query_all(APP_CONFIG.db.session))
+    ret_val = _make_vehicle_response(lambda: VehicleQueries.query_all(APP_CONFIG.db.session))
     return ret_val
 
 
@@ -37,7 +37,7 @@ def all_vehicles(request):
 def vehicles_via_route(request):
     p = RouteParamParser.factory(request)
     r = p.get_route_id("-111")
-    ret_val = _make_response(lambda: VehicleQueries.query_via_route_id(APP_CONFIG.db.session, route_id=r))
+    ret_val = _make_vehicle_response(lambda: VehicleQueries.query_via_route_id(APP_CONFIG.db.session, route_id=r))
     return ret_val
 
 
@@ -45,12 +45,12 @@ def vehicles_via_route(request):
 def vehicles_via_stop(request):
     p = StopParamParser.factory(request)
     s = p.get_stop_id("-111")
-    ret_val = _make_response(lambda: VehicleQueries.query_via_stop_id(APP_CONFIG.db.session, stop_id=s))
+    ret_val = _make_vehicle_response(lambda: VehicleQueries.query_via_stop_id(APP_CONFIG.db.session, stop_id=s))
     return ret_val
 
 
-def _make_response(vehicle_query_call):
-    """ util function that wraps various queries above with boilerplate work to generate the service response """
+def _make_vehicle_response(vehicle_query_call):
+    """ util function that wraps various vehicle queries above with boilerplate work to generate the service response """
     #import pdb; pdb.set_trace()
     ret_val = None
     try:
