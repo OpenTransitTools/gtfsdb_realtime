@@ -8,10 +8,11 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
     'ott.utils',
-    'gtfsdb',
     'argparse',
     'simplejson',
     'geojson',
+
+    'gtfsdb',
     'gtfs-realtime-bindings',
     'geoalchemy2',
     'sqlalchemy',
