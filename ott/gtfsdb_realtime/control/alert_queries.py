@@ -1,6 +1,6 @@
 from ott.gtfsdb_realtime.model.alert_entity import AlertEntity
 
-from base import Base
+from .base import Base
 
 import datetime
 import logging

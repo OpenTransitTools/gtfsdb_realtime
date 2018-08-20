@@ -1,8 +1,8 @@
 from ott.utils.parse.cmdline import db_cmdline
 from ott.utils.parse.cmdline import gtfs_cmdline
 
-from base import get_session_via_cmdline
-from base import Base
+from .base import get_session_via_cmdline
+from .base import Base
 
 from ott.gtfsdb_realtime.model.vehicle import Vehicle
 from ott.gtfsdb_realtime.model.vehicle_position import VehiclePosition
