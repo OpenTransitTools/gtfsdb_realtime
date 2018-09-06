@@ -18,7 +18,7 @@ requires = [
     'sqlalchemy',
     'zope.sqlalchemy',
 
-    'pyramid < 1.8',
+    'pyramid',
     'pyramid_tm',
     'pyramid_exclog',
     'waitress',
