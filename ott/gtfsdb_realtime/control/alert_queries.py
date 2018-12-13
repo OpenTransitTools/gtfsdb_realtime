@@ -64,7 +64,6 @@ def alerts_command_line():
 
     parser = db_cmdline.db_parser('bin/gtfsrt-alerts-cmd')
     gtfs_cmdline.simple_stop_route_parser(parser)
-    args = parser.parse_args()
     session = get_session_via_cmdline(args)
 
     ## NOTE: fun little test of casting a Base class in an object to a child
