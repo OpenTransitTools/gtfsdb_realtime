@@ -33,3 +33,7 @@ Run TriMet example:
 1. get a TriMet api key: http://developer.trimet.org/appid/registration/
 1. bin/gtfsdb-rt-loader -a TRIMET -d postgresql+psycopg2://ott@127.0.0.1:5432/ott --api_key <trimet api key> -c ### NOTE: create rt_ tables and populate all services
 1. bin/gtfsdb-rt-loader -a TRIMET -d postgresql+psycopg2://ott@127.0.0.1:5432/ott --api_key <trimet api key> -t None -v null ### NOTE: just update the Alerts data (skip trip and vehicle updates)
+
+
+TODO: to get the route_short_names into the db right now (for alerts), have to run -c (create tables) 
+cd ~/loader; bin/gtfsrt-load -d loc -a trimet -ak B393B2CE96A258A72BAB481CA -turl null -c
