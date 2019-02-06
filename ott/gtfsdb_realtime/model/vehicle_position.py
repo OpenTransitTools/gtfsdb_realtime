@@ -5,6 +5,7 @@ from sqlalchemy import Column, Index, Integer, Numeric, String, Boolean, DateTim
 from sqlalchemy.orm import relationship
 
 from ott.gtfsdb_realtime.model.base import Base
+from gtfsdb import Trip
 
 
 class VehiclePosition(Base):
@@ -31,12 +32,16 @@ class VehiclePosition(Base):
     speed = Column(Numeric)
 
     vehicle_id = Column(String)
-    headsign  = Column(String)
-    trip_id   = Column(String)
-    route_id  = Column(String)
-    stop_id   = Column(String)
-    stop_seq  = Column(Integer)
-    status    = Column(String)
+    headsign = Column(String)
+    trip_id = Column(String)
+    block_id = Column(String)
+    route_id = Column(String)
+    direction_id = Column(String)
+    service_id = Column(String)
+    shape_id = Column(String)
+    stop_id = Column(String)
+    stop_seq = Column(Integer)
+    status = Column(String)
     timestamp = Column(String)
 
     @classmethod
@@ -73,6 +78,18 @@ class VehiclePosition(Base):
         self.stop_seq = data.current_stop_sequence
         self.status = data.VehicleStopStatus.Name(data.current_status)
         self.timestamp = data.timestamp
+
+    def add_trip_details(self, session):
+        #import pdb; pdb.set_trace()
+        try:
+            trip = Trip.query_trip(session, self.trip_id)
+            if trip:
+                self.direction_id = trip.direction_id
+                self.block_id = trip.block_id
+                self.service_id = trip.service_id
+                self.shape_id = trip.shape_id
+        except:
+            pass
 
     @classmethod
     def clear_latest_column(cls, session, agency=''):

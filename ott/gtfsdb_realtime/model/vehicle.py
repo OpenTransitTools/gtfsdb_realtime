@@ -94,6 +94,26 @@ class Vehicle(Base):
 
         return ret_val
 
+    @classmethod
+    def query_position(cls, session, vehicle_id, time_span):
+        # step 1: get position object from db ...criteria is to find last position
+        #          update within an hour, and the car hasn't moved lat,lon
+        hours_ago = datetime.datetime.now() - datetime.timedelta(hours=time_span)
+        ret_val = None
+        try:
+            q = session.query(VehiclePosition).filter(
+                and_(
+                    VehiclePosition.vehicle_fk == vehicle_id,
+                    VehiclePosition.updated >= hours_ago,
+                    VehiclePosition.lat == lat,
+                    VehiclePosition.lon == lon,
+                )
+            )
+            ret_val = q.first()
+        except Exception as err:
+            log.exception(err)
+        return ret_val
+
     def update_position(self, session, agency, data, time_span=144):
         """ query the db for a position for this vehicle ... if the vehicle appears to be parked in the
             same place as an earlier update, update the 
@@ -104,22 +124,9 @@ class Vehicle(Base):
         lat = round(data.position.latitude,  6)
         lon = round(data.position.longitude, 6)
 
-        # step 1: get position object from db ...criteria is to find last position 
-        #          update within an hour, and the car hasn't moved lat,lon
-        hours_ago = datetime.datetime.now() - datetime.timedelta(hours=time_span)
+        # step 1: query existing position
         p = None
-        try:
-            q = session.query(VehiclePosition).filter(
-                and_(
-                    VehiclePosition.vehicle_fk == self.id,
-                    VehiclePosition.updated >= hours_ago,
-                    VehiclePosition.lat == lat,
-                    VehiclePosition.lon == lon,
-                )
-            )
-            p = q.first()
-        except Exception as err:
-            log.exception(err)
+        #p = self.query_position(session, self.id, time_span)
 
         # step 2: we didn't find an existing position in the Position history table, so add a new one
         try:
@@ -128,6 +135,7 @@ class Vehicle(Base):
                 p.vehicle_fk = self.id
                 p.agency = agency
                 p.set_attributes(data)
+                p.add_trip_details(session)
                 p.set_position(lat, lon)
                 session.add(p)
             else:

@@ -34,8 +34,7 @@ def make_vehcile(v, i):
             "heading": float(position.bearing),
 
             # old schedule vars for map
-            "direction": 111,  # no equal in gtfsdb-rt (is there a need to /q gtfs route_dir for this??)
-            "tripNumber": position.trip_id, #todo int utils safe
+            "tripNumber": position.trip_id,
             "routeNumber": 1,
             "routeNumberPadded": "001",
 
@@ -44,9 +43,11 @@ def make_vehcile(v, i):
             "stopSequence": position.stop_seq,
             "routeId": position.route_id,
             "tripId": position.trip_id,
-            "blockId": "TODO ... need to look at gtfsdb",
+            "shapeId": position.shape_id,
+            "directionId": position.direction_id,
+            "blockId": position.block_id,
 
-            "status": position.vehicle_fk,
+            "status": position.status,
             "vehicleNumber": v.vehicle_id,
             "destination": position.headsign,
             "minutes": 1,
