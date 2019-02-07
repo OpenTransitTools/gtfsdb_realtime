@@ -80,7 +80,7 @@ class VehiclePosition(Base):
         self.timestamp = data.timestamp
 
     def add_trip_details(self, session):
-        #import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         try:
             trip = Trip.query_trip(session, self.trip_id)
             if trip:
