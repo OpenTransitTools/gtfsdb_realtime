@@ -82,7 +82,10 @@ def get_session(url, schema=None, is_geospatial=False, create=False):
 def get_session_via_cmdline(args):
     #import pdb; pdb.set_trace()
     url = db_utils.check_localhost(args.database_url)
-    schema = args.agency_id if args.agency_id else args.schema
+    if args.schema:
+        schema = args.schema
+    else:
+        schema = args.agency_id.lower() if args.agency_id else None
     return get_session(url, schema, args.is_geospatial, args.create)
 
 
