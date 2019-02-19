@@ -92,7 +92,7 @@ def vehicles_command_line():
     """
     # import pdb; pdb.set_trace()
     parser = db_cmdline.db_parser('bin/gtfsrt-vehicles-cmd')
-    gtfs_cmdline.simple_stop_route_parser(parser)
+    args = gtfs_cmdline.simple_stop_route_parser(parser)
     session = get_session_via_cmdline(args)
 
     msg = "VIA"
