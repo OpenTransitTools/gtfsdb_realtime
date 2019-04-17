@@ -2,9 +2,11 @@ from ott.gtfsdb_realtime.model.database import Database
 from ott.gtfsdb_realtime.model.base import Base
 
 from ott.utils.parse.cmdline import gtfs_cmdline
+from ott.utils.parse.cmdline import db_cmdline
 from ott.utils import string_utils
 from ott.utils import db_utils
 from ott.utils import gtfs_utils
+from ott.utils.config_util import ConfigUtil
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -96,7 +98,7 @@ def store_feed(session, agency_id, feed_type, feed, clear_tables_first):
     return ret_val
 
 
-def load_feeds_via_config(feed, db_url, is_geospatial=True, create_db=False):
+def load_feeds_via_config(feed, db_url, do_trips=True, do_alerts=True, do_vehicles=True, is_geospatial=True, create_db=False):
     """
     insert a GTFS feed into configured db
     """
@@ -107,9 +109,9 @@ def load_feeds_via_config(feed, db_url, is_geospatial=True, create_db=False):
     schema = feed.get('schema', agency_id.lower())
 
     # step 2: get urls to this feed's
-    trips_url = gtfs_utils.get_realtime_trips_url(feed)
-    alerts_url = gtfs_utils.get_realtime_alerts_url(feed)
-    vehicles_url = gtfs_utils.get_realtime_vehicles_url(feed)
+    trips_url = gtfs_utils.get_realtime_trips_url(feed) if do_trips else None
+    alerts_url = gtfs_utils.get_realtime_alerts_url(feed) if do_alerts else None
+    vehicles_url = gtfs_utils.get_realtime_vehicles_url(feed) if do_vehicles else None
 
     # step 3: load them there gtfs-rt feeds
     try:
@@ -123,10 +125,22 @@ def load_feeds_via_config(feed, db_url, is_geospatial=True, create_db=False):
     return ret_val
 
 
+def load_vehicles(section='gtfs_realtime'):
+    """
+    insert a GTFS feed into configured db
+    """
+    args = db_cmdline.db_parser('bin/gtfsrt-vehicles-load', do_parse=True, url_required=False)
+    config = ConfigUtil.factory(section=section)
+    feed = config.get_json('feeds')[0]
+    url = config.get('db_url')
+    return load_feeds_via_config(feed, url, do_trips=False, do_alerts=False, create_db=args.create)
+
+
 def load_feeds_via_cmdline():
     """ this main() function will call TriMet's GTFS-RT apis by default (as and example of how to load the system) """
     # import pdb; pdb.set_trace()
-    args = gtfs_cmdline.gtfs_rt_parser(api_key_required=True, api_key_msg="Get a TriMet API Key at http://developer.trimet.org/appid/registration")
+    args = gtfs_cmdline.gtfs_rt_parser(api_key_required=True,
+                                       api_key_msg="Get a TriMet API Key at http://developer.trimet.org/appid/registration")
 
     schema = string_utils.get_val(args.schema, args.agency_id.lower())
     url = db_utils.check_localhost(args.database_url)
