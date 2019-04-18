@@ -8,6 +8,7 @@ from ott.utils import db_utils
 from ott.utils import gtfs_utils
 from ott.utils.config_util import ConfigUtil
 
+import time
 import logging
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
@@ -34,6 +35,16 @@ def load_agency_feeds(session, agency_id, alerts_url=None, trips_url=None, vehic
         if not r:
             ret_val = False
 
+        """
+        #debug work ... tbd sub-1 minute db population
+        for x in range(0, 11):
+            s = time.time()
+            r = load_gtfsrt_feed(session, agency_id, vehicles_url)
+            e = time.time()
+            import pdb; pdb.set_trace()
+            log.warning("secs to update: {}".format(e - s))
+            time.sleep(2);
+        """
     return ret_val
 
 
@@ -138,7 +149,6 @@ def load_vehicles(section='gtfs_realtime'):
 
 def load_feeds_via_cmdline():
     """ this main() function will call TriMet's GTFS-RT apis by default (as and example of how to load the system) """
-    # import pdb; pdb.set_trace()
     args = gtfs_cmdline.gtfs_rt_parser(api_key_required=True,
                                        api_key_msg="Get a TriMet API Key at http://developer.trimet.org/appid/registration")
 
