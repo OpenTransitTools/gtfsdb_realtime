@@ -1,7 +1,6 @@
 from ott.utils.parse.cmdline import db_cmdline
 from ott.utils.parse.cmdline import gtfs_cmdline
 
-from .base import get_session_via_cmdline
 from .base import Base
 
 from ott.gtfsdb_realtime.model.vehicle import Vehicle
@@ -84,10 +83,18 @@ def vehicles_command_line():
     example:
       bin/gtfsrt-vehicles-cmd -d loc -s trimet -rt "100,75"
     """
-    # import pdb; pdb.set_trace()
     parser = db_cmdline.db_parser('bin/gtfsrt-vehicles-cmd')
     args = gtfs_cmdline.simple_stop_route_parser(parser)
-    session = get_session_via_cmdline(args)
+
+    #import pdb; pdb.set_trace()
+    if args.database_url == 'C' or args.database_url == 'CONFIG':
+        from .base import get_session_via_config
+        from ott.utils.config_util import ConfigUtil
+        config = ConfigUtil.factory(section='gtfs_realtime')
+        session = get_session_via_config(config)
+    else:
+        from .base import get_session_via_cmdline
+        session = get_session_via_cmdline(args)
 
     msg = "VIA"
     vehicles = []
