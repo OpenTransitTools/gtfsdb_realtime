@@ -7,6 +7,9 @@ from sqlalchemy.orm import relationship
 from ott.gtfsdb_realtime.model.base import Base
 from gtfsdb import Trip
 
+import logging
+log = logging.getLogger(__file__)
+
 
 class VehiclePosition(Base):
     """ holds a history of the coordinates of a vehicle...
@@ -82,14 +85,16 @@ class VehiclePosition(Base):
     def add_trip_details(self, session):
         # import pdb; pdb.set_trace()
         try:
-            trip = Trip.query_trip(session, self.trip_id)
-            if trip:
-                self.direction_id = trip.direction_id
-                self.block_id = trip.block_id
-                self.service_id = trip.service_id
-                self.shape_id = trip.shape_id
-        except:
-            pass
+            if self.trip_id:
+                trip = Trip.query_trip(session, self.trip_id)
+                if trip:
+                    self.direction_id = trip.direction_id
+                    self.block_id = trip.block_id
+                    self.service_id = trip.service_id
+                    self.shape_id = trip.shape_id
+        except Exception as e:
+            log.warning("trip_id '{}' not in the GTFS (things OUT of DATE???)".format(self.trip_id))
+            session.rollback()
 
     @classmethod
     def clear_latest_column(cls, session, agency=''):
