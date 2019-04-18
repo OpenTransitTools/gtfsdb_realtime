@@ -6,7 +6,6 @@ from .base import Base
 
 from ott.gtfsdb_realtime.model.vehicle import Vehicle
 from ott.gtfsdb_realtime.model.vehicle_position import VehiclePosition
-from ott.gtfsdb_realtime.model.vehicle_geojson import make_response
 
 import datetime
 import logging
@@ -78,11 +77,6 @@ class VehicleQueries(Base):
 
         return ret_val
 
-    @classmethod
-    def to_geojson(cls, vehicles, pretty=False):
-        ret_val = make_response(vehicles, pretty)
-        return ret_val
-
 
 def vehicles_command_line():
     """
@@ -112,6 +106,6 @@ def vehicles_command_line():
         vehicles = VehicleQueries.query_all(session, limit=args.limit)
 
     vehicles = VehicleQueries.unique_sort(vehicles)
-    ret_val = VehicleQueries.to_geojson(vehicles, pretty=True)
+    ret_val = vehicles
     return ret_val
 
