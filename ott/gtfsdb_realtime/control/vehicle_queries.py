@@ -119,8 +119,8 @@ def vehicles_command_line():
         from ott.gtfsdb_realtime.model.response.vehicle_geojson import make_response
         ret_val = make_response(vehicles, pretty=True)
     elif args.json:
-        from ott.gtfsdb_realtime.model.response.vehicle_list import make_response
-        ret_val = make_response(vehicles, pretty=True)
+        from ott.gtfsdb_realtime.model.response.vehicle_list import VehicleListResponse
+        ret_val = VehicleListResponse.make_response(vehicles, pretty=True)
 
     return ret_val
 

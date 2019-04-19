@@ -42,7 +42,7 @@ class Vehicle(object):
     def __init__(self, vehicle, index):
         self.make_vehicle_record(vehicle, index)
 
-    def make_vehicle_record(self, v, i):
+    def make_vehicle_record(self, v, i, agency='trimet'):
         """
         :return a vehicle record
         """
@@ -50,7 +50,7 @@ class Vehicle(object):
 
         # note: we might get either Vehicle or Position objects here based on how the query happened
         #       so we first have to get both the position and the vehicle objects
-        from vehicle_position import VehiclePosition
+        from ..vehicle_position import VehiclePosition
         if isinstance(v, VehiclePosition):
             position = v
             v = position.vehicle[0]
@@ -58,7 +58,7 @@ class Vehicle(object):
             position = v.positions[0]
 
         self.rec = {
-            "~unique-id~": str(i),
+            "id": "{}-{}".format(v.vehicle_id, agency),
             "lon": -000.111,
             "lat": 000.111,
             "heading": float(position.bearing),
@@ -78,24 +78,19 @@ class Vehicle(object):
             "seconds": 0,
             "reportDate": "11.11.2111 11:11 pm"
         }
-        cls.set_coord(float(position.lat), float(position.lon))
-        cls.set_time(position)
+        self.set_coord(float(position.lat), float(position.lon))
+        self.set_time(float(position.timestamp))
 
     def set_coord(self, lat, lon):
-        self.rec.set('lat', lat)
-        self.rec.set('lon', lon)
+        self.rec['lat'] = lat
+        self.rec['lon'] = lon
 
-    def set_time(cls, vehicle, position):
-        ts = float(position.timestamp)
-        t = datetime.datetime.fromtimestamp(ts)
+    def set_time(self, time_stamp):
+        t = datetime.datetime.fromtimestamp(time_stamp)
         pretty_date_time = t.strftime('%x %I:%M %p').replace(" 0", " ")
-
         diff = datetime.datetime.now() - t
-        min_sec_diff = divmod(diff.days * 86400 + diff.seconds, 60)
-
-        vehicle["properties"]['minutes'] = min_sec_diff[0]
-        vehicle["properties"]['seconds'] = min_sec_diff[1]
-        vehicle["properties"]['reportDate'] = str(pretty_date_time)
+        self.rec['seconds'] = diff.seconds
+        self.rec['reportDate'] = str(pretty_date_time)
 
 
 class VehicleListResponse(object):
@@ -103,5 +98,10 @@ class VehicleListResponse(object):
 
     def __init__(self, vehicles):
         for i, v in enumerate(vehicles):
-            v = Vehcile(v, i)
-            self.records.push(v)
+            v = Vehicle(v, i)
+            self.records.append(v)
+
+    @classmethod
+    def make_response(cls, vehicles, pretty=True):
+        vl = VehicleListResponse(vehicles)
+        return vl.records
