@@ -3,6 +3,8 @@ this response format is one that is modeled after the stop and route responses f
 OTP doesn't have vehicle data, but I wanted to model this rt vehicle response on OTP TI, so that
 it fits with a style of services from that system
 """
+from .base import Base
+
 import datetime
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -42,7 +44,7 @@ class Vehicle(object):
     def __init__(self, vehicle, index):
         self.make_vehicle_record(vehicle, index)
 
-    def make_vehicle_record(self, v, i, agency='trimet'):
+    def make_vehicle_record(self, v, i):
         """
         :return a vehicle record
         """
@@ -58,7 +60,7 @@ class Vehicle(object):
             position = v.positions[0]
 
         self.rec = {
-            "id": "{}-{}".format(v.vehicle_id, agency),
+            "id": "{}-{}".format(v.vehicle_id, position.agency),
             "lon": -000.111,
             "lat": 000.111,
             "heading": float(position.bearing),
@@ -93,15 +95,15 @@ class Vehicle(object):
         self.rec['reportDate'] = str(pretty_date_time)
 
 
-class VehicleListResponse(object):
-    records = []
+class VehicleListResponse(Base):
 
     def __init__(self, vehicles):
         for i, v in enumerate(vehicles):
             v = Vehicle(v, i)
-            self.records.append(v)
+            self.records.append(v.rec)
 
     @classmethod
     def make_response(cls, vehicles, pretty=True):
         vl = VehicleListResponse(vehicles)
-        return vl.records
+        ret_val = vl.make_json_response(pretty)
+        return ret_val
