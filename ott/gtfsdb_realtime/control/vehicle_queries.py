@@ -84,6 +84,7 @@ def vehicles_command_line():
       bin/gtfsrt-vehicles-cmd -d loc -s trimet -rt "100,75"
     """
     parser = db_cmdline.db_parser('bin/gtfsrt-vehicles-cmd')
+    parser = gtfs_cmdline.output_format(parser, detailed=True)
     args = gtfs_cmdline.simple_stop_route_parser(parser)
 
     #import pdb; pdb.set_trace()
@@ -114,5 +115,12 @@ def vehicles_command_line():
 
     vehicles = VehicleQueries.unique_sort(vehicles)
     ret_val = vehicles
+    if args.geojson:
+        from ott.gtfsdb_realtime.model.response.vehicle_geojson import make_response
+        ret_val = make_response(vehicles, pretty=True)
+    elif args.json:
+        from ott.gtfsdb_realtime.model.response.vehicle_list import make_response
+        ret_val = make_response(vehicles, pretty=True)
+
     return ret_val
 
