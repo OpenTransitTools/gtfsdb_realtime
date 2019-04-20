@@ -53,6 +53,7 @@ def load_gtfsrt_feed(session, agency_id, feed_url, clear_tables_first=True):
     this is a main entry for loading a single GTFS-RT feed
     the logic here will grab a GTFS-RT feed, and store it in a database
     """
+    #import pdb; pdb.set_trace()
     feed = grab_feed(feed_url)
     feed_type = Base.get_feed_type(feed)
     if feed_type:
@@ -109,6 +110,17 @@ def store_feed(session, agency_id, feed_type, feed, clear_tables_first):
     return ret_val
 
 
+def load_vehicles(section='gtfs_realtime'):
+    """
+    insert a GTFS feed into configured db
+    """
+    args = db_cmdline.db_parser('bin/gtfsrt-vehicles-load', do_parse=True, url_required=False)
+    config = ConfigUtil.factory(section=section)
+    feed = config.get_json('feeds')[0]
+    url = config.get('db_url')
+    return load_feeds_via_config(feed, url, do_trips=False, do_alerts=False, create_db=args.create)
+
+
 def load_feeds_via_config(feed, db_url, do_trips=True, do_alerts=True, do_vehicles=True, is_geospatial=True, create_db=False):
     """
     insert a GTFS feed into configured db
@@ -136,17 +148,6 @@ def load_feeds_via_config(feed, db_url, do_trips=True, do_alerts=True, do_vehicl
     return ret_val
 
 
-def load_vehicles(section='gtfs_realtime'):
-    """
-    insert a GTFS feed into configured db
-    """
-    args = db_cmdline.db_parser('bin/gtfsrt-vehicles-load', do_parse=True, url_required=False)
-    config = ConfigUtil.factory(section=section)
-    feed = config.get_json('feeds')[0]
-    url = config.get('db_url')
-    return load_feeds_via_config(feed, url, do_trips=False, do_alerts=False, create_db=args.create)
-
-
 def load_feeds_via_cmdline():
     """ this main() function will call TriMet's GTFS-RT apis by default (as and example of how to load the system) """
     args = gtfs_cmdline.gtfs_rt_parser(api_key_required=True,
@@ -155,8 +156,6 @@ def load_feeds_via_cmdline():
     schema = string_utils.get_val(args.schema, args.agency_id.lower())
     url = db_utils.check_localhost(args.database_url)
     session = Database.make_session(url, schema, args.is_geospatial, args.create)
-    import gtfsdb
-    gtfsdb.Database.prep_gtfsdb_model_classes(schema, args.is_geospatial)
 
     api_key = string_utils.get_val(args.api_key, '<your key here>')
     aurl = string_utils.get_val(args.alerts_url, 'http://developer.trimet.org/ws/V1/FeedSpecAlerts/includeFuture/true/appId/' + api_key)

@@ -86,7 +86,7 @@ class VehiclePosition(Base):
         # import pdb; pdb.set_trace()
         try:
             if self.trip_id:
-                trip = Trip.query_trip(session, self.trip_id, self.get_schema())
+                trip = Trip.query_trip(session, self.trip_id)
                 if trip:
                     self.direction_id = trip.direction_id
                     self.block_id = trip.block_id

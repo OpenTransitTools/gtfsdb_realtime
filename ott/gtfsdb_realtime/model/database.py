@@ -47,11 +47,14 @@ class Database(object):
         self.Session = scoped_session(self.session_factory)
 
     @classmethod
-    def make_session(cls, url, schema, is_geospatial=False, create_db=False):
+    def make_session(cls, url, schema, is_geospatial=False, create_db=False, prep_gtfsdb=True):
         if cls.db_singleton is None:
             cls.db_singleton = Database(url, schema, is_geospatial)
             if create_db:
                 cls.db_singleton.create()
+            if prep_gtfsdb:
+                import gtfsdb
+                gtfsdb.Database.prep_gtfsdb_model_classes(schema, is_geospatial)
         return cls.db_singleton.session
 
     @property
