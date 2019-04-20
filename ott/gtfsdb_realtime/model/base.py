@@ -145,6 +145,14 @@ class _Base(object):
             c.set_schema(schema)
 
     @classmethod
+    def get_schema(cls, def_val=None):
+        ret_val = def_val
+        if hasattr(cls, '__table__'):
+            ret_val = cls.__table__.schema
+        return ret_val
+
+
+    @classmethod
     def set_geometry(cls, is_geospatial=False):
         if is_geospatial:
             if hasattr(cls, 'add_geometry_column'):
