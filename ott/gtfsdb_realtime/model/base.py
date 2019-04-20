@@ -151,7 +151,6 @@ class _Base(object):
             ret_val = cls.__table__.schema
         return ret_val
 
-
     @classmethod
     def set_geometry(cls, is_geospatial=False):
         if is_geospatial:
@@ -161,5 +160,6 @@ class _Base(object):
             # bit of recursion to hit sub classes
             for c in cls.__subclasses__():
                 c.set_geometry(is_geospatial)
+
 
 Base = declarative_base(cls=_Base)

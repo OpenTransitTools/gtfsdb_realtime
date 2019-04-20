@@ -89,6 +89,18 @@ class Vehicle(object):
             ret_val = True
         return ret_val
 
+    def merge(self, other_vehicle):
+        new_id = self.rec['id'] if self.rec['id'] < other_vehicle.rec['id'] else other_vehicle.rec['id']
+        new_vehicle_id = "{}+{}".format(self.rec['vehicleId'], other_vehicle.rec['vehicleId'])
+
+        # step 1: use other record if newer than my record
+        if other_vehicle.rec['seconds'] < self.rec['seconds']:
+            self.rec = other_vehicle.rec
+
+        # step 2: re-label the vehicle id with a concat of the labels
+        self.rec['id'] = new_id
+        self.rec['vehicleId'] = new_vehicle_id
+
 
 class VehicleListResponse(Base):
 

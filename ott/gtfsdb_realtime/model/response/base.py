@@ -24,19 +24,21 @@ class Base(object):
             # step 1: sort vehicle records based on block id
             self.records.sort(key=lambda v: v.rec['blockId'], reverse=False)
 
+            # import pdb; pdb.set_trace()
+
             new_list = []
-            num_vehicles = len(vehicle_list)
-            for i, v in enumerate(vehicle_list):
+            num_vehicles = len(self.records)
+            for i, v in enumerate(self.records):
                 # step 2: cull any vehicles where position does not have valid coords
-                if v.lat is None or v.lat == 0.0 or v.lon is None or v.lon == 0.0:
+                if v.rec['lat'] is None or v.rec['lat'] == 0.0 or v.rec['lon'] is None or v.rec['lon'] == 0.0:
                     continue
+
 
                 # step 3: cull/merge vehicles on same block
                 if i+1 < num_vehicles:
-                    next_v = vehicle_list[i+1]
-                    if next_v and next_v.rec['blockId'] in v.rec['blockId']:
-                        # step 3b: merge records of vehicles on same block
-                        next_v.rec['blockId'] = "{}-{}".format(next_v.rec['blockId'], v.rec['blockId'])
+                    next_v = self.records[i+1]
+                    if next_v and next_v.rec['blockId'] == v.rec['blockId']:
+                        next_v.merge(v)
                         continue
 
                 # step N: add to new list
