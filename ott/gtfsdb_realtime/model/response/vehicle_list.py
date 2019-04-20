@@ -59,9 +59,10 @@ class Vehicle(object):
             "agencyId": position.agency,
             "routeId": position.route_id,
             "tripId": position.trip_id,
-            "shapeId": position.shape_id,
             "directionId": position.direction_id,
+            "serviceId": position.service_id,
             "blockId": position.block_id,
+            "shapeId": position.shape_id,
             "stopId": position.stop_id,
             "stopSequence": position.stop_seq,
 
@@ -105,7 +106,7 @@ class Vehicle(object):
 class VehicleListResponse(Base):
 
     def __init__(self, vehicles):
-        # import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         for i, v in enumerate(vehicles):
             v, p = self.get_position(v)
             v = Vehicle(v, p)
