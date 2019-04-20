@@ -35,7 +35,7 @@ class Base(object):
         return def_val
 
     @classmethod
-    def _base_query(cls, session, rt_clazz, route_id, stop_id, agency_id, limit, execute=True, def_val=[]):
+    def _base_query(cls, session, rt_clazz, route_id, stop_id, agency_id, limit, order_by=None, execute=True, def_val=[]):
         """
         generic query routine for alerts and vehicles
         """
@@ -59,6 +59,8 @@ class Base(object):
                     q = q.filter(rt_clazz.stop_id == stop_id)
             if agency_id:
                 q = q.filter(rt_clazz.agency == agency_id)
+            if order_by:
+                q = q.order_by(order_by)
 
             # run the query (by default) or return the query for more filtering...
             if execute:

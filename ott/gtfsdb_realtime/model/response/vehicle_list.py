@@ -44,27 +44,17 @@ class Vehicle(object):
     def __init__(self, vehicle, index):
         self.make_vehicle_record(vehicle, index)
 
-    def make_vehicle_record(self, v, i):
+    def make_vehicle_record(self, vehicle, position):
         """
         :return a vehicle record
         """
         # import pdb; pdb.set_trace()
-
-        # note: we might get either Vehicle or Position objects here based on how the query happened
-        #       so we first have to get both the position and the vehicle objects
-        from ..vehicle_position import VehiclePosition
-        if isinstance(v, VehiclePosition):
-            position = v
-            v = position.vehicle[0]
-        else:
-            position = v.positions[0]
-
         self.rec = {
-            "id": "{}-{}".format(v.vehicle_id, position.agency),
+            "id": "{}-{}".format(vehicle.vehicle_id, position.agency),
             "lon": -000.111,
             "lat": 000.111,
             "heading": float(position.bearing),
-            "vehicleId": v.vehicle_id,
+            "vehicleId": vehicle.vehicle_id,
             "destination": position.headsign,
 
             "agencyId": position.agency,
@@ -94,13 +84,24 @@ class Vehicle(object):
         self.rec['seconds'] = diff.seconds
         self.rec['reportDate'] = str(pretty_date_time)
 
+    def is_same_block(self, block_id):
+        ret_val = False
+        if len(self.rec['blockId']) > 0 and self.rec['blockId'] == block_id:
+            ret_val = True
+        return ret_val
+
 
 class VehicleListResponse(Base):
 
     def __init__(self, vehicles):
+        prev_vehicle = None
         for i, v in enumerate(vehicles):
-            v = Vehicle(v, i)
-            self.records.append(v.rec)
+            v, p = self.get_position(v)
+            if prev_vehicle and prev_vehicle.is_same_block(p.block_id):
+                prev_vehicle['blockId'] = "{}-{}".format(prev_vehicle['blockId'], p.block_id)
+            else:
+                v = Vehicle(v, p)
+                self.records.append(v)
 
     @classmethod
     def make_response(cls, vehicles, pretty=True):
