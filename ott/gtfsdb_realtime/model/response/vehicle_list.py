@@ -94,15 +94,11 @@ class VehicleListResponse(Base):
 
     def __init__(self, vehicles):
         # import pdb; pdb.set_trace()
-        prev_vehicle = None
         for i, v in enumerate(vehicles):
             v, p = self.get_position(v)
-            if prev_vehicle and prev_vehicle.is_same_block(p.block_id):
-                prev_vehicle['vehicleId'] = "{}-{}".format(prev_vehicle.rec['vehicleId'], v.vehicle_id)
-            else:
-                v = Vehicle(v, p)
-                self.records.append(v)
-                prev_vehicle = v
+            v = Vehicle(v, p)
+            self.records.append(v)
+        self.fix_up()
 
     @classmethod
     def make_response(cls, vehicles, pretty=True):
