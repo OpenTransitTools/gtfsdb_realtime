@@ -62,6 +62,7 @@ class Base(object):
             if order_by:
                 q = q.order_by(order_by)
 
+            #import pdb; pdb.set_trace()
             # run the query (by default) or return the query for more filtering...
             if execute:
                 # note: only apply the limit to a query that will be executed below...

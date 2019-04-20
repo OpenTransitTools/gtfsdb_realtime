@@ -48,7 +48,6 @@ class Vehicle(object):
         """
         :return a vehicle record
         """
-        # import pdb; pdb.set_trace()
         self.rec = {
             "id": "{}-{}".format(vehicle.vehicle_id, position.agency),
             "lon": -000.111,
@@ -94,14 +93,16 @@ class Vehicle(object):
 class VehicleListResponse(Base):
 
     def __init__(self, vehicles):
+        # import pdb; pdb.set_trace()
         prev_vehicle = None
         for i, v in enumerate(vehicles):
             v, p = self.get_position(v)
             if prev_vehicle and prev_vehicle.is_same_block(p.block_id):
-                prev_vehicle['blockId'] = "{}-{}".format(prev_vehicle['blockId'], p.block_id)
+                prev_vehicle['vehicleId'] = "{}-{}".format(prev_vehicle.rec['vehicleId'], v.vehicle_id)
             else:
                 v = Vehicle(v, p)
                 self.records.append(v)
+                prev_vehicle = v
 
     @classmethod
     def make_response(cls, vehicles, pretty=True):

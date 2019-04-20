@@ -3,9 +3,15 @@ import logging
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
 
+from operator import itemgetter
 
 class Base(object):
     records = []
+
+    def block_sort(self, vehicles):
+        """sort list via block id"""
+        sorted(vehicles, key=itemgetter('age'))
+
 
     def get_vehicle_recs(self):
         ret_val = []
