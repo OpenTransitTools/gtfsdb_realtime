@@ -5,7 +5,7 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
 
 
-class Base(object):
+class VehicleBase(object):
     records = []
 
     def has_same_block(self, other_v):
@@ -84,16 +84,3 @@ class Base(object):
         else:
             ret_val = json.dumps(recs)
         return ret_val
-
-    @classmethod
-    def get_position(cls, vehicle):
-        # note: we might get either Vehicle or Position objects here based on how the query happened
-        #       so we first have to get both the position and the vehicle objects
-        from ..vehicle_position import VehiclePosition
-        if isinstance(vehicle, VehiclePosition):
-            position = vehicle
-            vehicle = position.vehicle[0]
-        else:
-            position = vehicle.positions[0]
-
-        return vehicle, position

@@ -17,39 +17,30 @@ def make_vehcile(v, i):
     """
     # import pdb; pdb.set_trace()
 
-    # note: we might get either Vehicle or Position objects here based on how the query happened
-    #       so we first have to get both the position and the vehicle objects
-    from vehicle_position import VehiclePosition
-    if isinstance(v, VehiclePosition):
-        position = v
-        v = position.vehicle[0]
-    else:
-        position = v.positions[0]
-
     ret_val = {
         "properties": {
             "~unique-id~": str(i),
             "lon": -000.111,
             "lat": 00.111,
-            "heading": float(position.bearing),
+            "heading": float(v.bearing),
 
             # old schedule vars for map
-            "tripNumber": position.trip_id,
+            "tripNumber": v.trip_id,
             "routeNumber": 1,
             "routeNumberPadded": "001",
 
-            "agencyId": position.agency,
-            "stopId": position.stop_id,
-            "stopSequence": position.stop_seq,
-            "routeId": position.route_id,
-            "tripId": position.trip_id,
-            "shapeId": position.shape_id,
-            "directionId": position.direction_id,
-            "blockId": position.block_id,
+            "agencyId": v.agency,
+            "stopId": v.stop_id,
+            "stopSequence": v.stop_seq,
+            "routeId": v.route_id,
+            "tripId": v.trip_id,
+            "shapeId": v.shape_id,
+            "directionId": v.direction_id,
+            "blockId": v.block_id,
 
-            "status": position.status,
+            "status": v.status,
             "vehicleNumber": v.vehicle_id,
-            "destination": position.headsign,
+            "destination": v.headsign,
             "minutes": 1,
             "seconds": 11,
             "reportDate": "11.11.2111 11:11 pm"
@@ -61,8 +52,8 @@ def make_vehcile(v, i):
         }
     }
 
-    _set_coord(ret_val, float(position.lat), float(position.lon))
-    _set_time(ret_val, position)
+    _set_coord(ret_val, float(v.lat), float(v.lon))
+    _set_time(ret_val, v.timestamp)
     _set_route_number(ret_val)
 
     return ret_val
@@ -82,8 +73,8 @@ def _set_coord(vehicle, lat, lon, convert="GOOGLE"):
     vehicle["geometry"]["coordinates"] = [x, y]
 
 
-def _set_time(vehicle, position):
-    ts = float(position.timestamp)
+def _set_time(vehicle, timestamp):
+    ts = float(timestamp)
     t = datetime.datetime.fromtimestamp(ts)
     pretty_date_time = t.strftime('%x %I:%M %p').replace(" 0", " ")
 

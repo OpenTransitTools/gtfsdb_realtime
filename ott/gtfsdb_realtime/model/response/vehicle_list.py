@@ -3,40 +3,13 @@ this response format is one that is modeled after the stop and route responses f
 OTP doesn't have vehicle data, but I wanted to model this rt vehicle response on OTP TI, so that
 it fits with a style of services from that system
 """
-from .base import Base
+from .vehicle_base import VehicleBase
 
 import datetime
 import logging
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
 
-"""
-    "id": "1111-trimet",
-    "vehicle": "1111",
-    "mode": "BUS",
-    "destination": "20  Burnside\/Stark to Gresham TC via Portland City ter",
-    "timestamp": 1555555555,
-
-    "lat": 45.5092,
-    "lon": -122.773568,
-    "heading": 104,
-    "lastUpdate": 5,
-    "realtimeState": "SCHEDULED",
-    "stopId": "1",
-    "stopSeq": "1",
-
-    "agencyName": "TriMet",
-    "agencyId": "TRIMET",
-    "routeShortName": "20",
-    "routeId": "20",
-    "directionId": "1",
-    "tripId": "8983916",
-    "blockId": "2074",
-    "patternId": "111",
-    "serviceId": "111",
-    "serviceDay": 1555052400
-
-"""
 
 class Vehicle(object):
     rec = {}
@@ -97,7 +70,7 @@ class Vehicle(object):
         self.rec['vehicleId'] = new_vehicle_id
 
 
-class VehicleListResponse(Base):
+class VehicleListResponse(VehicleBase):
 
     def __init__(self, vehicles):
         # import pdb; pdb.set_trace()
