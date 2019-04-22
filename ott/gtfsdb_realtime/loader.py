@@ -3,10 +3,11 @@ from ott.gtfsdb_realtime.model.base import Base
 
 from ott.utils.parse.cmdline import gtfs_cmdline
 from ott.utils.parse.cmdline import db_cmdline
+from ott.utils.config_util import ConfigUtil
 from ott.utils import string_utils
+from ott.utils import num_utils
 from ott.utils import db_utils
 from ott.utils import gtfs_utils
-from ott.utils.config_util import ConfigUtil
 
 import time
 import logging
@@ -14,37 +15,48 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
 
 
-def load_agency_feeds(session, agency_id, alerts_url=None, trips_url=None, vehicles_url=None):
+def load_agency_feeds(session, agency_id, alerts_url=None, trips_url=None, vehicles_url=None, durr=None, freq=None):
     """
     This is a main entry for loading one or more GTFS-RT feeds ...
     """
     ret_val = True
 
-    if alerts_url:
-        r = load_gtfsrt_feed(session, agency_id, alerts_url)
-        if not r:
-            ret_val = False
+    import pdb; pdb.set_trace()
+    freq = num_utils.to_int(freq)
+    durr = num_utils.to_int(durr)
+    start = int(time.time())
 
-    if trips_url:
-        r = load_gtfsrt_feed(session, agency_id, trips_url)
-        if not r:
-            ret_val = False
+    i = 0
+    while True:
+        i = i + 1
+        if alerts_url:
+            r = load_gtfsrt_feed(session, agency_id, alerts_url)
+            if not r:
+                ret_val = False
 
-    if vehicles_url:
-        r = load_gtfsrt_feed(session, agency_id, vehicles_url)
-        if not r:
-            ret_val = False
+        if trips_url:
+            r = load_gtfsrt_feed(session, agency_id, trips_url)
+            if not r:
+                ret_val = False
 
-        """
-        #debug work ... tbd sub-1 minute db population
-        for x in range(0, 11):
-            s = time.time()
+        if vehicles_url:
             r = load_gtfsrt_feed(session, agency_id, vehicles_url)
-            e = time.time()
-            import pdb; pdb.set_trace()
-            log.warning("secs to update: {}".format(e - s))
-            time.sleep(2);
-        """
+            if not r:
+                ret_val = False
+
+        elapse = int(time.time()) - start
+        if durr and durr - elapse <= 0:
+            log.info("EXITING: process ran for {} seconds (specified duration is {} seconds)".format(elapse, i))
+            break
+        else:
+            log.info("CONTINUING: process has run for {} seconds (specified duration is {} seconds)".format(elapse, i))
+
+        if freq:
+            log.info("sleeping for {} seconds (iteration {})".format(freq, i))
+            time.sleep(freq)
+        else:
+            break
+
     return ret_val
 
 
@@ -53,7 +65,6 @@ def load_gtfsrt_feed(session, agency_id, feed_url, clear_tables_first=True):
     this is a main entry for loading a single GTFS-RT feed
     the logic here will grab a GTFS-RT feed, and store it in a database
     """
-    #import pdb; pdb.set_trace()
     feed = grab_feed(feed_url)
     feed_type = Base.get_feed_type(feed)
     if feed_type:
@@ -116,15 +127,15 @@ def load_vehicles(section='gtfs_realtime'):
     """
     insert a GTFS feed into configured db
     """
-    args = db_cmdline.db_parser('bin/gtfsrt-vehicles-load', do_parse=True, url_required=False)
+    args = db_cmdline.db_parser('bin/gtfsrt-vehicles-load', do_parse=True, url_required=False, add_misc=True)
     config = ConfigUtil.factory(section=section)
     feed = config.get_json('feeds')[0]
     url = config.get('db_url')
-    ret_val = load_feeds_via_config(feed, url, do_trips=False, do_alerts=False, create_db=args.create)
+    ret_val = load_feeds_via_config(feed, url, do_trips=False, do_alerts=False, create_db=args.create, durr=args.durr, freq=args.freq)
     return ret_val
 
 
-def load_feeds_via_config(feed, db_url, do_trips=True, do_alerts=True, do_vehicles=True, is_geospatial=True, create_db=False):
+def load_feeds_via_config(feed, db_url, do_trips=True, do_alerts=True, do_vehicles=True, is_geospatial=True, create_db=False, durr=None, freq=None):
     """
     insert a GTFS feed into configured db
     """
@@ -143,11 +154,10 @@ def load_feeds_via_config(feed, db_url, do_trips=True, do_alerts=True, do_vehicl
     try:
         log.info("loading gtfsdb_realtime db {} {}".format(db_url, schema))
         session = Database.make_session(db_url, schema, is_geospatial, create_db)
-        ret_val = load_agency_feeds(session, agency_id, trips_url, alerts_url, vehicles_url)
+        ret_val = load_agency_feeds(session, agency_id, trips_url, alerts_url, vehicles_url, durr, freq)
     except Exception as e:
         log.error("DATABASE ERROR : {}".format(e))
         ret_val = False
-
 
     return ret_val
 
