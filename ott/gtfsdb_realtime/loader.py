@@ -44,12 +44,13 @@ def load_agency_feeds(session, agency_id, alerts_url=None, trips_url=None, vehic
             if not r:
                 ret_val = False
 
-        elapse = int(time.time()) - start
-        if durr and durr - elapse <= 0:
-            log.info("EXITING: process ran for {} seconds (specified duration is {} seconds)".format(elapse, i))
-            break
-        else:
-            log.info("CONTINUING: process has run for {} seconds (specified duration is {} seconds)".format(elapse, i))
+        if durr:
+            elapse = int(time.time()) - start
+            if durr - elapse <= 0:
+                log.info("EXITING: process ran for {} seconds of {} seconds (specified duration)".format(elapse, durr))
+                break
+            else:
+                log.info("CONTINUING: process has run for {} seconds of {} duration (iteration {})".format(elapse, durr, i))
 
         if freq:
             log.info("sleeping for {} seconds (iteration {})".format(freq, i))
