@@ -21,7 +21,7 @@ def load_agency_feeds(session, agency_id, alerts_url=None, trips_url=None, vehic
     """
     ret_val = True
 
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
     freq = num_utils.to_int(freq)
     durr = num_utils.to_int(durr)
     start = int(time.time())
@@ -44,16 +44,16 @@ def load_agency_feeds(session, agency_id, alerts_url=None, trips_url=None, vehic
             if not r:
                 ret_val = False
 
+        elapse = int(time.time()) - start
         if durr:
-            elapse = int(time.time()) - start
             if durr - elapse <= 0:
-                log.info("EXITING: process ran for {} seconds of {} seconds (specified duration)".format(elapse, durr))
+                log.info("EXITING: process ran for {} seconds (e.g., specified duration of {} secs)".format(elapse, durr))
                 break
             else:
                 log.info("CONTINUING: process has run for {} seconds of {} duration (iteration {})".format(elapse, durr, i))
 
         if freq:
-            log.info("sleeping for {} seconds (iteration {})".format(freq, i))
+            log.info("sleeping for {} seconds (iteration {} ... process has been running for {} seconds)".format(freq, i, elapse))
             time.sleep(freq)
         else:
             break
