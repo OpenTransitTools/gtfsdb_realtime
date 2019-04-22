@@ -42,36 +42,36 @@ class Vehicle(object):
     rec = {}
 
     def __init__(self, vehicle, index):
-        self.make_vehicle_record(vehicle, index)
+        self.make_vehicle_record(vehicle)
 
-    def make_vehicle_record(self, vehicle, position):
+    def make_vehicle_record(self, vehicle):
         """
         :return a vehicle record
         """
         self.rec = {
-            "id": "{}-{}".format(vehicle.vehicle_id, position.agency),
+            "id": "{}-{}".format(vehicle.vehicle_id, vehicle.agency),
             "lon": -000.111,
             "lat": 000.111,
-            "heading": float(position.bearing),
+            "heading": float(vehicle.bearing),
             "vehicleId": vehicle.vehicle_id,
-            "destination": position.headsign,
+            "destination": vehicle.headsign,
 
-            "agencyId": position.agency,
-            "routeId": position.route_id,
-            "tripId": position.trip_id,
-            "directionId": position.direction_id,
-            "serviceId": position.service_id,
-            "blockId": position.block_id,
-            "shapeId": position.shape_id,
-            "stopId": position.stop_id,
-            "stopSequence": position.stop_seq,
+            "agencyId": vehicle.agency,
+            "routeId": vehicle.route_id,
+            "tripId": vehicle.trip_id,
+            "directionId": vehicle.direction_id,
+            "serviceId": vehicle.service_id,
+            "blockId": vehicle.block_id,
+            "shapeId": vehicle.shape_id,
+            "stopId": vehicle.stop_id,
+            "stopSequence": vehicle.stop_seq,
 
-            "status": position.status,
+            "status": vehicle.status,
             "seconds": 0,
             "reportDate": "11.11.2111 11:11 pm"
         }
-        self.set_coord(float(position.lat), float(position.lon))
-        self.set_time(float(position.timestamp))
+        self.set_coord(float(vehicle.lat), float(vehicle.lon))
+        self.set_time(float(vehicle.timestamp))
 
     def set_coord(self, lat, lon):
         self.rec['lat'] = lat
@@ -108,8 +108,7 @@ class VehicleListResponse(Base):
     def __init__(self, vehicles):
         #import pdb; pdb.set_trace()
         for i, v in enumerate(vehicles):
-            v, p = self.get_position(v)
-            v = Vehicle(v, p)
+            v = Vehicle(v, i)
             self.records.append(v)
         self.fix_up()
 

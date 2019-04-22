@@ -2,9 +2,7 @@ from ott.utils.parse.cmdline import db_cmdline
 from ott.utils.parse.cmdline import gtfs_cmdline
 
 from .base import Base
-
 from ott.gtfsdb_realtime.model.vehicle import Vehicle
-from ott.gtfsdb_realtime.model.vehicle_position import VehiclePosition
 
 import datetime
 import logging
@@ -15,16 +13,16 @@ class VehicleQueries(Base):
 
     @classmethod
     def query_via_route_id(cls, session, route_id, agency_id=None, limit=None):
-        return cls._base_query(session, VehiclePosition, route_id, None, agency_id, limit, VehiclePosition.block_id)
+        return cls._base_query(session, Vehicle, route_id, None, agency_id, limit, Vehicle.block_id)
 
     @classmethod
     def query_via_stop_id(cls, session, stop_id, agency_id=None, limit=None):
         # TODO: really need to look at the trips (and/or routes) that this stop_id serves, and query all eventually hitting that stopt
-        return cls._base_query(session, VehiclePosition, None, stop_id, agency_id, limit, VehiclePosition.block_id)
+        return cls._base_query(session, Vehicle, None, stop_id, agency_id, limit, Vehicle.block_id)
 
     @classmethod
     def query_all(cls, session, agency_id=None, limit=None):
-        return cls._base_query(session, Vehicle, None, None, agency_id, limit, VehiclePosition.block_id)
+        return cls._base_query(session, Vehicle, None, None, agency_id, limit, Vehicle.block_id)
 
 
 def vehicles_command_line():
