@@ -6,13 +6,46 @@ log = logging.getLogger(__file__)
 
 
 class VehicleBase(object):
-    records = []
+    rec = {}
 
     def has_same_block(self, other_v):
         ret_val = False
-        if len(self.rec['blockId']) > 0 and self.rec['blockId'] == other_v.rec['block_id']:
+        if len(self.rec['blockId']) > 0 and self.rec['blockId'] == other_v.rec['blockId']:
             ret_val = True
         return ret_val
+
+    def set_coord(self, lat, lon):
+        self.rec['lat'] = lat
+        self.rec['lon'] = lon
+
+    def has_valid_coords(self):
+        ret_val = True
+        if self.rec['lat'] is None or self.rec['lat'] == 0.0 or self.rec['lon'] is None or self.rec['lon'] == 0.0:
+            ret_val = False
+        return ret_val
+
+    def set_time(self, time_stamp):
+        t = datetime.datetime.fromtimestamp(time_stamp)
+        pretty_date_time = t.strftime('%x %I:%M %p').replace(" 0", " ")
+        diff = datetime.datetime.now() - t
+        self.rec['seconds'] = diff.seconds
+        self.rec['reportDate'] = str(pretty_date_time)
+
+    def merge(self, other_vehicle):
+        new_id = self.rec['id'] if self.rec['id'] < other_vehicle.rec['id'] else other_vehicle.rec['id']
+        new_vehicle_id = "{}+{}".format(self.rec['vehicleId'], other_vehicle.rec['vehicleId'])
+
+        # step 1: use other record if newer than my record
+        if other_vehicle.rec['seconds'] < self.rec['seconds']:
+            self.rec = other_vehicle.rec
+
+        # step 2: re-label the vehicle id with a concat of the labels
+        self.rec['id'] = new_id
+        self.rec['vehicleId'] = new_vehicle_id
+
+
+class VehicleListBase(object):
+    records = []
 
     def fix_up(self):
         """
@@ -30,17 +63,17 @@ class VehicleBase(object):
             # step 1: sort vehicle records based on block id
             self.records.sort(key=lambda v: v.rec['blockId'], reverse=False)
 
-            # import pdb; pdb.set_trace()
-
+            # step 2: filter list
             new_list = []
             num_vehicles = len(self.records)
             for i, v in enumerate(self.records):
-                # step 2: cull any vehicles where position does not have valid coords
-                if v.rec['lat'] is None or v.rec['lat'] == 0.0 or v.rec['lon'] is None or v.rec['lon'] == 0.0:
+                #import pdb; pdb.set_trace()
+
+                # step 2a: cull any vehicles where position does not have valid coordinates
+                if not v.has_valid_coords():
                     continue
 
-
-                # step 3: cull/merge vehicles on same block
+                # step 2b: cull/merge vehicles on same block
                 if i+1 < num_vehicles:
                     next_v = self.records[i+1]
                     if next_v and v.has_same_block(next_v):

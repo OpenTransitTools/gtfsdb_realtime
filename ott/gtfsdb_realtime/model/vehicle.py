@@ -65,7 +65,6 @@ class Vehicle(Base):
     def add_trip_details(self, session):
         try:
             if self.trip_id:
-                # import pdb; pdb.set_trace()
                 trip = Trip.query_trip(session, self.trip_id)
                 if trip:
                     self.direction_id = trip.direction_id

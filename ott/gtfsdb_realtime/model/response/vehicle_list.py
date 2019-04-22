@@ -4,6 +4,7 @@ OTP doesn't have vehicle data, but I wanted to model this rt vehicle response on
 it fits with a style of services from that system
 """
 from .vehicle_base import VehicleBase
+from .vehicle_base import VehicleListBase
 
 import datetime
 import logging
@@ -11,9 +12,7 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
 
 
-class Vehicle(object):
-    rec = {}
-
+class Vehicle(VehicleBase):
     def __init__(self, vehicle, index):
         self.make_vehicle_record(vehicle)
 
@@ -46,31 +45,8 @@ class Vehicle(object):
         self.set_coord(float(vehicle.lat), float(vehicle.lon))
         self.set_time(float(vehicle.timestamp))
 
-    def set_coord(self, lat, lon):
-        self.rec['lat'] = lat
-        self.rec['lon'] = lon
 
-    def set_time(self, time_stamp):
-        t = datetime.datetime.fromtimestamp(time_stamp)
-        pretty_date_time = t.strftime('%x %I:%M %p').replace(" 0", " ")
-        diff = datetime.datetime.now() - t
-        self.rec['seconds'] = diff.seconds
-        self.rec['reportDate'] = str(pretty_date_time)
-
-    def merge(self, other_vehicle):
-        new_id = self.rec['id'] if self.rec['id'] < other_vehicle.rec['id'] else other_vehicle.rec['id']
-        new_vehicle_id = "{}+{}".format(self.rec['vehicleId'], other_vehicle.rec['vehicleId'])
-
-        # step 1: use other record if newer than my record
-        if other_vehicle.rec['seconds'] < self.rec['seconds']:
-            self.rec = other_vehicle.rec
-
-        # step 2: re-label the vehicle id with a concat of the labels
-        self.rec['id'] = new_id
-        self.rec['vehicleId'] = new_vehicle_id
-
-
-class VehicleListResponse(VehicleBase):
+class VehicleListResponse(VehicleListBase):
 
     def __init__(self, vehicles):
         # import pdb; pdb.set_trace()
