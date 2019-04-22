@@ -1,10 +1,12 @@
 import datetime
+
+from geoalchemy2 import Geometry
 from sqlalchemy import Column, Index, Integer, Numeric, String, DateTime
 from sqlalchemy.sql import func, and_
 from sqlalchemy.orm import deferred, object_session, relationship
 
 from ott.gtfsdb_realtime.model.base import Base
-from ott.gtfsdb_realtime.model.vehicle_position import VehiclePosition
+from gtfsdb import Trip
 
 import logging
 log = logging.getLogger(__file__)
@@ -16,32 +18,82 @@ class Vehicle(Base):
     vehicle_id = Column(String, nullable=False)
     license_plate = Column(String)
 
-    positions = relationship(
-        'VehiclePosition',
-        primaryjoin='Vehicle.vehicle_id == VehiclePosition.vehicle_id',
-        foreign_keys='(Vehicle.vehicle_id)',
-        uselist=True, viewonly=True,
-        backref="vehicle"
-    )
+    lat = Column(Numeric(12,6), nullable=False)
+    lon = Column(Numeric(12,6), nullable=False)
+    bearing = Column(Numeric, default=0)
+    odometer = Column(Numeric)
+    speed = Column(Numeric)
 
-    def __init__(self, agency, vehicle_id, license_plate=None):
+    vehicle_id = Column(String)
+    headsign = Column(String)
+    trip_id = Column(String)
+    block_id = Column(String)
+    route_id = Column(String)
+    direction_id = Column(String)
+    service_id = Column(String)
+    shape_id = Column(String)
+    stop_id = Column(String)
+    stop_seq = Column(Integer)
+    status = Column(String)
+    timestamp = Column(String)
+
+    def __init__(self, agency, data):
+        self.set_attributes(agency, data.vehicle)
+
+    def set_attributes(self, agency, data):
+        #import pdb; pdb.set_trace()
         self.agency = agency
-        self.vehicle_id = vehicle_id
-        self.license_plate = license_plate
+
+        self.lat = round(data.position.latitude,  6)
+        self.lon = round(data.position.longitude, 6)
+        if hasattr(self, 'geom'):
+            self.add_geom_to_dict(self.__dict__)
+
+        self.bearing = data.position.bearing
+        self.odometer = data.position.odometer
+        self.speed = data.position.speed
+
+        self.vehicle_id = data.vehicle.id
+        self.headsign = data.vehicle.label
+        self.trip_id = data.trip.trip_id
+        self.route_id = data.trip.route_id
+        self.stop_id = data.stop_id
+        self.stop_seq = data.current_stop_sequence
+        self.status = data.VehicleStopStatus.Name(data.current_status)
+        self.timestamp = data.timestamp
+
+    def add_trip_details(self, session):
+        try:
+            if self.trip_id:
+                # import pdb; pdb.set_trace()
+                trip = Trip.query_trip(session, self.trip_id)
+                if trip:
+                    self.direction_id = trip.direction_id
+                    self.block_id = trip.block_id
+                    self.service_id = trip.service_id
+                    self.shape_id = trip.shape_id
+        except Exception as e:
+            log.warning("trip_id '{}' not in the GTFS (things OUT of DATE???)".format(self.trip_id))
+            session.rollback()
+
+    @classmethod
+    def add_geometry_column(cls, srid=4326):
+        cls.geom = Column(Geometry(geometry_type='POINT', srid=srid))
+
+    @classmethod
+    def add_geom_to_dict(cls, row, srid=4326):
+        row['geom'] = 'SRID={0};POINT({1} {2})'.format(srid, row['lon'], row['lat'])
 
     @classmethod
     def clear_tables(cls, session, agency):
         """
         clear out the positions and vehicles tables
         """
-        VehiclePosition.clear_tables(session, agency)
         session.query(Vehicle).filter(Vehicle.agency == agency).delete()
-        session.commit()
 
     @classmethod
     def parse_gtfsrt_feed(cls, session, agency, feed):
         if feed and feed.entity and len(feed.entity) > 0:
-            VehiclePosition.clear_latest_column(session, agency)
             super(Vehicle, cls).parse_gtfsrt_feed(session, agency, feed)
 
     @classmethod
@@ -49,106 +101,7 @@ class Vehicle(Base):
         """ create or update new Vehicles and positions
             :return Vehicle object
         """
-        ret_val = None
-        v = None
-
-        # step 1: query db for vehicle
-        try:
-            # step 1a: get inner 'vehicle' record
-            record = record.vehicle
-
-            # step 1b: see if this is an existing vehicle
-            q = session.query(Vehicle).filter(
-                and_(
-                    Vehicle.vehicle_id == record.vehicle.id,
-                    Vehicle.agency == agency,
-                )
-            )
-            v = q.first()
-        except Exception as err:
-            log.exception(err)
-
-        try:
-            # step 2: we didn't find an existing vehicle in the Vehicle table, so add a new one
-            if v is None:
-                v = Vehicle(agency, record.vehicle.id, record.vehicle.license_plate)
-                session.add(v)
-                session.commit()
-                session.flush()
-
-            # step 2b: set ret_val to our Vehicle (old or new)
-            ret_val = v
-
-            # step 3: update the position record if need be
-            v.update_position(session, agency, record)
-        except Exception as err:
-            log.exception(err)
-            session.rollback()
-        finally:
-            try:
-                session.commit()
-                session.flush()
-            except Exception as err:
-                log.exception(err)
-                session.rollback()
-
-        return ret_val
-
-    @classmethod
-    def query_position(cls, session, vehicle_id, time_span):
-        # step 1: get position object from db ...criteria is to find last position
-        #          update within an hour, and the car hasn't moved lat,lon
-        hours_ago = datetime.datetime.now() - datetime.timedelta(hours=time_span)
-        ret_val = None
-        try:
-            q = session.query(VehiclePosition).filter(
-                and_(
-                    VehiclePosition.vehicle_fk == vehicle_id,
-                    VehiclePosition.updated >= hours_ago,
-                    VehiclePosition.lat == lat,
-                    VehiclePosition.lon == lon,
-                )
-            )
-            ret_val = q.first()
-        except Exception as err:
-            log.exception(err)
-        return ret_val
-
-    def update_position(self, session, agency, data, time_span=144):
-        """ query the db for a position for this vehicle ... if the vehicle appears to be parked in the
-            same place as an earlier update, update the 
-            NOTE: the position add/update needs to be committed to the db by the caller of this method 
-        """
-
-        # step 0: cast some variables
-        lat = round(data.position.latitude,  6)
-        lon = round(data.position.longitude, 6)
-
-        # step 1: query existing position
-        p = None
-        #p = self.query_position(session, self.id, time_span)
-
-        # step 2: we didn't find an existing position in the Position history table, so add a new one
-        try:
-            if p is None:
-                p = VehiclePosition()
-                p.vehicle_fk = self.id
-                p.agency = agency
-                p.set_attributes(data)
-                p.add_trip_details(session)
-                p.set_position(lat, lon)
-                session.add(p)
-            else:
-                p.set_updated()
-
-        except Exception as err:
-            log.exception(err)
-            session.rollback()
-        finally:
-            try:
-                session.commit()
-                session.flush()
-            except Exception as err:
-                log.exception(err)
-                session.rollback()
-        return p
+        v = Vehicle(agency, record)
+        v.add_trip_details(session)
+        session.add(v)
+        return v

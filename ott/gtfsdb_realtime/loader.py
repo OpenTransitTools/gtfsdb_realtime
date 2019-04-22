@@ -93,12 +93,12 @@ def store_feed(session, agency_id, feed_type, feed, clear_tables_first):
         # step 2: clear content from existing tables
         if clear_tables_first:
             feed_type.clear_tables(session, agency_id)
-            # TODO this doesn't seem to be deleting data....
-            # TODO: also, do you want to be deleting vehicle position data, if you're recording a history????
-            # TODO: we probably need a "clear / don't clear" mechanism on this ... what if we want to append multiple feeds into single table space?
 
         # step 3: add gtfsrt data to db
         feed_type.parse_gtfsrt_feed(session, agency_id, feed)
+        session.commit()
+        session.flush()
+
         ret_val = True
     except Exception as e:
         # step 4: something bad happened ... roll back to our old savepoint
@@ -107,6 +107,8 @@ def store_feed(session, agency_id, feed_type, feed, clear_tables_first):
     finally:
         # step 5: commit whatever's in the session
         session.commit()
+        session.flush()
+
     return ret_val
 
 
@@ -118,7 +120,8 @@ def load_vehicles(section='gtfs_realtime'):
     config = ConfigUtil.factory(section=section)
     feed = config.get_json('feeds')[0]
     url = config.get('db_url')
-    return load_feeds_via_config(feed, url, do_trips=False, do_alerts=False, create_db=args.create)
+    ret_val = load_feeds_via_config(feed, url, do_trips=False, do_alerts=False, create_db=args.create)
+
 
 
 def load_feeds_via_config(feed, db_url, do_trips=True, do_alerts=True, do_vehicles=True, is_geospatial=True, create_db=False):
@@ -144,6 +147,7 @@ def load_feeds_via_config(feed, db_url, do_trips=True, do_alerts=True, do_vehicl
     except Exception as e:
         log.error("DATABASE ERROR : {}".format(e))
         ret_val = False
+
 
     return ret_val
 
