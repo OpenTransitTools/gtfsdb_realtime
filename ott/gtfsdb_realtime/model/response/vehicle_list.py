@@ -84,12 +84,6 @@ class Vehicle(object):
         self.rec['seconds'] = diff.seconds
         self.rec['reportDate'] = str(pretty_date_time)
 
-    def is_same_block(self, block_id):
-        ret_val = False
-        if len(self.rec['blockId']) > 0 and self.rec['blockId'] == block_id:
-            ret_val = True
-        return ret_val
-
     def merge(self, other_vehicle):
         new_id = self.rec['id'] if self.rec['id'] < other_vehicle.rec['id'] else other_vehicle.rec['id']
         new_vehicle_id = "{}+{}".format(self.rec['vehicleId'], other_vehicle.rec['vehicleId'])
@@ -106,7 +100,7 @@ class Vehicle(object):
 class VehicleListResponse(Base):
 
     def __init__(self, vehicles):
-        #import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         for i, v in enumerate(vehicles):
             v = Vehicle(v, i)
             self.records.append(v)

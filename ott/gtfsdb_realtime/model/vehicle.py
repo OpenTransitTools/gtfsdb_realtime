@@ -74,7 +74,6 @@ class Vehicle(Base):
                     self.shape_id = trip.shape_id
         except Exception as e:
             log.warning("trip_id '{}' not in the GTFS (things OUT of DATE???)".format(self.trip_id))
-            session.rollback()
 
     @classmethod
     def add_geometry_column(cls, srid=4326):
@@ -104,4 +103,5 @@ class Vehicle(Base):
         v = Vehicle(agency, record)
         v.add_trip_details(session)
         session.add(v)
+        #import pdb; pdb.set_trace()
         return v

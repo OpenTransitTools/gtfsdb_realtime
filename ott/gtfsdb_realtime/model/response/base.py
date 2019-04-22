@@ -8,6 +8,12 @@ log = logging.getLogger(__file__)
 class Base(object):
     records = []
 
+    def has_same_block(self, other_v):
+        ret_val = False
+        if len(self.rec['blockId']) > 0 and self.rec['blockId'] == other_v.rec['block_id']:
+            ret_val = True
+        return ret_val
+
     def fix_up(self):
         """
         de-duplicate and sort alerts from an entity list
@@ -37,7 +43,7 @@ class Base(object):
                 # step 3: cull/merge vehicles on same block
                 if i+1 < num_vehicles:
                     next_v = self.records[i+1]
-                    if next_v and next_v.rec['blockId'] == v.rec['blockId']:
+                    if next_v and v.has_same_block(next_v):
                         next_v.merge(v)
                         continue
 
