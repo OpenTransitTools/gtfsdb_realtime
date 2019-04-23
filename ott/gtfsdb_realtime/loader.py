@@ -85,8 +85,6 @@ def grab_feed(feed_url):
     from google.transit import gtfs_realtime_pb2
 
     log.info("calling GTFS-RT feed url: {}".format(feed_url))
-
-    # TODO: do we need to close any handlers below?
     feed = gtfs_realtime_pb2.FeedMessage()
     response = urllib.urlopen(feed_url)
     feed.ParseFromString(response.read())

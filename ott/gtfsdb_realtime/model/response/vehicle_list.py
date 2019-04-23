@@ -6,7 +6,6 @@ it fits with a style of services from that system
 from .vehicle_base import VehicleBase
 from .vehicle_base import VehicleListBase
 
-import datetime
 import logging
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
