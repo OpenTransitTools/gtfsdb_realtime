@@ -27,6 +27,21 @@ class VehicleBase(object):
             ret_val = False
         return ret_val
 
+    def has_valid_trip_id(self):
+        ret_val = True
+        if self.rec['tripId'] is None or len(self.rec['tripId']) < 1:
+            ret_val = False
+        return ret_val
+
+    def has_valid_route_id(self):
+        ret_val = True
+        if self.rec['routeId'] is None or len(self.rec['routeId']) < 1:
+            ret_val = False
+        return ret_val
+
+    def has_valid_ids(self):
+        return self.has_valid_trip_id() and self.has_valid_route_id()
+
     def set_time(self, time_stamp):
         t = datetime.datetime.fromtimestamp(time_stamp)
         pretty_date_time = t.strftime('%x %I:%M %p').replace(" 0", " ")
@@ -73,13 +88,17 @@ class VehicleListBase(object):
             new_list = []
             num_vehicles = len(self.records)
             for i, v in enumerate(self.records):
-                #import pdb; pdb.set_trace()
 
-                # step 2a: cull any vehicles where position does not have valid coordinates
+                # step 2a: don't bother with vehicles that are missing trip or route ids
+                if not v.has_valid_ids():
+                    #import pdb; pdb.set_trace()
+                    continue
+
+                # step 2b: cull any vehicles where position does not have valid coordinates
                 if not v.has_valid_coords():
                     continue
 
-                # step 2b: cull/merge vehicles on same block
+                # step 2c: cull/merge vehicles on same block
                 if i+1 < num_vehicles:
                     next_v = self.records[i+1]
                     if next_v and v.has_same_block(next_v):
