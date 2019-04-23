@@ -4,12 +4,13 @@ from ott.gtfsdb_realtime.control.vehicle_queries import VehicleQueries
 from ott.utils.parse.url.stop_param_parser import StopParamParser
 from ott.utils.parse.url.route_param_parser import RouteParamParser
 
+from ott.utils.svr.pyramid import response_utils
 from ott.utils.svr.pyramid.globals import *
 
 import logging
 log = logging.getLogger(__file__)
 
-CACHE_SHORT=10
+
 APP_CONFIG=None
 def set_app_config(app_cfg):
     """
@@ -48,7 +49,7 @@ def vehicles_via_stop(request):
     return ret_val
 
 
-def _make_vehicle_response(vehicle_query_call, do_geojson=False):
+def _make_vehicle_response(vehicle_query_call):
     """
     util function that wraps various vehicle queries above with boilerplate work to generate the service response
     NOTE: using "lambda: VehicleQueries.x(params...)" above allows me to notate a normal looking function call (complete with params), and
@@ -57,19 +58,12 @@ def _make_vehicle_response(vehicle_query_call, do_geojson=False):
     #import pdb; pdb.set_trace()
     ret_val = None
     try:
-        # step 1: query
-        vehicles = vehicle_query_call() # make call to VehcleQueries.query...() within our try/catch
-        log.info("number of vehicles: {}".format(len(vehicles)))
-
-        # step 2: convert to either list or geojson response (prep'd for web / python)
-        if do_geojson:
-            ret_val = VehicleQueries.to_geojson(vehicles, web_response=True)
-        else:
-            ret_val = VehicleQueries.to_jsonlist(vehicles, web_response=True)
+        vehicles_db = vehicle_query_call() # make call to VehcleQueries.query...() within our try/catch
+        vehicles_geojson = VehicleQueries.to_geojson(vehicles_db)
+        ret_val = response_utils.json_response(vehicles_geojson)
     except Exception as e:
-        from ott.utils.svr.pyramid import response_utils
         ret_val = response_utils.sys_error_response()
-        log.warning(e)
+        log.warn(e)
     finally:
         pass
     return ret_val

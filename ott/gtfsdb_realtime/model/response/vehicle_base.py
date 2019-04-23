@@ -6,7 +6,10 @@ log = logging.getLogger(__file__)
 
 
 class VehicleBase(object):
-    rec = {}
+    rec = None
+
+    def __init__(self):
+        self.rec = {}
 
     def has_same_block(self, other_v):
         ret_val = False
@@ -45,7 +48,10 @@ class VehicleBase(object):
 
 
 class VehicleListBase(object):
-    records = []
+    records = None
+
+    def __init__(self):
+        self.records = []
 
     def fix_up(self):
         """

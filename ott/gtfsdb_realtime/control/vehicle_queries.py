@@ -13,6 +13,7 @@ class VehicleQueries(Base):
 
     @classmethod
     def query_via_route_id(cls, session, route_id, agency_id=None, limit=None):
+        # import pdb; pdb.set_trace()
         return cls._base_query(session, Vehicle, route_id, None, agency_id, limit, Vehicle.block_id)
 
     @classmethod
@@ -23,6 +24,25 @@ class VehicleQueries(Base):
     @classmethod
     def query_all(cls, session, agency_id=None, limit=None):
         return cls._base_query(session, Vehicle, None, None, agency_id, limit, Vehicle.block_id)
+
+    @classmethod
+    def to_geojson(cls, vehicles, pretty=False, web_response=False):
+        from ott.gtfsdb_realtime.model.response.vehicle_geojson import make_response
+        ret_val = make_response(vehicles, pretty=pretty)
+        if web_response:
+            from ott.utils.svr.pyramid import response_utils
+
+        return ret_val
+
+    @classmethod
+    def to_jsonlist(cls, vehicles, pretty=False, web_response=False):
+        from ott.gtfsdb_realtime.model.response.vehicle_list import VehicleListResponse
+        ret_val = VehicleListResponse.make_response(vehicles, pretty=pretty)
+        log.info("num vehicles: {}, size of ret {}".format(len(vehicles), len(ret_val)))
+        if web_response:
+            from ott.utils.svr.pyramid import response_utils
+            ret_val = response_utils.json_response(ret_val)
+        return ret_val
 
 
 def vehicles_command_line():
@@ -63,11 +83,8 @@ def vehicles_command_line():
 
     ret_val = vehicles
     if args.geojson:
-        from ott.gtfsdb_realtime.model.response.vehicle_geojson import make_response
-        ret_val = make_response(vehicles, pretty=True)
+        ret_val = VehicleQueries.to_geojson(vehicles, pretty=True)
     elif args.json:
-        from ott.gtfsdb_realtime.model.response.vehicle_list import VehicleListResponse
-        ret_val = VehicleListResponse.make_response(vehicles, pretty=True)
-
+        ret_val = VehicleQueries.to_jsonlist(vehicles, pretty=True)
     return ret_val
 

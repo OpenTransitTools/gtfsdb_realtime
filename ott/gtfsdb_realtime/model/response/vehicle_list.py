@@ -14,6 +14,7 @@ log = logging.getLogger(__file__)
 
 class Vehicle(VehicleBase):
     def __init__(self, vehicle, index):
+        super(Vehicle, self).__init__()
         self.make_vehicle_record(vehicle)
 
     def make_vehicle_record(self, vehicle):
@@ -49,6 +50,7 @@ class Vehicle(VehicleBase):
 class VehicleListResponse(VehicleListBase):
 
     def __init__(self, vehicles):
+        super(VehicleListResponse, self).__init__()
         # import pdb; pdb.set_trace()
         for i, v in enumerate(vehicles):
             v = Vehicle(v, i)
