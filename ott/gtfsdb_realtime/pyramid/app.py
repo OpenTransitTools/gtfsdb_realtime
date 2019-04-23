@@ -21,7 +21,7 @@ def main(global_config, **ini_settings):
     db = Database(u, s, g, session_extenstion=ZopeTransactionExtension())
     app.set_db(db)
 
-    app.add_cors_headers()
+    #app.add_cors_headers()
     app.config_include_scan(views)
     return app.make_wsgi_app()
 

@@ -112,14 +112,17 @@ def store_feed(session, agency_id, feed_type, feed, clear_tables_first):
 
         # step 4: commit the session
         session.commit()
-        session.commit()  # not exactly sure why I need 2 commits, but...
+        session.commit()  # think I need 2 commits due to session create + begin_nested being created above.
         session.flush()
 
         ret_val = True
     except Exception as e:
         # step 5: something bad happened ... roll back to our old savepoint
-        session.rollback()
         log.warn(e)
+        session.rollback()
+        session.rollback()
+        session.commit()
+        session.flush()
 
     return ret_val
 
