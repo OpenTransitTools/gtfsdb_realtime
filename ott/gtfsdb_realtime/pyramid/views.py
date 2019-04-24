@@ -100,9 +100,9 @@ def _make_vehicle_response(vehicle_query_call, do_geojson=False):
         else:
             ret_val = VehicleQueries.to_jsonlist(vehicles, web_response=True)
     except Exception as e:
-        from ott.utils.svr.pyramid import response_utils
-        ret_val = response_utils.sys_error_response()
         log.warning(e)
+        from ott.utils.svr.pyramid.response_utils import sys_error_response
+        ret_val = sys_error_response()
     finally:
         pass
     return ret_val
