@@ -49,9 +49,7 @@ def do_view_config(cfg):
 
 @view_config(route_name='all_vehicles', renderer='json', http_cache=globals.CACHE_NONE)
 def all_vehicles(request):
-    ret_val = {}
-    with APP_CONFIG.db.managed_session(timeout=10) as session:
-        ret_val = _make_vehicle_response(lambda: VehicleQueries.query_all(session))
+    ret_val = _make_vehicle_response(lambda: VehicleQueries.query_all(APP_CONFIG.db.session))
     return ret_val
 
 
