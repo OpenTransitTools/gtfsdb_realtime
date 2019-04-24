@@ -21,7 +21,9 @@ def main(global_config, **ini_settings):
     db = Database(u, s, g, session_extenstion=ZopeTransactionExtension())
     app.set_db(db)
 
-    #app.add_cors_headers()
+    # import pdb; pdb.set_trace()
+    if ini_settings['pyramid.debug_all']:
+        app.add_cors_headers()
     app.config_include_scan(views)
     return app.make_wsgi_app()
 
