@@ -28,6 +28,9 @@ class Vehicle(VehicleBase):
             "vehicleId": vehicle.vehicle_id,
             "destination": vehicle.headsign,
 
+            "routeShortName": vehicle.route_id,
+            "routeType": "BUS",
+
             "agencyId": vehicle.agency,
             "routeId": vehicle.route_id,
             "tripId": vehicle.trip_id,
