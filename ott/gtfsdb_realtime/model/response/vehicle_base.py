@@ -41,10 +41,6 @@ class VehicleBase(object):
         return ret_val
 
     def has_valid_ids(self):
-        if self.rec['vehicleId'] in ('2932', '3512'):
-            #import pdb; pdb.set_trace()
-            pass
-
         return self.has_valid_trip_id() and self.has_valid_route_id()
 
     def set_time(self, time_stamp):
