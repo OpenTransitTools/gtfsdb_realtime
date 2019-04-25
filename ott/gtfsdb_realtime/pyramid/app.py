@@ -22,7 +22,7 @@ def main(global_config, **ini_settings):
     app.set_db(db)
 
     # import pdb; pdb.set_trace()
-    if ini_settings['pyramid.debug_all']:
+    if ini_settings.get('pyramid.debug_all', 'false') == 'true':
         app.add_cors_headers()
     app.config_include_scan(views)
     return app.make_wsgi_app()
