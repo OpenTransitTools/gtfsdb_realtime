@@ -13,7 +13,7 @@ class VehicleBase(object):
 
     def has_same_block(self, other_v):
         ret_val = False
-        if len(self.rec['blockId']) > 0 and self.rec['blockId'] == other_v.rec['blockId']:
+        if self.rec['blockId'] and len(self.rec['blockId']) > 0 and self.rec['blockId'] == other_v.rec['blockId']:
             ret_val = True
         return ret_val
 
@@ -29,6 +29,7 @@ class VehicleBase(object):
 
     def has_valid_trip_id(self):
         ret_val = True
+
         if self.rec['tripId'] is None or len(self.rec['tripId']) < 1:
             ret_val = False
         return ret_val
@@ -40,6 +41,10 @@ class VehicleBase(object):
         return ret_val
 
     def has_valid_ids(self):
+        if self.rec['vehicleId'] in ('2932', '3512'):
+            #import pdb; pdb.set_trace()
+            pass
+
         return self.has_valid_trip_id() and self.has_valid_route_id()
 
     def set_time(self, time_stamp):
@@ -91,7 +96,6 @@ class VehicleListBase(object):
 
                 # step 2a: don't bother with vehicles that are missing trip or route ids
                 if not v.has_valid_ids():
-                    #import pdb; pdb.set_trace()
                     continue
 
                 # step 2b: cull any vehicles where position does not have valid coordinates
