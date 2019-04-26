@@ -62,6 +62,30 @@ class VehicleBase(object):
         self.rec['id'] = new_id
         self.rec['vehicleId'] = new_vehicle_id
 
+    @classmethod
+    def get_route_short_name(cls, vehicle, def_val="transit"):
+        ret_val = def_val
+        if vehicle.route_short_name and len(vehicle.route_short_name) > 0:
+            ret_val = vehicle.route_short_name
+        elif vehicle.route_id and len(vehicle.route_id) > 0:
+            ret_val = vehicle.route_id
+        elif vehicle.route_long_name and len(vehicle.route_long_name) > 0:
+            ret_val = vehicle.route_long_name
+        elif vehicle.headsign and len(vehicle.headsign) > 0:
+            ret_val = vehicle.headsign
+        return ret_val
+
+    @classmethod
+    def get_route_long_name(cls, vehicle, def_val="See where take ya, buddy..."):
+        ret_val = def_val
+        if vehicle.headsign and len(vehicle.headsign) > 0:
+            ret_val = vehicle.headsign
+        elif vehicle.route_long_name and len(vehicle.route_long_name) > 0:
+            ret_val = vehicle.route_long_name
+        elif vehicle.route_short_name and len(vehicle.route_short_name) > 0:
+            ret_val = vehicle.route_short_name
+        return ret_val
+
 
 class VehicleListBase(object):
     records = None

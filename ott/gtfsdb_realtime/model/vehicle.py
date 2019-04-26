@@ -24,11 +24,15 @@ class Vehicle(Base):
     odometer = Column(Numeric)
     speed = Column(Numeric)
 
-    vehicle_id = Column(String)
+    route_id = Column(String)
+    route_type = Column(String)
+    route_short_name = Column(String)
+    route_long_name = Column(String)
     headsign = Column(String)
+
+    vehicle_id = Column(String)
     trip_id = Column(String)
     block_id = Column(String)
-    route_id = Column(String)
     direction_id = Column(String)
     service_id = Column(String)
     shape_id = Column(String)
@@ -41,7 +45,6 @@ class Vehicle(Base):
         self.set_attributes(agency, data.vehicle)
 
     def set_attributes(self, agency, data):
-        #import pdb; pdb.set_trace()
         self.agency = agency
 
         self.lat = round(data.position.latitude,  6)
@@ -53,16 +56,21 @@ class Vehicle(Base):
         self.odometer = data.position.odometer
         self.speed = data.position.speed
 
-        self.vehicle_id = data.vehicle.id
-        self.headsign = data.vehicle.label
-        self.trip_id = data.trip.trip_id
         self.route_id = data.trip.route_id
+        self.route_long_name = data.trip.route_id
+        self.route_short_name = data.trip.route_id
+        self.route_type = "TRANSIT"
+        self.headsign = data.vehicle.label
+
+        self.vehicle_id = data.vehicle.id
+        self.trip_id = data.trip.trip_id
         self.stop_id = data.stop_id
         self.stop_seq = data.current_stop_sequence
         self.status = data.VehicleStopStatus.Name(data.current_status)
         self.timestamp = data.timestamp
 
     def add_trip_details(self, session):
+        #import pdb; pdb.set_trace()
         try:
             if self.trip_id:
                 trip = Trip.query_trip(session, self.trip_id)
@@ -71,6 +79,11 @@ class Vehicle(Base):
                     self.block_id = trip.block_id
                     self.service_id = trip.service_id
                     self.shape_id = trip.shape_id
+
+                    self.route_long_name = trip.route.route_name
+                    self.route_short_name = trip.route.make_route_short_name(trip.route)
+                    self.route_type = trip.route.type.otp_type
+
         except Exception as e:
             log.warning("trip_id '{}' not in the GTFS (things OUT of DATE???)".format(self.trip_id))
 

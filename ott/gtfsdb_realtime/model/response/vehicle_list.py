@@ -26,13 +26,13 @@ class Vehicle(VehicleBase):
             "lat": 000.111,
             "heading": float(vehicle.bearing),
             "vehicleId": vehicle.vehicle_id,
-            "destination": vehicle.headsign,
 
-            "routeShortName": vehicle.route_id,
-            "routeType": "BUS",
+            "routeShortName": self.get_route_short_name(vehicle),
+            "routeLongName": self.get_route_long_name(vehicle),
+            "routeType": vehicle.route_type,
+            "routeId": vehicle.route_id,
 
             "agencyId": vehicle.agency,
-            "routeId": vehicle.route_id,
             "tripId": vehicle.trip_id,
             "directionId": vehicle.direction_id,
             "serviceId": vehicle.service_id,
@@ -43,7 +43,7 @@ class Vehicle(VehicleBase):
 
             "status": vehicle.status,
             "seconds": 0,
-            "reportDate": "11.11.2111 11:11 pm"
+            "reportDate": "11.11.2111 11:11 pm",
         }
         self.set_coord(float(vehicle.lat), float(vehicle.lon))
         self.set_time(float(vehicle.timestamp))
