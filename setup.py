@@ -11,6 +11,7 @@ requires = [
     'argparse',
     'simplejson',
     'geojson',
+    'cachetools',
 
     'gtfsdb',
     'gtfs-realtime-bindings',

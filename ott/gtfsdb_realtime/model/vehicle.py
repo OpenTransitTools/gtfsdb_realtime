@@ -8,12 +8,16 @@ from sqlalchemy.orm import deferred, object_session, relationship
 from ott.gtfsdb_realtime.model.base import Base
 from gtfsdb import Trip
 
+from cachetools import TTLCache
+
 import logging
 log = logging.getLogger(__file__)
 
 
 class Vehicle(Base):
     __tablename__ = 'rt_vehicles'
+
+    _route_cache = TTLCache(maxsize=10000, ttl=1200)
 
     vehicle_id = Column(String, nullable=False)
     license_plate = Column(String)
@@ -79,13 +83,30 @@ class Vehicle(Base):
                     self.block_id = trip.block_id
                     self.service_id = trip.service_id
                     self.shape_id = trip.shape_id
-
-                    self.route_long_name = trip.route.route_name
-                    self.route_short_name = trip.route.make_route_short_name(trip.route)
-                    self.route_type = trip.route.type.otp_type
-
+                    self.add_route_details(trip)
         except Exception as e:
             log.warning("trip_id '{}' not in the GTFS (things OUT of DATE???)".format(self.trip_id))
+
+    def add_route_details(self, trip):
+        """
+        add (cached) route data to this object
+        @see add_trip_details()
+        """
+        try:
+            route = self._route_cache.get(trip.trip_id)
+            if route is None:
+                route = {
+                    'n': trip.route.route_name,
+                    's': trip.route.make_route_short_name(trip.route),
+                    't': trip.route.type.otp_type
+                }
+                self._route_cache[trip.trip_id] = route
+
+            self.route_long_name = route['n']
+            self.route_short_name = route['s']
+            self.route_type = route['t']
+        except Exception as e:
+            log.warning("route data for trip {} threw an exception:\n{}".format(self.trip_id, e))
 
     @classmethod
     def add_geometry_column(cls, srid=4326):
