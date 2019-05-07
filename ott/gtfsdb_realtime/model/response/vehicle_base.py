@@ -11,9 +11,15 @@ class VehicleBase(object):
     def __init__(self):
         self.rec = {}
 
-    def has_same_block(self, other_v):
+    def is_same_route(self, other_v):
         ret_val = False
-        if self.rec['blockId'] and len(self.rec['blockId']) > 0 and self.rec['blockId'] == other_v.rec['blockId']:
+        if self.has_valid_route_id() and self.rec['routeId'] == other_v.rec['routeId']:
+            ret_val = True
+        return ret_val
+
+    def is_same_block(self, other_v):
+        ret_val = False
+        if self.has_valid_block_id() and self.rec['blockId'] == other_v.rec['blockId']:
             ret_val = True
         return ret_val
 
@@ -27,9 +33,14 @@ class VehicleBase(object):
             ret_val = False
         return ret_val
 
+    def has_valid_block_id(self):
+        ret_val = True
+        if self.rec['blockId'] is None or len(self.rec['blockId']) < 1:
+            ret_val = False
+        return ret_val
+
     def has_valid_trip_id(self):
         ret_val = True
-
         if self.rec['tripId'] is None or len(self.rec['tripId']) < 1:
             ret_val = False
         return ret_val
@@ -51,15 +62,20 @@ class VehicleBase(object):
         self.rec['reportDate'] = str(pretty_date_time)
 
     def merge(self, other_vehicle):
-        new_id = self.rec['id'] if self.rec['id'] < other_vehicle.rec['id'] else other_vehicle.rec['id']
+        # step 1: concat vehicle id to a string separated by a + character
         new_vehicle_id = "{}+{}".format(self.rec['vehicleId'], other_vehicle.rec['vehicleId'])
 
-        # step 1: use other record if newer than my record
+        # step 2: sort these ids, so we can build a consistent but unique array key
+        ids = new_vehicle_id.split('+')
+        ids = sorted(ids)
+        new_vehicle_id = '+'.join(ids)
+
+        # step 3: use other record if newer than my record
         if other_vehicle.rec['seconds'] < self.rec['seconds']:
             self.rec = other_vehicle.rec
 
-        # step 2: re-label the vehicle id with a concat of the labels
-        self.rec['id'] = new_id
+        # step 4: re-label the vehicle id with a concat of the labels
+        self.rec['id'] = new_vehicle_id
         self.rec['vehicleId'] = new_vehicle_id
 
     @classmethod
@@ -125,7 +141,7 @@ class VehicleListBase(object):
                 # step 2c: cull/merge vehicles on same block
                 if i+1 < num_vehicles:
                     next_v = self.records[i+1]
-                    if next_v and v.has_same_block(next_v):
+                    if next_v and v.is_same_block(next_v) and v.is_same_route(next_v):
                         next_v.merge(v)
                         continue
 
