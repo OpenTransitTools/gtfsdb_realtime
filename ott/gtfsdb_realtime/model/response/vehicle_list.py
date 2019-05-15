@@ -53,11 +53,13 @@ class VehicleListResponse(VehicleListBase):
 
     def __init__(self, vehicles):
         super(VehicleListResponse, self).__init__()
-        # import pdb; pdb.set_trace()
         for i, v in enumerate(vehicles):
-            v = Vehicle(v, i)
-            self.records.append(v)
+            if self.is_valid_vehicle(v):
+                v = Vehicle(v, i)
+                self.records.append(v)
         self.fix_up()
+
+
 
     @classmethod
     def make_response(cls, vehicles, pretty=True):

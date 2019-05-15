@@ -39,6 +39,12 @@ class VehicleBase(object):
             ret_val = False
         return ret_val
 
+    def has_valid_vehicle_id(self):
+        ret_val = True
+        if self.rec['vehicleId'] is None or len(self.rec['vehicleId']) < 1:
+            ret_val = False
+        return ret_val
+
     def has_valid_trip_id(self):
         ret_val = True
         if self.rec['tripId'] is None or len(self.rec['tripId']) < 1:
@@ -52,7 +58,7 @@ class VehicleBase(object):
         return ret_val
 
     def has_valid_ids(self):
-        return self.has_valid_trip_id() and self.has_valid_route_id()
+        return self.has_valid_vehicle_id() and self.has_valid_trip_id() and self.has_valid_route_id()
 
     def set_time(self, time_stamp):
         t = datetime.datetime.fromtimestamp(time_stamp)
@@ -108,6 +114,14 @@ class VehicleListBase(object):
 
     def __init__(self):
         self.records = []
+
+    @classmethod
+    def is_valid_vehicle(cls, v):
+        #import pdb; pdb.set_trace()
+        ret_val = True
+        if v is None or len(v.vehicle_id) < 1:
+            ret_val = False
+        return ret_val
 
     def fix_up(self):
         """
