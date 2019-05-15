@@ -11,6 +11,9 @@ class VehicleBase(object):
     def __init__(self):
         self.rec = {}
 
+    def get_vehicle_id(self):
+        return self.rec['vehicleId']
+
     def is_same_route(self, other_v):
         ret_val = False
         if self.has_valid_route_id() and self.rec['routeId'] == other_v.rec['routeId']:
@@ -117,7 +120,6 @@ class VehicleListBase(object):
 
     @classmethod
     def is_valid_vehicle(cls, v):
-        #import pdb; pdb.set_trace()
         ret_val = True
         if v is None or len(v.vehicle_id) < 1:
             ret_val = False
@@ -183,14 +185,17 @@ class VehicleListBase(object):
         etime = datetime.datetime.now()
         print(etime - stime)
 
-    def get_vehicle_recs(self):
+    def get_unique_vehicle_recs(self):
         ret_val = []
+        unique_ids = []
         for r in self.records:
-            ret_val.append(r.rec)
+            if r not in unique_ids:
+                ret_val.append(r.rec)
+                unique_ids.append(r.get_vehicle_id())
         return ret_val
 
     def make_json_response(self, pretty=True):
-        recs = self.get_vehicle_recs()
+        recs = self.get_unique_vehicle_recs()
         if pretty:
             ret_val = json.dumps(recs, indent=4, sort_keys=True)
         else:
