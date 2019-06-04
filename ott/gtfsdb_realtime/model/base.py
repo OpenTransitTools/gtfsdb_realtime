@@ -46,10 +46,13 @@ class _Base(object):
     @classmethod
     def parse_gtfsrt_feed(cls, session, agency, feed):
         """
+        generic record processor
+        :returns feed header timestamp in POSIX time (i.e., number of seconds since January 1st 1970)
         """
         timestamp = datetime.datetime.utcfromtimestamp(feed.header.timestamp)
         for record in feed.entity:
             cls.parse_gtfsrt_record(session, agency, record, timestamp)
+        return feed.header.timestamp
 
     @abc.abstractmethod
     def parse_gtfsrt_record(cls, session, agency, record, timestamp):

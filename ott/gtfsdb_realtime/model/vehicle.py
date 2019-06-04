@@ -14,6 +14,22 @@ import logging
 log = logging.getLogger(__file__)
 
 
+class VehiclesTimestamp(Base):
+    __tablename__ = 'rt_vehicles_timestamp'
+    timestamp = Column(Integer)
+
+    def __init__(self, agency, timestamp, id=None):
+        if id:
+            self.id = id
+        self.agency = agency
+        self.timestamp = timestamp
+
+    @classmethod
+    def update(cls, session, agency, timestamp):
+        vt = VehiclesTimestamp(agency, timestamp, 1)
+        session.merge(vt)
+
+
 class Vehicle(Base):
     __tablename__ = 'rt_vehicles'
 
@@ -125,8 +141,11 @@ class Vehicle(Base):
 
     @classmethod
     def parse_gtfsrt_feed(cls, session, agency, feed):
+        timestamp = None
         if feed and feed.entity and len(feed.entity) > 0:
-            super(Vehicle, cls).parse_gtfsrt_feed(session, agency, feed)
+            timestamp = super(Vehicle, cls).parse_gtfsrt_feed(session, agency, feed)
+            if timestamp:
+                VehiclesTimestamp.update(session, agency, timestamp)
 
     @classmethod
     def parse_gtfsrt_record(cls, session, agency, record, timestamp):
