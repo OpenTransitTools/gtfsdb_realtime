@@ -59,8 +59,6 @@ class VehicleListResponse(VehicleListBase):
                 self.records.append(v)
         self.fix_up()
 
-
-
     @classmethod
     def make_response(cls, vehicles, pretty=True):
         vl = VehicleListResponse(vehicles)

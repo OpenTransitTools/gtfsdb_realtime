@@ -1,8 +1,9 @@
-from pyramid.response import Response
 from pyramid.view import view_config
 
 from ott.gtfsdb_realtime.control.vehicle_queries import VehicleQueries
+from ott.gtfsdb_realtime.model.vehicle import VehiclesTimestamp
 
+from ott.utils.svr.pyramid import response_utils
 from ott.utils.parse.url.param_parser import ParamParser
 from ott.utils.parse.url.geo_param_parser import GeoParamParser
 
@@ -57,6 +58,7 @@ def all_vehicles(request):
 def vehicles_via_route(request):
     # import pdb; pdb.set_trace()
     routes = request.matchdict['routes']
+    request.response.headers.update({'blah': 'hi'})
     ret_val = _make_vehicle_response(lambda: VehicleQueries.query_via_route_id(APP_CONFIG.db.session, route_id=routes))
     return ret_val
 
@@ -96,9 +98,12 @@ def _make_vehicle_response(vehicle_query_call, do_geojson=False):
 
         # step 2: convert to either list or geojson response (prep'd for web / python)
         if do_geojson:
-            ret_val = VehicleQueries.to_geojson(vehicles, web_response=True)
+            ret_val = VehicleQueries.to_geojson(vehicles)
         else:
-            ret_val = VehicleQueries.to_jsonlist(vehicles, web_response=True)
+            ts = VehiclesTimestamp.query(APP_CONFIG.db.session)
+            veh_json = VehicleQueries.to_jsonlist(vehicles)
+            ret_val = response_utils.json_response(veh_json, last_modified=ts.toUtc())
+
     except Exception as e:
         log.warning(e)
         from ott.utils.svr.pyramid.response_utils import sys_error_response

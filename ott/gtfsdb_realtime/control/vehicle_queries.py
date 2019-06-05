@@ -26,22 +26,16 @@ class VehicleQueries(Base):
         return cls._base_query(session, Vehicle, None, None, agency_id, limit, Vehicle.block_id)
 
     @classmethod
-    def to_geojson(cls, vehicles, pretty=False, web_response=False):
+    def to_geojson(cls, vehicles, pretty=False):
         from ott.gtfsdb_realtime.model.response.vehicle_geojson import make_response
         ret_val = make_response(vehicles, pretty=pretty)
-        if web_response:
-            from ott.utils.svr.pyramid import response_utils
-
         return ret_val
 
     @classmethod
-    def to_jsonlist(cls, vehicles, pretty=False, web_response=False):
+    def to_jsonlist(cls, vehicles, pretty=False):
         from ott.gtfsdb_realtime.model.response.vehicle_list import VehicleListResponse
         ret_val = VehicleListResponse.make_response(vehicles, pretty=pretty)
         log.info("num vehicles: {}, size of ret {}".format(len(vehicles), len(ret_val)))
-        if web_response:
-            from ott.utils.svr.pyramid import response_utils
-            ret_val = response_utils.json_response(ret_val)
         return ret_val
 
 

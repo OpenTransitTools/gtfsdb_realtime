@@ -1,7 +1,7 @@
 import datetime
 
 from geoalchemy2 import Geometry
-from sqlalchemy import Column, Index, Integer, Numeric, String, DateTime
+from sqlalchemy import Column, Index, Integer, Numeric, String, DateTime, desc
 from sqlalchemy.sql import func, and_
 from sqlalchemy.orm import deferred, object_session, relationship
 
@@ -12,22 +12,6 @@ from cachetools import TTLCache
 
 import logging
 log = logging.getLogger(__file__)
-
-
-class VehiclesTimestamp(Base):
-    __tablename__ = 'rt_vehicles_timestamp'
-    timestamp = Column(Integer)
-
-    def __init__(self, agency, timestamp, id=None):
-        if id:
-            self.id = id
-        self.agency = agency
-        self.timestamp = timestamp
-
-    @classmethod
-    def update(cls, session, agency, timestamp):
-        vt = VehiclesTimestamp(agency, timestamp, 1)
-        session.merge(vt)
 
 
 class Vehicle(Base):
@@ -157,3 +141,31 @@ class Vehicle(Base):
         session.add(v)
         #import pdb; pdb.set_trace()
         return v
+
+
+# TODO: make this generic
+class VehiclesTimestamp(Base):
+    __tablename__ = 'rt_vehicles_timestamp'
+    timestamp = Column(Integer)
+
+    def __init__(self, agency, timestamp, id=None):
+        if id:
+            self.id = id
+        self.agency = agency
+        self.timestamp = timestamp
+
+    def toUtc(self):
+        return datetime.datetime.utcfromtimestamp(self.timestamp)
+
+    @classmethod
+    def update(cls, session, agency, timestamp):
+        vt = cls(agency, timestamp, 1)
+        session.merge(vt)
+
+    @classmethod
+    def query(cls, session, all=False, latest_first=True):
+        q = session.query(cls)
+        q = q.order_by(desc(cls.timestamp)) if latest_first else q.order_by(cls.timestamp)
+        ret_val = q.all() if all else q.one()
+        return ret_val
+
