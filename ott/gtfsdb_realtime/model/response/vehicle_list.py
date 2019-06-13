@@ -61,6 +61,7 @@ class VehicleListResponse(VehicleListBase):
 
     @classmethod
     def make_response(cls, vehicles, pretty=True):
+        # import time; time.sleep(30);  # test slow connection
         vl = VehicleListResponse(vehicles)
         ret_val = vl.make_json_response(pretty)
         return ret_val
