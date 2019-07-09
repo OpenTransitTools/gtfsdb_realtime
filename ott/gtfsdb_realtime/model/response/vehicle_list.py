@@ -31,6 +31,8 @@ class Vehicle(VehicleBase):
             "routeLongName": self.get_route_long_name(vehicle),
             "routeType": vehicle.route_type,
             "routeId": vehicle.route_id,
+            "routeColor": None,       # TODO:  both add color (useful), but also think about: routeShort / Long names (needed?)
+            "routeTextColor": None,   # todo:  what about an API that allows minimal elements here?  What tech (graphql?)
 
             "agencyId": vehicle.agency,
             "tripId": vehicle.trip_id,
