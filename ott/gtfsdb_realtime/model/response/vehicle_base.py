@@ -192,19 +192,19 @@ class VehicleListBase(object):
         print(etime - stime)
 
     def get_unique_vehicle_recs(self):
-        # TODO this method doesn't work
-        # further, we don't want to filter on vehicle_id alone
+        return self.records # TODO see below -- quick return here...
+
+        # TODO this method doesn't work -- further, we don't want to filter on vehicle_id alone, since diff blocks w/same v
         ret_val = []
         unique_ids = []
         for r in self.records:
             if r not in unique_ids:
                 ret_val.append(r.rec)
                 unique_ids.append(r.get_vehicle_id())
-
         return ret_val
 
     def make_json_response(self, pretty=True):
-        # recs = self.get_unique_vehicle_recs()
+        recs = self.get_unique_vehicle_recs()
         if pretty:
             ret_val = json.dumps(recs, indent=4, sort_keys=True)
         else:
