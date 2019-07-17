@@ -49,7 +49,7 @@ def vehicles_command_line():
     parser = gtfs_cmdline.output_format(parser, detailed=True)
     args = gtfs_cmdline.simple_stop_route_parser(parser)
 
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     if args.database_url == 'C' or args.database_url == 'CONFIG':
         from .base import get_session_via_config
         from ott.utils.config_util import ConfigUtil

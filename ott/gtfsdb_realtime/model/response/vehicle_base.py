@@ -71,6 +71,12 @@ class VehicleBase(object):
         self.rec['reportDate'] = str(pretty_date_time)
 
     def merge(self, other_vehicle):
+        # import pdb; pdb.set_trace()
+        # step 0: check that we're not merging things that shouldn't merge
+        if self.is_same_block(other_vehicle) is False or self.is_same_route(other_vehicle) is False:
+            log.warning("tried to merge to vehicles with different blocks")
+            return
+
         # step 1: concat vehicle id to a string separated by a + character
         new_vehicle_id = "{}+{}".format(self.rec['vehicleId'], other_vehicle.rec['vehicleId'])
 
@@ -186,16 +192,19 @@ class VehicleListBase(object):
         print(etime - stime)
 
     def get_unique_vehicle_recs(self):
+        # TODO this method doesn't work
+        # further, we don't want to filter on vehicle_id alone
         ret_val = []
         unique_ids = []
         for r in self.records:
             if r not in unique_ids:
                 ret_val.append(r.rec)
                 unique_ids.append(r.get_vehicle_id())
+
         return ret_val
 
     def make_json_response(self, pretty=True):
-        recs = self.get_unique_vehicle_recs()
+        # recs = self.get_unique_vehicle_recs()
         if pretty:
             ret_val = json.dumps(recs, indent=4, sort_keys=True)
         else:
