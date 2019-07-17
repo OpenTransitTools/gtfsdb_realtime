@@ -5,6 +5,7 @@
 .settings
 COMMIT_EDITMSG
 nohup.out
+logs/*
 .git
 .git/*
 .git/FETCH_HEAD
