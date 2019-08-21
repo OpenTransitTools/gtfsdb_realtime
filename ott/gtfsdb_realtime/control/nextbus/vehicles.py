@@ -22,6 +22,10 @@ class Vehicles(Base):
             <lastTime time="1566411708213" />
         </body>
 
+        other agencies:
+         - http://webservices.nextbus.com/s/xmlFeed?command=vehicleLocations&a=sf-muni&t=0
+         -
+
         :param agency:
         :return:
         """
