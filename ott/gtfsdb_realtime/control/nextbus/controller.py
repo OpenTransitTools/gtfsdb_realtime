@@ -1,16 +1,22 @@
 import datetime
+from lxml import etree
 
 import logging
 log = logging.getLogger(__file__)
 
 
-class Vehicles(Base):
+class Vehicles(object):
+    agency = None
+    data = []
 
-    def __init__(self, agency, data):
-        self.set_attributes(agency, data.vehicle)
+    def __init__(self, agency):
+        self.agency = agency
 
-    def curl_nextbus_data(self, agency):
+    @classmethod
+    def grab_feed(cls, agency, parse=True):
         """
+        docs: https://www.nextbus.com/xmlFeedDocs/NextBusXMLFeed.pdf
+
         http://webservices.nextbus.com/s/xmlFeed?command=vehicleLocations&a=portland-sc&t=0
         Here's the XML from NextBus:
         <body copyright="All data copyright Portland Streetcar 2019.">
@@ -26,33 +32,25 @@ class Vehicles(Base):
          - http://webservices.nextbus.com/s/xmlFeed?command=vehicleLocations&a=sf-muni&t=0
          -
 
+        NextBus terms:
+           All polling commands, such as for obtaining vehicle locations, should only be run at the most once every 10 seconds
+           Interpret this to mean one can call trip updates every 10 secs, and vehicles every 10 secs ...
+
+
         :param agency:
         :return:
         """
-
-        self.agency = agency
-
-        self.lat = round(data.position.latitude,  6)
-        self.lon = round(data.position.longitude, 6)
-        if hasattr(self, 'geom'):
-            self.add_geom_to_dict(self.__dict__)
-
-        self.bearing = data.position.bearing
-        self.odometer = data.position.odometer
-        self.speed = data.position.speed
-
-        self.route_id = data.trip.route_id
-        self.route_long_name = data.trip.route_id
-        self.route_short_name = data.trip.route_id
-        self.route_type = "TRANSIT"
-        self.headsign = data.vehicle.label
-
-        self.vehicle_id = data.vehicle.id
-        self.trip_id = data.trip.trip_id
-        self.stop_id = data.stop_id
-        self.stop_seq = data.current_stop_sequence
-        self.status = data.VehicleStopStatus.Name(data.current_status)
-        self.timestamp = data.timestamp
+        ret_val = None
+        response = urllib.urlopen(feed_url)
 
     def vehicle_to_orm(self, session):
         #import pdb; pdb.set_trace()
+
+    def vehicle_to_orm(self, session):
+
+def main():
+    v = Vehicles.curl_nextbus_data('portland-sc')
+
+if __name__ == '__main__':
+    main()
+

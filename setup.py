@@ -69,10 +69,11 @@ setup(
         main = ott.gtfsdb_realtime.pyramid.app:main
 
         [console_scripts]
-        gtfsrt-load = ott.gtfsdb_realtime.loader:main        
+        gtfsrt-load = ott.gtfsdb_realtime.loader:main
         gtfsrt-alerts-query = ott.gtfsdb_realtime.control.alert_queries:alerts_command_line
         gtfsrt-vehicles-query = ott.gtfsdb_realtime.control.vehicle_queries:vehicles_command_line
         gtfsrt-vehicles-load = ott.gtfsdb_realtime.loader:load_vehicles
+        gtfsrt-nextbus-vehicles = ott.gtfsdb_realtime.control.nextbus.vehicle:main
     """,
 
 )
