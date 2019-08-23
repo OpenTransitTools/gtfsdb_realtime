@@ -1,4 +1,3 @@
-import urllib
 import logging
 log = logging.getLogger(__file__)
 

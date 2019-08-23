@@ -1,9 +1,11 @@
+from .vehicle import Vehicle
+
+import urllib
 import datetime
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
     import xml.etree.ElementTree as ET
-
 
 import logging
 log = logging.getLogger(__file__)
@@ -45,6 +47,9 @@ class Controller(object):
         :return:
         """
         ret_val = None
+
+
+        feed_url = "http://webservices.nextbus.com/s/xmlFeed?command=vehicleLocations&t=0&a={}".format(agency)
         data = urllib.urlopen(feed_url)
         if parse:
             if '<' in data and '>' in data:
@@ -56,20 +61,23 @@ class Controller(object):
                 children = root.getchildren()
             ret_val = []
             for c in children:
-                Vehicle
+                v = Vehicle.xml_to_vehicle(xml)
+                ret_val.append(v)
 
         else:
             ret_val = data
         return ret_val
 
     def vehicle_to_orm(self, session):
+        pass
         #import pdb; pdb.set_trace()
 
     def vehicle_to_orm(self, session):
         pass
 
+
 def main():
-    v = .curl_nextbus_data('portland-sc')
+    v = Controller.grab_feed('portland-sc')
 
 if __name__ == '__main__':
     main()
