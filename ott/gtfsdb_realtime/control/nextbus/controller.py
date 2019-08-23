@@ -48,9 +48,11 @@ class Controller(object):
         """
         ret_val = None
 
-
+        #import pdb; pdb.set_trace()
         feed_url = "http://webservices.nextbus.com/s/xmlFeed?command=vehicleLocations&t=0&a={}".format(agency)
-        data = urllib.urlopen(feed_url)
+        #log.debug("Calling: " + feed_url)
+        response = urllib.urlopen(feed_url)
+        data = response.read()
         if parse:
             if '<' in data and '>' in data:
                 tree = ET.fromstring(data)
@@ -60,17 +62,16 @@ class Controller(object):
                 root = tree.getroot()
                 children = root.getchildren()
             ret_val = []
-            for c in children:
-                v = Vehicle.xml_to_vehicle(xml)
-                ret_val.append(v)
-
+            for xml in children:
+                if xml.tag == 'vehicle':
+                    v = Vehicle.xml_to_vehicle(xml)
+                    ret_val.append(v)
         else:
             ret_val = data
         return ret_val
 
     def vehicle_to_orm(self, session):
         pass
-        #import pdb; pdb.set_trace()
 
     def vehicle_to_orm(self, session):
         pass
@@ -78,6 +79,7 @@ class Controller(object):
 
 def main():
     v = Controller.grab_feed('portland-sc')
+    print v[0].to_str()
 
 if __name__ == '__main__':
     main()

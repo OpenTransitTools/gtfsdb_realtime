@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<body copyright="All data copyright Portland Streetcar 2019.">
+<vehicle id="S026" routeTag="193" dirTag="193_0_var0" lat="45.521366" lon="-122.681465" secsSinceReport="86" predictable="true" heading="18" speedKmHr="0"/>
+<lastTime time="1566542333976"/>
+</body>

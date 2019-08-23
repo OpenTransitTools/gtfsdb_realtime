@@ -15,6 +15,9 @@ class Vehicle(object):
     speed_kph = None
     dir_tag = None
 
+    def to_str(self):
+        print "HI" #self.vehicle_id
+
     @classmethod
     def xml_to_vehicle(cls, xml):
         """
@@ -22,17 +25,17 @@ class Vehicle(object):
         """
         v = Vehicle()
 
-        xml = ET.fromstring(data)
         v.vehicle_id = xml.get('id')
         v.route_id = xml.get('routeTag')
         v.dir_tag = xml.get('dirTag');
-        v.direction_id = cls.parse_dir(dirTag)
+        v.direction_id = cls.parse_dir(v.dir_tag)
 
         v.lat = cls.get_float('lat', xml)
         v.lon = cls.get_float('lon', xml)
         v.bearing = cls.get_float('heading', xml)
         v.speed_kph = cls.get_int('speedKmHr', xml)
         v.age = cls.get_int('secsSinceReport', xml)
+        return v
 
     @classmethod
     def parse_dir(cls, dir_tag):
