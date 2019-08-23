@@ -1,6 +1,4 @@
 import urllib
-from lxml import etree
-
 import logging
 log = logging.getLogger(__file__)
 
@@ -25,6 +23,7 @@ class Vehicle(object):
         """
         v = Vehicle()
 
+        xml = ET.fromstring(data)
         v.vehicle_id = xml.get('id')
         v.route_id = xml.get('routeTag')
         v.dir_tag = xml.get('dirTag');

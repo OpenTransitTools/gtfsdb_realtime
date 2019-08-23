@@ -1,11 +1,15 @@
 import datetime
-from lxml import etree
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+
 
 import logging
 log = logging.getLogger(__file__)
 
 
-class Vehicles(object):
+class Controller(object):
     agency = None
     data = []
 
@@ -41,15 +45,31 @@ class Vehicles(object):
         :return:
         """
         ret_val = None
-        response = urllib.urlopen(feed_url)
+        data = urllib.urlopen(feed_url)
+        if parse:
+            if '<' in data and '>' in data:
+                tree = ET.fromstring(data)
+                children = tree.getchildren()
+            else:
+                tree = ET.parse(data)
+                root = tree.getroot()
+                children = root.getchildren()
+            ret_val = []
+            for c in children:
+                Vehicle
+
+        else:
+            ret_val = data
+        return ret_val
 
     def vehicle_to_orm(self, session):
         #import pdb; pdb.set_trace()
 
     def vehicle_to_orm(self, session):
+        pass
 
 def main():
-    v = Vehicles.curl_nextbus_data('portland-sc')
+    v = .curl_nextbus_data('portland-sc')
 
 if __name__ == '__main__':
     main()
