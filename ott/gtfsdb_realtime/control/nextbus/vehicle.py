@@ -6,6 +6,7 @@ class Vehicle(object):
     vehicle_id = None
     route_id = None
     direction_id = None
+    pattern_variation = None
     lat = None
     lon = None
     bearing = None
@@ -28,7 +29,7 @@ class Vehicle(object):
         v.vehicle_id = xml.get('id')
         v.route_id = xml.get('routeTag')
         v.dir_tag = xml.get('dirTag');
-        v.direction_id = cls.parse_dir(v.dir_tag)
+        v.parse_dir()
 
         v.lat = cls.get_float('lat', xml)
         v.lon = cls.get_float('lon', xml)
@@ -37,9 +38,11 @@ class Vehicle(object):
         v.age = cls.get_int('secsSinceReport', xml)
         return v
 
-    @classmethod
-    def parse_dir(cls, dir_tag):
-        return dir_tag
+    def parse_dir(self):
+        dl = self.dir_tag.split('_')
+        if dl and len(dl) == 3:
+            self.direction_id = dl[1]
+            self.pattern_variation = dl[2]
 
     @classmethod
     def get_int(cls, name, xml):
