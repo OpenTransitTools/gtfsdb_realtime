@@ -16,7 +16,7 @@ class Vehicle(object):
     dir_tag = None
 
     def to_str(self):
-        print "HI" #self.vehicle_id
+        return "v: {}, r: {}, d: {}, t: {} secs".format(self.vehicle_id, self.route_id, self.direction_id, self.age)
 
     @classmethod
     def xml_to_vehicle(cls, xml):

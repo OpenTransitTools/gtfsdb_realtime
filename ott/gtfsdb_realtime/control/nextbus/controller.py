@@ -50,7 +50,7 @@ class Controller(object):
 
         #import pdb; pdb.set_trace()
         feed_url = "http://webservices.nextbus.com/s/xmlFeed?command=vehicleLocations&t=0&a={}".format(agency)
-        #log.debug("Calling: " + feed_url)
+        log.debug("\nCalling: " + feed_url)
         response = urllib.urlopen(feed_url)
         data = response.read()
         if parse:
