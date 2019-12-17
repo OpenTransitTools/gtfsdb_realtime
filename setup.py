@@ -12,6 +12,7 @@ requires = [
     'simplejson',
     'geojson',
     'cachetools',
+    'requests',
 
     'gtfsdb',
     'gtfs-realtime-bindings',

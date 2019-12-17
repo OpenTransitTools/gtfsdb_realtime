@@ -1,7 +1,8 @@
 from .vehicle import Vehicle
 
-import urllib
+import requests
 import datetime
+import time
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
@@ -48,11 +49,17 @@ class Controller(object):
         """
         ret_val = None
 
-        #import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         feed_url = "http://webservices.nextbus.com/s/xmlFeed?command=vehicleLocations&t=0&a={}".format(agency)
         log.debug("\nCalling: " + feed_url)
-        response = urllib.urlopen(feed_url)
-        data = response.read()
+        data = ''
+        for n in range(3):
+            time.sleep(1)
+            response = requests.get(feed_url)
+            data = str(response.content)
+            if 'vehicle' in data:
+                break
+            time.sleep(1)
         if parse:
             if '<' in data and '>' in data:
                 tree = ET.fromstring(data)
@@ -79,7 +86,7 @@ class Controller(object):
 
 def main():
     v = Controller.grab_feed('portland-sc')
-    print v[0].to_str()
+    print(v[0].to_str())
 
 if __name__ == '__main__':
     main()
