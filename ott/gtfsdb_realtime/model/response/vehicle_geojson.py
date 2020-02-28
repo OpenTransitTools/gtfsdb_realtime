@@ -35,7 +35,6 @@ def make_vehcile(v, i):
             "routeId": v.route_id,
             "tripId": v.trip_id,
             "shapeId": v.shape_id,
-            "directionId": v.direction_id,
             "blockId": v.block_id,
 
             "status": v.status,

@@ -15,7 +15,7 @@ def main(global_config, **ini_settings):
 
     from zope.sqlalchemy import ZopeTransactionExtension
     from ott.gtfsdb_realtime.model.database import Database
-    import views
+    from . import views
 
     u, s, g = app.db_params_from_config()
     db = Database(u, s, g, session_extenstion=ZopeTransactionExtension())
