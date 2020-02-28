@@ -9,12 +9,16 @@ log = logging.getLogger(__file__)
 
 class _Base(object):
 
-    id = Column(Integer, primary_key=True, nullable=False)
     agency = Column(String, nullable=False)
+
+    id = Column(Integer, primary_key=True, nullable=False)
     created = Column(DateTime, default=datetime.datetime.now())
     updated = Column(DateTime, default=datetime.datetime.now())
 
     lang = "en"
+
+    def __init__(self, agency):
+        self.agency = agency
 
     @classmethod
     def clear_tables(cls, session):

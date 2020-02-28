@@ -1,6 +1,8 @@
 import requests
 import time
 
+from ott.gtfsdb_realtime.model.vehicle import Vehicle
+
 import logging
 log = logging.getLogger(__file__)
 
@@ -27,17 +29,45 @@ class Controller(object):
             response = requests.get(feed_url)
             data = response.json()
             if 'vehicle' in data:
-                ret_val = data
+                ret_val = data['vehicle']
                 break
             time.sleep(1)
         return ret_val
 
-    def vehicle_to_orm(self, session):
-        pass
+    def to_orm(self, session, agency="PSC"):
+        """
+          {'id': 'S026', 'routeTag': '193',  'lon': '-122.682045', 'lat': '45.520138', 'secsSinceReport': '65', 'dirTag': '193_0_var0', 'heading': '20', 'predictable': 'true', 'speedKmHr': '0' }
+        """
+        data = []
+        for d in self.data:
+            v = Vehicle(agency)
+            v.id  = "{}::{}::{}".format(d.id, agency, d.dirTag)
+            v.vehicle_id = id
+            v.lon = d.lon
+            v.lat = d.lat
+            v.bearing = d.heading
+            v.speed = d.speedKmHr
 
-    def vehicle_to_orm(self, session):
-        pass
+            # todo ... need to figure out a lot of junk to fill in below...
+            rdv = d.dirTag.split("_")
 
+            v.route_id = d.routeTag
+            v.route_type = "SC"
+
+            v.direction_id = rdv[1]
+
+            v.trip_id = d.dirTag
+            v.block_id = d.dirTag
+            v.service_id = d.dirTag
+
+            v.route_short_name = rdv[0]
+            v.route_long_name = rdv[0]
+            v.headsign = rdv[0]
+
+            v.stop_id = ""
+            v.stop_seq = 2
+            v.status = "X"
+            v.timestamp = d.secsSinceReport
 
 def main():
     v = Controller()

@@ -22,8 +22,8 @@ class Vehicle(Base):
     vehicle_id = Column(String, nullable=False)
     license_plate = Column(String)
 
-    lat = Column(Numeric(12,6), nullable=False)
-    lon = Column(Numeric(12,6), nullable=False)
+    lat = Column(Numeric(12, 6), nullable=False)
+    lon = Column(Numeric(12, 6), nullable=False)
     bearing = Column(Numeric, default=0)
     odometer = Column(Numeric)
     speed = Column(Numeric)
@@ -45,11 +45,12 @@ class Vehicle(Base):
     status = Column(String)
     timestamp = Column(String)
 
-    def __init__(self, agency, data):
-        self.set_attributes(agency, data.vehicle)
+    def __init__(self, agency, data=None):
+        super(Vehicle, self).__init__(agency)
+        if data and data.vehicle:
+            self.set_attributes(data.vehicle)
 
-    def set_attributes(self, agency, data):
-        self.agency = agency
+    def set_attributes(self, data):
 
         self.lat = round(data.position.latitude,  6)
         self.lon = round(data.position.longitude, 6)
