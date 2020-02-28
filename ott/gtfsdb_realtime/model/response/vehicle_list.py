@@ -21,7 +21,7 @@ class Vehicle(VehicleBase):
         :return a vehicle record
         """
         self.rec = {
-            "id": "{}-{}-{}".format(vehicle.vehicle_id, vehicle.agency, vehicle.block_id),
+            "id": "{}::{}::{}".format(vehicle.vehicle_id, vehicle.agency, vehicle.trip_id),
             "lon": -000.111,
             "lat": 000.111,
             "heading": float(vehicle.bearing),
