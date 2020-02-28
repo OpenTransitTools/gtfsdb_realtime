@@ -46,7 +46,8 @@ class Vehicle(Base):
     timestamp = Column(String)
 
     def __init__(self, agency, data=None):
-        super(Vehicle, self).__init__(agency)
+        super(Vehicle, self).__init__()
+        self.agency = agency
         if data and data.vehicle:
             self.set_attributes(data.vehicle)
 

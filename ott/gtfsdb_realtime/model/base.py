@@ -17,9 +17,6 @@ class _Base(object):
 
     lang = "en"
 
-    def __init__(self, agency):
-        self.agency = agency
-
     @classmethod
     def clear_tables(cls, session):
         log.warning("called from parent, so no idea what tables to clear")
