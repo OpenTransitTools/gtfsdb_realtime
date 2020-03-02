@@ -86,7 +86,7 @@ def grab_feed(feed_url):
 
     log.info("calling GTFS-RT feed url: {}".format(feed_url))
     feed = gtfs_realtime_pb2.FeedMessage()
-    response = urllib.urlopen(feed_url)
+    response = urllib.request.urlopen(feed_url)
     feed.ParseFromString(response.read())
     return feed
 

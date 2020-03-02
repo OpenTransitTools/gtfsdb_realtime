@@ -77,6 +77,7 @@ class Controller(object):
             orm.append(v)
         return orm
 
+
 def main():
     v = Controller()
     print(v.to_orm())
@@ -84,4 +85,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
