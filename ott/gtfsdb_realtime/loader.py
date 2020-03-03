@@ -9,13 +9,17 @@ from ott.utils import num_utils
 from ott.utils import db_utils
 from ott.utils import gtfs_utils
 
+from future.standard_library import install_aliases
+install_aliases()
+
+import urllib
 import time
 import logging
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__file__)
 
 
-def load_agency_feeds(session, agency_id, alerts_url=None, trips_url=None, vehicles_url=None, durr=None, freq=None):
+def load_agency_feeds(session, agency_id, alerts_url=None, trips_url=None, vehicles_url=None, nextbus_url=None, durr=None, freq=None):
     """
     This is a main entry for loading one or more GTFS-RT feeds ...
     """
@@ -71,7 +75,7 @@ def load_gtfsrt_feed(session, agency_id, feed_url, clear_tables_first=True):
     if feed_type:
         ret_val = store_feed(session, agency_id, feed_type, feed, clear_tables_first)
     else:
-        log.warn("not sure what type of data we got back from {}".format(feed_url))
+        log.warning("not sure what type of data we got back from {}".format(feed_url))
         ret_val = False
     return ret_val
 
@@ -81,7 +85,6 @@ def grab_feed(feed_url):
     download a feed from a url
     :see: https://developers.google.com/transit/gtfs-realtime/examples/
     """
-    import urllib
     from google.transit import gtfs_realtime_pb2
 
     log.info("calling GTFS-RT feed url: {}".format(feed_url))
@@ -108,6 +111,14 @@ def store_feed(session, agency_id, feed_type, feed, clear_tables_first):
         # step 3: add gtfsrt data to db
         feed_type.parse_gtfsrt_feed(session, agency_id, feed)
 
+        """
+        # development junk
+        if feed_type:
+            from ott.gtfsdb_realtime.control.nextbus.controller import Controller
+            c = Controller()
+            c.to_orm(session)
+        """
+
         # step 4: commit the session
         session.commit()
         session.commit()  # think I need 2 commits due to session create + begin_nested being created above.
@@ -116,7 +127,7 @@ def store_feed(session, agency_id, feed_type, feed, clear_tables_first):
         ret_val = True
     except Exception as e:
         # step 5: something bad happened ... roll back to our old savepoint
-        log.warn(e)
+        log.error(e)
         session.rollback()
         session.rollback()
         session.commit()
@@ -156,7 +167,8 @@ def load_feeds_via_config(feed, db_url, do_trips=True, do_alerts=True, do_vehicl
     try:
         log.info("loading gtfsdb_realtime db {} {}".format(db_url, schema))
         session = Database.make_session(db_url, schema, is_geospatial, create_db)
-        ret_val = load_agency_feeds(session, agency_id, trips_url, alerts_url, vehicles_url, durr, freq)
+        ret_val = load_agency_feeds(session, agency_id, trips_url, alerts_url, vehicles_url, "DO NB", durr, freq)
+
     except Exception as e:
         log.error("DATABASE ERROR : {}".format(e))
         ret_val = False

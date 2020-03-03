@@ -1,7 +1,5 @@
-import requests
 import time
-
-from ott.gtfsdb_realtime.model.vehicle import Vehicle
+import requests
 
 import logging
 log = logging.getLogger(__file__)
@@ -38,6 +36,8 @@ class Controller(object):
         """
           {'id': 'S026', 'routeTag': '193',  'lon': '-122.682045', 'lat': '45.520138', 'secsSinceReport': '65', 'dirTag': '193_0_var0', 'heading': '20', 'predictable': 'true', 'speedKmHr': '0' }
         """
+        from ott.gtfsdb_realtime.model.vehicle import Vehicle
+
         orm = []
         for d in self.data:
             v = Vehicle(agency)
@@ -75,6 +75,10 @@ class Controller(object):
             v.status = "X"
             v.timestamp = d.get('secsSinceReport')
             orm.append(v)
+
+            if session:
+                session.add(v)
+
         return orm
 
 
