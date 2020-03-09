@@ -1,6 +1,7 @@
 from ott.gtfsdb_realtime.model.database import Database
 from ott.gtfsdb_realtime.model.base import Base
 
+from ott.utils.compat_2_to_3 import *
 from ott.utils.parse.cmdline import gtfs_cmdline
 from ott.utils.parse.cmdline import db_cmdline
 from ott.utils.config_util import ConfigUtil
@@ -9,10 +10,6 @@ from ott.utils import num_utils
 from ott.utils import db_utils
 from ott.utils import gtfs_utils
 
-from future.standard_library import install_aliases
-install_aliases()
-
-import urllib
 import time
 import logging
 logging.basicConfig(level=logging.INFO)
