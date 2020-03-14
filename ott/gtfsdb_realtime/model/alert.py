@@ -134,6 +134,6 @@ class Alert(Base):
         below is TriMet specific (e.g., WES), so override for different agency
         """
         ret_val = long_route_name
-        if nm == "WES Commuter Rail":
+        if long_route_name == "WES Commuter Rail":
             ret_val = "WES"
         return ret_val
