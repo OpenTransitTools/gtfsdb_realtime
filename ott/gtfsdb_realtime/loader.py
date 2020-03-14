@@ -173,10 +173,9 @@ def load_feeds_via_config(feed, db_url, do_trips=True, do_alerts=True, do_vehicl
     return ret_val
 
 
-def load_feeds_via_cmdline():
+def load_feeds_via_cmdline(api_key_required=True, agency_required=True, api_key_msg="Get a TriMet API Key at http://developer.trimet.org/appid/registration"):
     """ this main() function will call TriMet's GTFS-RT apis by default (as and example of how to load the system) """
-    args = gtfs_cmdline.gtfs_rt_parser(api_key_required=True,
-                                       api_key_msg="Get a TriMet API Key at http://developer.trimet.org/appid/registration")
+    args = gtfs_cmdline.gtfs_rt_parser(api_key_required=api_key_required, api_key_msg=api_key_msg, agency_required=agency_required)
 
     schema = string_utils.get_val(args.schema, args.agency_id.lower())
     url = db_utils.check_localhost(args.database_url)
