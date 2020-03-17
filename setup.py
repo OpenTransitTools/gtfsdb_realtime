@@ -11,6 +11,8 @@ requires = [
     'argparse',
     'simplejson',
     'geojson',
+
+    'venusian==1.2.0',
     'cachetools==3.1.1',
     'requests',
 
