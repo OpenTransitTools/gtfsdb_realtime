@@ -13,8 +13,8 @@ requires = [
     'geojson',
 
     'venusian==1.2.0',
-    'cachetools==3.1.1',
-    'requests',
+    'cachetools<=3.1.1',
+    'requests==2.21.0',
 
     'gtfsdb',
     'gtfs-realtime-bindings',
@@ -22,7 +22,7 @@ requires = [
     'sqlalchemy',
     'zope.sqlalchemy',
 
-    'pyramid',
+    'pyramid==1.10.4',
     'pyramid_tm',
     'pyramid_exclog',
     'waitress',
