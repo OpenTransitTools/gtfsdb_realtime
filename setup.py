@@ -12,9 +12,9 @@ requires = [
     'simplejson',
     'geojson',
 
-    'venusian==1.2.0',
-    'cachetools<=3.1.1',
-    'requests==2.21.0',
+    'venusian',
+    'cachetools',
+    'requests',
 
     'gtfsdb',
     'gtfs-realtime-bindings',
@@ -34,14 +34,14 @@ extras_require = dict(
 )
 
 oracle_extras = ['cx_oracle>=5.1']
-postgresql_extras = ['psycopg2>=2.4.2']
+pg_extras = ['psycopg2>=2.4.2']
 
 # NOTE: add pyschopg to requires, else pserve is incomplete
-requires.append(postgresql_extras)
+requires.append(pg_extras)
 
 setup(
     name='ott.gtfsdb_realtime',
-    version='0.1.0',
+    version='1.0.0',
     description='GTFS Real-time Database',
     long_description=README + '\n\n' + CHANGES,
     keywords='GTFS,GTFS-realtime,GTFSRT',
@@ -57,6 +57,7 @@ setup(
         'Natural Language :: English',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.9',
     ),
     dependency_links=[
         'git+https://github.com/OpenTransitTools/utils.git#egg=ott.utils-0.1.0',

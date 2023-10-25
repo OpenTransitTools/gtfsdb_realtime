@@ -22,7 +22,8 @@ See https://developers.google.com/transit/gtfs-realtime/
 Install and use via the gtfsdb source tree:
 ---
 
-1. Install Python 2.7, easy_install and buildout on your system...
+1. Install Python 3.x (as of Oct 2022, works well with py 3.9), easy_install and buildout on your system...
+1. note: may work with older versions of python, up to Python 2.7 (the problem with older versions of python is that the dependant libraries needed to 'buildout' the app get out of date and have conflicts, and the build is problematic).
 1. git clone https://github.com/OpenTransitTools/gtfsdb_realtime.git
 1. cd gtfsdb_realtime
 1. buildout (note: if you're using postgres, do a 'buildout install prod pg')
