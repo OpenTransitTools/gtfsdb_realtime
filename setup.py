@@ -19,7 +19,7 @@ requires = [
     'gtfsdb',
     'gtfs-realtime-bindings',
     'geoalchemy2',
-    'sqlalchemy',
+    'sqlalchemy == 1.4.49',
     'zope.sqlalchemy',
 
     'pyramid',
