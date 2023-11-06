@@ -34,7 +34,7 @@ extras_require = dict(
 )
 
 oracle_extras = ['cx_oracle>=5.1']
-pg_extras = ['psycopg2>=2.4.2']
+pg_extras = ['psycopg2-binary']
 
 # NOTE: add pyschopg to requires, else pserve is incomplete
 requires.append(pg_extras)
